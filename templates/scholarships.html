@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Fully Funded Scholarships 2026 | Study Abroad Without IELTS
+{% endblock %}
+
+{% block metadescription %}
+Explore fully funded scholarships for international students 2026. Find scholarships in USA, Europe, UK with deadlines, benefits, and eligibility.
+{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">Scholarships</li>
+{% endblock %}
+
+{% block content %}
+
+{% if request.resolver_match.url_name == "summer_schools" %}
+  <h1 class="mb-4">Summer Schools</h1>
+{% elif request.resolver_match.url_name == "internships" %}
+  <h1 class="mb-4">Internships</h1>
+{% elif request.resolver_match.url_name == "conferences" %}
+  <h1 class="mb-4">Conferences & Youth Summits</h1>
+{% elif request.resolver_match.url_name == "exchange_programs" %}
+  <h1 class="mb-4">Exchange Programs</h1>
+{% elif request.GET.type %}
+  <h1 class="mb-4">{{ request.GET.type|slugify|title }}</h1>
+{% else %}
+  <h1 class="mb-4">All Scholarships</h1>
+{% endif %}
+
+
+<p class="text-muted mb-4">
+  Browse verified international scholarships including Erasmus Mundus, Fulbright, Chevening, and other fully funded study abroad opportunities.
+</p>
+
+<!-- FILTER BAR -->
+<form method="get" class="row g-2 mb-4">
+
+  {% if request.GET.type %}
+    <input type="hidden" name="type" value="{{ request.GET.type }}">
+  {% endif %}
+
+  <div class="col-md-4">
+    <input type="text" name="q" class="form-control"
+           placeholder="Search by title, country, or field"
+           value="{{ request.GET.q }}">
+  </div>
+
+  <div class="col-md-3">
+    <select name="level" class="form-select">
+      <option value="">All Levels</option>
+      <option value="Undergraduate" {% if request.GET.level == "Undergraduate" %}selected{% endif %}>Undergraduate</option>
+      <option value="Masters" {% if request.GET.level == "Masters" %}selected{% endif %}>Masters</option>
+      <option value="PhD" {% if request.GET.level == "PhD" %}selected{% endif %}>PhD</option>
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <select name="type" class="form-select">
+      <option value="">All Types</option>
+      <option value="Scholarship" {% if request.GET.type == "Scholarship" %}selected{% endif %}>Scholarship</option>
+      <option value="Grant" {% if request.GET.type == "Grant" %}selected{% endif %}>Grant</option>
+      <option value="Fellowship" {% if request.GET.type == "Fellowship" %}selected{% endif %}>Fellowship</option>
+      <option value="summer-school"{% if request.GET.type == "summer-school" %}selected{% endif %}>Summer School</option>
+      <option value="Internship"{% if request.GET.type == "Internship" %}selected{% endif %}>Internships</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100">Search</button>
+  </div>
+</form>
+
+
+<!-- AD SLOT -->
+<div class="mb-4 text-center p-3 bg-light border rounded">
+  <small class="text-muted">ADVERTISEMENT</small>
+</div>
+
+<!-- SCHOLARSHIP LIST -->
+{% for scholarship in opportunities %}
+<div class="card mb-3 shadow-sm border-0">
+  <div class="card-body">
+    <div class="d-flex justify-content-between">
+      <!-- <div class="h-100 d-flex align-items-center justify-content-center bg-white p-2 border-end" style="min-height: 120px; position: relative;"></div>
+        {% if scholarship.image %}
+          <img src="{{ scholarship.image.url }}" class="img-fluid h-100 object-fit-cover" alt="{{ scholarship.title }}">
+        {% elif scholarship.logo_url %}
+          <img src="{{ scholarship.logo_url }}" 
+              class="img-fluid main-logo" 
+              style="max-height: 70px; width: auto;"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        {% endif %}
+      </div> -->
+      <span class="badge bg-primary">{{ scholarship.opportunity_type }}</span>
+      <small class="text-danger fw-bold">
+        Deadline: {{ scholarship.deadline|date:"M d, Y" }}
+      </small>
+    </div>
+
+    <h2 class="h5 fw-bold mt-2">
+      <a href="{% url 'opportunity_detail' scholarship.slug %}"
+         class="text-decoration-none text-dark">
+        {{ scholarship.title }}
+      </a>
+    </h2>
+
+    <p class="mb-1 text-success fw-bold">
+      {{ scholarship.amount }}
+    </p>
+
+    <p class="small text-muted mb-2">
+      Host : {{ scholarship.target_countries }}
+    </p>
+
+    <a href="{% url 'opportunity_detail' scholarship.slug %}"
+       class="btn btn-sm btn-outline-primary">
+      View Details →
+    </a>
+  </div>
+</div>
+{% empty %}
+<p>No scholarships found.</p>
+{% endfor %}
+
+<!-- PAGINATION -->
+{% if is_paginated %}
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+      </li>
+    {% endif %}
+
+    <li class="page-item active">
+      <span class="page-link">{{ page_obj.number }}</span>
+    </li>
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+       <a class="page-link"
+        href="?{% for key, value in request.GET.items %}
+                {% if key != 'page' %}
+                  {{ key }}={{ value }}&
+                {% endif %}
+              {% endfor %}
+              page={{ page_obj.next_page_number }}">
+        Next
+      </a>
+
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+{% endblock %}

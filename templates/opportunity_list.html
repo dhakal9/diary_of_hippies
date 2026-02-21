@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Study Abroad Guides | SOP, Essays & Scholarships{% endblock %}
+{% block meta_description %}
+Summer School Programs Worldwide: Explore top summer schools for students. Find programs in various fields, enhance your skills, and gain international experience.
+{% endblock %}
+
+{% block content %}
+<main class="container my-5">
+    <div class="row">
+
+        <!-- Main Content -->
+        <div class="col-lg-8">
+
+            <h1 class="fw-bold mb-4">Opportunity List</h1>
+
+            {% for guide in guides %}
+            <article class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+
+                    <h2 class="h5 fw-bold">
+                        <a href="{{ opt.get_absolute_url }}" class="text-dark text-decoration-none">
+                            {{ opt.title }}
+                        </a>
+                    </h2>
+
+                    <p class="text-muted small mb-2">
+                        <i class="far fa-clock"></i> Fields
+                    </p>
+
+                    <p class="text-secondary">
+                        Fields
+                    </p>
+
+                    <a href="{{ opt.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
+                        Read Full Guide →
+                    </a>
+                </div>
+            </article>
+
+            {% if forloop.counter == 3 %}
+            <!-- In-content Ad -->
+            <div class="my-4 text-center p-3 bg-white border rounded">
+                <small class="text-muted d-block mb-2">ADVERTISEMENT</small>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-XXXX"
+                     data-ad-slot="XXXX"
+                     data-ad-format="auto"></ins>
+            </div>
+            {% endif %}
+
+            {% endfor %}
+
+            <!-- Pagination -->
+            <nav class="mt-4">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top:90px;">
+
+                <!-- Sidebar Ad -->
+                <div class="card border-0 shadow-sm mb-4 p-3 text-center" style="height:400px;">
+                    <small class="text-muted">SPONSORED</small>
+                    <ins class="adsbygoogle"
+                         style="display:block;height:100%"
+                         data-ad-client="ca-pub-XXXX"
+                         data-ad-slot="XXXX"></ins>
+                </div>
+
+                <!-- SEO Topics -->
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="fw-bold mb-3">Popular Topics</h5>
+                    <ul class="list-unstyled small">
+                        <li>✔ SOP for USA</li>
+                        <li>✔ SOP for Canada</li>
+                        <li>✔ Erasmus Motivation Letter</li>
+                        <li>✔ Scholarship Essay Samples</li>
+                        <li>✔ Fully Funded Scholarships</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock %}

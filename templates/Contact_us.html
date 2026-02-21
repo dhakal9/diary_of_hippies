@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- HERO SECTION -->
+<div class="container-fluid contact_us_bg_img py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-12">
+                <h1 class="text-white fw-bold mb-2">Contact Us</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-transparent p-0 mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'index' %}" class="text-white">
+                                <i class="fa fa-home"></i> Home
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">
+                            Contact
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CONTACT INFO -->
+<div class="container-fluid fh5co_fh5co_bg_contcat py-4">
+    <div class="container">
+        <div class="row text-center">
+
+            <div class="col-md-4 mb-3">
+                <div class="p-4 shadow-sm bg-white rounded h-100">
+                    <i class="fa fa-phone fa-2x text-primary mb-3"></i>
+                    <h6 class="fw-bold">Call Us</h6>
+                    <p class="mb-0">+977 9863543602</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="p-4 shadow-sm bg-white rounded h-100">
+                    <i class="fa fa-envelope fa-2x text-primary mb-3"></i>
+                    <h6 class="fw-bold">Email</h6>
+                    <p class="mb-0">mastersgrant3@gmail.com</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="p-4 shadow-sm bg-white rounded h-100">
+                    <i class="fa fa-map-marker fa-2x text-primary mb-3"></i>
+                    <h6 class="fw-bold">Address</h6>
+                    <p class="mb-0">Tarkeshwor-03, Nuwakot, Nepal</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- CONTACT FORM -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">Get in Touch</h2>
+            <p class="text-muted">
+                Have questions about scholarships, internships, or programs?  
+                We’d love to hear from you.
+            </p>
+        </div>
+    </div>
+
+    <div class="row align-items-stretch">
+        <!-- FORM -->
+        <div class="col-md-6 mb-4">
+            <form class="bg-white p-4 shadow-sm rounded">
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Your Name</label>
+                    <input type="text" class="form-control" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" class="form-control" placeholder="example@email.com" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Subject</label>
+                        <input type="text" class="form-control" placeholder="Subject">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Message</label>
+                    <textarea class="form-control" rows="5" placeholder="Write your message here..." required></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary px-5">
+                        Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- MAP -->
+        <div class="col-md-6">
+            <div class="shadow-sm rounded overflow-hidden h-100">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5696.754643423738!2d85.29462949060627!3d27.74691739537142!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb198a307baabf%3A0xb5137c1bf18db1ea!2sKathmandu%2044600!5e1!3m2!1sen!2snp!4v1735554359333!5m2!1sen!2snp"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

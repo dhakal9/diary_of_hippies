@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+<main class="content">
+  <div class="container">
+    <section class="post-preview row">
+      {% for blog in blogs %}
+      <article class="post col-md-4 col-sm-6">
+        <div class="image-container">
+          <img style=" width: 90%; height: 90%; object-fit: cover;" src="{{blog.image.url}}" alt="{{ blog.title }}">
+        </div>
+        <h2 style='font-size: 1.2rem; font-weight: 700;'>{{ blog.title }}</h2>
+        <p>{{ blog.description|truncatewords:20|safe }}.</p>
+        <a href="{% url 'blogs_details' blog.slug %}" class="read-more">Read More</a>
+      </article>
+      {% endfor %}
+    </section>
+  </div>
+</main>
+
+
+
+<style>
+    
+    .image-container {
+        margin-top:20px;
+        width: 100%;  /* Ensures responsiveness */
+        padding-top: 100%;  /* Makes the container square (1:1 aspect ratio) */
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .image-container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;  /* Ensures the whole image fits within the co
+      }
+      .post {
+        margin-bottom: 20px;
+      }
+</style>
+{% endblock content %}
+
+{% comment %} 
+User: nepandmk_goat_project_user
+
+Database: nepandmk_goat_project
+{% endcomment %}

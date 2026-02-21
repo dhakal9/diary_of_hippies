@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ opportunity.title }} | StudentFundingHub
+{% endblock %}
+
+{% block content %}
+
+<div class="container my-4">
+    <div class="row justify-content-center">
+
+        <!-- ================= MAIN CONTENT ================= -->
+        <div class="col-lg-8">
+
+            <!-- Breadcrumb -->
+            <nav class="mb-4 small text-muted">
+                <a href="{% url 'index' %}" class="text-decoration-none">Home</a> ›
+                <a href="{% url 'scholarship_list' %}" class="text-decoration-none">Scholarships</a> ›
+                <span class="text-dark">{{ opportunity.title|truncatechars:50 }}</span>
+            </nav>
+
+            <!-- Title -->
+            <h1 class="fw-bold mb-3 lh-sm">
+                {{ opportunity.title }}
+            </h1>
+
+            <div class="opportunity-image mb-4">
+                <img src="{{ opportunity.image.url }}" alt="{{ opportunity.title }}" class="img-fluid rounded">
+            </div>
+                   
+            <!-- Deadline -->
+            <p class="text-muted mb-4">
+                <i class="far fa-calendar-alt me-1"></i>
+                Application Deadline:
+                <span class="text-danger fw-bold">
+                    {{ opportunity.deadline|date:"d F Y" }}
+                </span>
+            </p>
+
+            <!-- Quick Facts -->
+            <div class="card border-0 shadow-sm mb-5">
+                <div class="card-body">
+                    <div class="row small">
+                        <div class="col-md-4 mb-2">
+                            <strong>Funding Type</strong><br>
+                            <span class="text-muted">{{ opportunity.amount }}</span>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Study Level</strong><br>
+                            <span class="text-muted">{{ opportunity.education_level }}</span>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <strong>Host</strong><br>
+                            <span class="text-muted">{{ opportunity.target_countries }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <article class="scholarship-content mb-5">
+                {{ opportunity.description|safe }}
+            </article>
+
+            <!-- In-content Ad -->
+            <div class="my-5 p-4 bg-light border rounded text-center">
+                <small class="text-muted d-block mb-2">ADVERTISEMENT</small>
+                <div class="ad-box py-3">
+                    In-Article Responsive Ad
+                </div>
+            </div>
+
+            <!-- Apply Button -->
+            <div class="text-center my-5">
+                <a href="{{ opportunity.official_link }}"
+                   target="_blank"
+                   rel="nofollow noopener"
+                   class="btn btn-lg btn-primary px-5 py-3 fw-bold">
+                    Apply Now
+                </a>
+                <p class="small text-muted mt-2">
+                    Application is free and handled by the official provider
+                </p>
+            </div>
+
+        </div>
+
+        <!-- ================= RIGHT SIDEBAR ================= -->
+        <aside class="col-lg-4 d-none d-lg-block">
+
+            <div class="sticky-sidebar">
+
+                <!-- AdSense Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <small class="text-muted d-block mb-2">ADVERTISEMENT</small>
+                        <div class="ad-box py-4">
+                            Sidebar Ad (300x600 / Responsive)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Scholarships -->
+                {% if related_items %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">
+                            Related Scholarships
+                        </h6>
+
+                        <ul class="list-unstyled mb-0">
+                            {% for r in related_items %}
+                            <li class="mb-3">
+                                <a href="{% url 'opportunity_detail' r.slug %}"
+                                   class="text-decoration-none text-dark small">
+                                    {{ r.title|truncatechars:65 }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </aside>
+
+    </div>
+</div>
+
+<!-- ================= STYLES ================= -->
+<style>
+.scholarship-content {
+    font-size: 1.08rem;
+    line-height: 1.9;
+    color: #2d2d2d;
+}
+
+.scholarship-content h2,
+.scholarship-content h3 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.scholarship-content ul,
+.scholarship-content ol {
+    padding-left: 1.4rem;
+    margin-bottom: 1.5rem;
+}
+
+.scholarship-content li {
+    margin-bottom: 0.6rem;
+}
+
+/* Sticky Sidebar */
+.sticky-sidebar {
+    position: sticky;
+    top: 90px;
+}
+
+/* Hover effect */
+.hover-top {
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+.hover-top:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.12);
+}
+/* Styling for the transformed scraper content */
+.opp-intro {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.opp-requirements {
+    border-left: 5px solid #1a237e; /* Matches your image generator color */
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+}
+
+.opp-requirements h4 {
+    margin-top: 0;
+    color: #1a237e;
+    font-weight: bold;
+}
+
+.source-attribution {
+    margin-top: 30px;
+    padding: 15px;
+    background: #fffdf0; /* Subtle warning yellow */
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+}
+.opportunity-image {
+    max-width: 100%;
+    aspect-ratio: 1200 / 630; /* Facebook post ratio */
+    overflow: hidden;
+}
+
+.opportunity-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+</style>
+
+{% endblock %}
