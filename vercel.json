@@ -1,5 +1,11 @@
 {
   "version": 2,
+<<<<<<< HEAD
   "builds": [{"src": "core/wsgi.py", "use": "@vercel/python", ""}],
   "routes": [{"src": "/(.*)", "dest": "core/wsgi.py"}]
 }
+=======
+  "builds": [{"src": "core/wsgi.py", "use": "@vercel/python"}],
+  "routes": [{"src": "/(.*)", "dest": "core/wsgi.py"}]
+}
+>>>>>>> ee951062dd6e29eeeaec5a2ae6b22c9bd4879a89
