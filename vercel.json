@@ -13,10 +13,11 @@
     }
   ],
 
+  "version": 2,
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "core/wsgi.py"
+      "dest": "api/index.py"
     }
   ]
 }
