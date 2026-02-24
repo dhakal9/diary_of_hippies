@@ -76,7 +76,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+# WSGI_APPLICATION = 'core.wsgi.application'
+# Source - https://stackoverflow.com/a/77327454
+# Posted by Croolic
+# Retrieved 2026-02-24, License - CC BY-SA 4.0
+
+WSGI_APPLICATION = 'core.wsgi.app'
+
 
 
 # Database
