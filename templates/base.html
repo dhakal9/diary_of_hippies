@@ -3,193 +3,169 @@
 <head>
     {% load static %}
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>{% block title %}MastersGrant| Scholarships & Financial Aid 2026{% endblock %}</title>
-    <meta name="description" content="{% block metadescription %}Find the latest scholarships, grants, fellowships, and student funding opportunities worldwide. Updated daily for 2026.{% endblock %}">
-    <meta name="robots" content="index, follow">
+    <title>{% block title %}MastersGrant | 2026-2027 Fully Funded Scholarships & International Grants{% endblock %}</title>
+    <meta name="description" content="{% block metadescription %}Apply for 2026 fully funded scholarships, masters grants, PhD fellowships, and international student financial aid. Verified daily opportunities for global students.{% endblock %}">
+    <meta name="keywords" content="Scholarships 2026, Fully Funded Masters, PhD Fellowships, International Student Loans, Study Abroad Grants, MastersGrant">
+    <meta name="author" content="MastersGrant">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="MastersGrant | 2026 Scholarships & Financial Aid">
+    <meta property="og:description" content="Discover verified fully funded scholarships and global student grants for 2026.">
+    <meta property="og:image" content="{% static 'images/og-image.jpg' %}">
+
     <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
 
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
-    <!-- UI Kit -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.1.0/mdb.min.css" rel="stylesheet">
 
     <style>
         :root {
-            --hub-blue: #1a73e8;
+            --hub-blue: #1a73e8; /* High-trust Google Blue */
             --hub-green: #34a853;
             --hub-dark: #202124;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fdfdfd;
-            color: #3c4043;
-            overflow-x: hidden;
-        }
-
-        .main-wrapper { min-height: 70vh; content-visibility: auto; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; color: #3c4043; }
+        
+        /* Logo & Nav */
         .logo-text { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.8rem; color: var(--hub-blue); letter-spacing: -1px; }
         .logo-text span { color: var(--hub-green); }
-        .nav-link { font-weight: 600; color: #444 !important; font-size: 0.95rem; border-bottom: 2px solid transparent; }
-        .nav-link:hover { border-bottom: 2px solid var(--hub-blue); color: var(--hub-blue) !important; }
-        .breadcrumb-nav { background: #f1f3f4; padding: 8px 0; font-size: 0.85rem; }
-        .ad-slot-header, .ad-slot-sidebar { background: #fafafa; border: 1px dashed #ddd; display: flex; align-items: center; justify-content: center; min-height: 90px; }
-        .hover-top { transition: transform 0.2s; }
-        .hover-top:hover { transform: translateY(-5px); }
-        .bg-soft-primary { background-color: #e7f0fd; }
-        .object-fit-cover { object-fit: cover; }
+        .nav-link { font-weight: 600; color: #444 !important; font-size: 0.95rem; }
+        .nav-link:hover { color: var(--hub-blue) !important; }
+        
+        /* Ad Optimization: Ensuring visibility for High CPC Ads */
+        .ad-slot-header { background: #fdfdfd; border: 1px solid #eee; min-height: 90px; display: flex; align-items: center; justify-content: center; width: 100%; max-width: 728px; }
+        
+        .main-wrapper { min-height: 70vh; }
+        
+        /* Hamburger fix: Ensure it's visible and clickable */
+        .navbar-toggler { border: none !important; box-shadow: none !important; }
+        
+        @media (max-width: 991.98px) {
+            .navbar-collapse { background: #fff; padding: 1rem; border-top: 1px solid #eee; }
+        }
     </style>
 
     {% block extra_head %}{% endblock %}
-    {% block schema %}{% endblock %}
-    <!-- Google tag (gtag.js) -->
+    
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-NS68H5T0M9"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-
         gtag('config', 'G-NS68H5T0M9');
     </script>
 </head>
 
 <body>
 
-<!-- Top Bar -->
-<div class="bg-dark text-white py-2">
+<div class="bg-dark text-white py-1">
     <div class="container d-flex justify-content-between align-items-center small">
-        <div><span class="badge bg-danger me-2">LIVE</span> 2026 International Scholarship Applications Now Open</div>
+        <div><span class="badge bg-danger me-2">NEW</span> 2026 Fully Funded Programs Closing Soon!</div>
         <div class="d-none d-md-block">
-            <a href="{% url 'guide_list' %}" class="text-white-50 me-3 text-decoration-none">Student Guides</a>
-            <a href="{% url 'contact' %}" class="text-white-50 text-decoration-none">Support</a>
+            <a href="{% url 'contact' %}" class="text-white-50 text-decoration-none">Help Center</a>
         </div>
     </div>
 </div>
 
-<!-- Header + Logo + Ad + Search -->
 <header class="py-4 bg-white border-bottom">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-4 text-center text-lg-start mb-3 mb-lg-0">
-                <a href="{% url 'index' %}" class="text-decoration-none d-inline-block">
+            <div class="col-lg-4 text-center text-lg-start">
+                <a href="{% url 'index' %}" class="text-decoration-none">
                     <div class="logo-text">Masters<span>Grant</span></div>
-                    <small class="text-muted">Global Financial Aid Directory For Graduates</small>
+                    <h1 class="h6 text-muted mb-0" style="font-size: 0.75rem; font-weight: 400;">Global Scholarship & Financial Aid Database</h1>
                 </a>
             </div>
-
-            <div class="col-lg-8 d-none d-lg-flex justify-content-end align-items-center">
-                <div class="ad-slot-header me-3">Advertisement</div>
-
-                <form action="{% url 'scholarship_list' %}" method="GET" class="d-flex w-50">
-                    <input type="search" name="q" class="form-control rounded-start" placeholder="Search scholarships..." aria-label="Search">
-                    <button class="btn btn-primary rounded-end" type="submit"><i class="fas fa-search"></i></button>
-                </form>
+            <div class="col-lg-8 d-none d-lg-flex justify-content-end">
+                <div class="ad-slot-header text-muted">Advertisement</div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light sticky-top shadow-sm bg-white">
     <div class="container">
-        <a class="navbar-brand d-lg-none" href="{% url 'index' %}"><div class="logo-text">SFH</div></a>
-        <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarContent">
+        <a class="navbar-brand d-lg-none logo-text" href="{% url 'index' %}" style="font-size: 1.4rem;">Masters<span>Grant</span></a>
+        
+        <button class="navbar-toggler" type="button" 
+                data-mdb-collapse-init 
+                data-mdb-target="#navbarContent" 
+                aria-controls="navbarContent" 
+                aria-expanded="false" 
+                aria-label="Toggle navigation">
             <i class="fas fa-bars"></i>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarContent">
+        <div class="collapse navbar-collapse" id="navbarContent" data-mdb-collapse-init>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'scholarship_list' %}">Scholarships</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'guide_list' %}">Application Guides</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'summer_schools' %}">Summer Schools</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'internships' %}">Internships</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'conferences' %}">Conferences</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'exchange_programs' %}">Exchange Programs</a></li>
-                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="{% url 'scholarship_list' %}" id="scholarshipDropdown" role="button" data-mdb-toggle="dropdown">
-                        Opportunities
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% for cat in all_categories %}
-                        <li><a class="dropdown-item" href="{% url 'scholarship_list' %}?category={{ cat.slug }}">{{ cat.name }} Scholarships</a></li>
-                        {% empty %}
-                        <li><a class="dropdown-item" href="{% url 'scholarship_list' %}">All Scholarships</a></li>
-                        {% endfor %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'guide_list' %}">How to Apply</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="oppsDropdown" role="button" data-mdb-dropdown-init aria-expanded="false">Opportunities</a>
+                    <ul class="dropdown-menu" aria-labelledby="oppsDropdown">
+                        <li><a class="dropdown-item" href="{% url 'internships' %}">Internships</a></li>
+                        <li><a class="dropdown-item" href="{% url 'summer_schools' %}">Summer Schools</a></li>
+                        <li><a class="dropdown-item" href="{% url 'conferences' %}">Conferences</a></li>
                     </ul>
                 </li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
             </ul>
-
-            <!-- Mobile Search -->
-            <form action="{% url 'scholarship_list' %}" method="GET" class="d-flex d-lg-none mt-3 w-100">
-                <input type="search" name="q" class="form-control rounded-start" placeholder="Search scholarships...">
-                <button class="btn btn-primary rounded-end" type="submit"><i class="fas fa-search"></i></button>
+            
+            <form action="{% url 'scholarship_list' %}" method="GET" class="d-flex input-group w-auto">
+                <input type="search" name="q" class="form-control" placeholder="Search Grants..." aria-label="Search">
+                <button class="btn btn-primary" type="submit" data-mdb-ripple-init><i class="fas fa-search"></i></button>
             </form>
         </div>
     </div>
 </nav>
 
-<!-- Breadcrumb -->
-<div class="breadcrumb-nav">
-    <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-                {% block breadcrumb_items %}{% endblock %}
-            </ol>
-        </nav>
-    </div>
-</div>
-
-<!-- Main Content -->
-<main class="main-wrapper my-5">
+<main class="main-wrapper my-4">
     <div class="container">
         {% block content %}{% endblock %}
     </div>
+</main>
 
-<!-- Footer -->
-<footer class="bg-light pt-5 pb-4 border-top">
+<footer class="bg-white pt-5 pb-4 border-top mt-5">
     <div class="container">
         <div class="row">
             <div class="col-lg-4 mb-4">
                 <div class="logo-text mb-2" style="font-size:1.4rem;">Masters<span>Grant</span></div>
-                <p class="small text-muted">The definitive source for scholarships, grants, and student funding worldwide.</p>
+                <p class="small text-muted">Your #1 trusted source for verified 2026 international scholarships, PhD fellowships, and student grants.</p>
             </div>
-
-            <div class="col-lg-2 col-6 mb-4">
-                <h6 class="fw-bold">Explore</h6>
-                <ul class="list-unstyled small">
-                    <li><a href="{% url 'scholarship_list' %}" class="text-muted">Latest Scholarships</a></li>
-                    <li><a href="{% url 'guide_list' %}" class="text-muted">Student Guides</a></li>
-                </ul>
-            </div>
-
-            <div class="col-lg-6 mb-4">
-                <h6 class="fw-bold">About MastersGrant</h6>
-                <ul class="list-unstyled small">
-                    <li><a href="#" class="text-muted">About Us</a></li>
-                    <li><a href="{% url 'contact' %}" class="text-muted">Contact Us</a></li>
-                    <li><a href="#" class="text-muted">Career</a></li>
-                </ul>
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <h6 class="fw-bold">Resources</h6>
+                        <ul class="list-unstyled small">
+                            <li><a href="{% url 'scholarship_list' %}" class="text-muted">Browse Scholarships</a></li>
+                            <li><a href="{% url 'guide_list' %}" class="text-muted">Success Guides</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <h6 class="fw-bold">Legal</h6>
+                        <ul class="list-unstyled small">
+                            <li><a href="{% url 'privacy_policy' %}" class="text-muted">Privacy Policy</a></li>
+                            <li><a href="#" class="text-muted">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-
         <hr>
-        <div class="d-flex justify-content-between small text-muted">
-            <p>© 2026 MastersGrant</p>
-            <div>
-                <a href="{% url 'privacy_policy' %}" class="text-muted me-3">Privacy Policy</a>
-                <a href="#" class="text-muted">Terms</a>
-            </div>
+        <div class="text-center small text-muted">
+            <p>© 2026 MastersGrant.com - Connecting Students to Opportunities.</p>
         </div>
     </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.1.0/mdb.umd.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.1.0/mdb.umd.min.js"></script>
 </body>
 </html>
