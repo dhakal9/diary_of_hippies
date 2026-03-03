@@ -117,8 +117,8 @@ cloudinary.config(
 # }
 DATABASES = {
     'default': dj_database_url.parse(
-        "postgresql://postgres:wjwOEl8qWN5q46cJ@db.ezasxuxkxwkaclsjltle.supabase.co:5432/postgres",
-        conn_max_age=0,
+        "postgresql://postgres.ezasxuxkxwkaclsjltle:wjwOEl8qWN5q46cJ@aws-0-eu-central-1.pooler.supabase.com:6543/postgres",
+        conn_max_age=60,
         ssl_require=True
     )
 }
