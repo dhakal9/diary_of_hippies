@@ -117,12 +117,20 @@ cloudinary.config(
 # }
 
 DATABASES = {
-    'default': dj_database_url.parse(
-        "postgresql://postgres.ezasxuxkxwkaclsjltle:wjwOEl8qWN5q46cJ@aws-0-eu-central-1.pooler.supabase.com:6543/postgres",
-        conn_max_age=60,
-        ssl_require=True
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.ezasxuxkxwkaclsjltle', # Project ID must stay in the username
+        'PASSWORD': 'wjwOEl8qWN5q46cJ', 
+        'HOST': 'aws-0-eu-central-1.pooler.supabase.com', # Use the POOLER host
+        'PORT': '5432',  # Using 5432 on the POOLER host = Session Mode (IPv4 compatible)
+        'CONN_MAX_AGE': 60,
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+    }
 }
+# tinychnages
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
