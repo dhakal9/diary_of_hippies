@@ -115,6 +115,7 @@ cloudinary.config(
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
 DATABASES = {
     'default': dj_database_url.parse(
         "postgresql://postgres.ezasxuxkxwkaclsjltle:wjwOEl8qWN5q46cJ@aws-0-eu-central-1.pooler.supabase.com:6543/postgres",
