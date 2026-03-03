@@ -119,7 +119,6 @@ DATABASES = {
     'default': dj_database_url.parse(
         "postgresql://postgres:wjwOEl8qWN5q46cJ@db.ezasxuxkxwkaclsjltle.supabase.co:5432/postgres",
         conn_max_age=600,
-        ssl_require=True
     )
 }
 
