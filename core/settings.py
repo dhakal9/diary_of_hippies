@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+import cloudinary
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,8 +31,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
-INSTALLED_APPS = [
-    'whitenoise.runserver_nostatic',  # Add this line to disable static file handling in development
+INSTALLED_APPS = [  
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,12 +41,13 @@ INSTALLED_APPS = [
     'ckeditor',
     'blog',
     'scraper',
+    'cloudinary',
+    'cloudinary_storage',
     
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add this line to enable WhiteNoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,7 +84,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.app'
 
-
+cloudinary.config(
+    cloud_name='dsi0pqrcy',
+    api_key='474493794259973',
+    api_secret='ytnPQexg8XvYC0XdO2ORlxr-Ji8',	
+    CLOUDINARY_URL='cloudinary://474493794259973:ytnPQexg8XvYC0XdO2ORlxr-Ji8@dsi0pqrcy',
+)
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -145,8 +151,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 
-STATIC_URL = "static/"
-MEDIA_URL = "media/"
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
 
@@ -157,11 +163,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
 
 
 AUTOSLUG_SLUGIFY_FUNCTION = 'django.utils.text.slugify'
@@ -170,3 +171,16 @@ AUTOSLUG_SLUGIFY_FUNCTION = 'django.utils.text.slugify'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# SECURITY
+# =========================
+CSRF_TRUSTED_ORIGINS = [
+    "https://mastersgrant.com",
+    "https://www.mastersgrant.com",
+]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
