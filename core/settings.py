@@ -117,18 +117,11 @@ cloudinary.config(
 # }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.ezasxuxkxwkaclsjltle', 
-        'PASSWORD': 'wjwOEl8qWN5q46cJ', 
-        'HOST': 'aws-0-eu-central-1.pooler.supabase.com', 
-        'PORT': '5432', # Session Mode is the most stable for Django on Vercel
-        'CONN_MAX_AGE': 60,
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
-    }
+    'default': dj_database_url.config(
+        default='postgresql://neondb_owner:npg_Qo1sEgTr5iwv@ep-proud-frost-aibysccf-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # tinychnages
