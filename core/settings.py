@@ -120,10 +120,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER': 'postgres.ezasxuxkxwkaclsjltle', # Project ID must stay in the username
+        'USER': 'postgres.ezasxuxkxwkaclsjltle', # User MUST have the project ref
         'PASSWORD': 'wjwOEl8qWN5q46cJ', 
-        'HOST': 'aws-0-eu-central-1.pooler.supabase.com', # Use the POOLER host
-        'PORT': '5432',  # Using 5432 on the POOLER host = Session Mode (IPv4 compatible)
+        'HOST': 'aws-0-eu-central-1.pooler.supabase.com', # Use the POOLER host, not the direct one
+        'PORT': '5432', # Session Mode (IPv4 Bridge)
         'CONN_MAX_AGE': 60,
         'OPTIONS': {
             'sslmode': 'require',
