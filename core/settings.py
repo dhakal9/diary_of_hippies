@@ -164,15 +164,19 @@ USE_TZ = True
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
+# Where your source static files live
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
+# Where collectstatic gathers files
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# STATIC_ROOT for collectstatic
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# Media files
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+# Cloudinary storage
+STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 
 AUTOSLUG_SLUGIFY_FUNCTION = 'django.utils.text.slugify'
