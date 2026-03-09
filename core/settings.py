@@ -44,13 +44,11 @@ INSTALLED_APPS = [
     'scraper',
     'cloudinary',
     'cloudinary_storage',
-    'whitenoise',  # Add this line to use WhiteNoise with runserver
     
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
