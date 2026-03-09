@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'scraper',
     'cloudinary',
     'cloudinary_storage',
-    'whitenoise.runserver_nostatic',  # Add this line to use WhiteNoise with runserver
+    'whitenoise',  # Add this line to use WhiteNoise with runserver
     
 ]
 
