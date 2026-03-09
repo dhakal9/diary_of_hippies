@@ -44,11 +44,13 @@ INSTALLED_APPS = [
     'scraper',
     'cloudinary',
     'cloudinary_storage',
+    'whitenoise.runserver_nostatic',  # Add this line to use WhiteNoise with runserver
     
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -162,21 +164,22 @@ USE_TZ = True
 
 
 STATIC_URL = "/static/"
-MEDIA_URL = "/media/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles") 
 
-# Where your source static files live
+# 2. Keep this as 'static' (this is where your custom CSS/JS lives)
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-# Where collectstatic gathers files
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# 3. Use WhiteNoise to fix the "image/gif" and MIME type issues on Vercel
+# This is the most important step for production
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# 3. Keep Cloudinary ONLY for Media (User uploads)
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-# Cloudinary storage
-STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 
 AUTOSLUG_SLUGIFY_FUNCTION = 'django.utils.text.slugify'
