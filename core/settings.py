@@ -2,14 +2,17 @@ import os
 from pathlib import Path
 import dj_database_url
 
+from dotenv import load_dotenv
+load_dotenv()
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-h1xlm5#l(qpecmj$pyg6&37@$_%_hhc8-bxi9x2)cmt=+p1x=k'
+
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -25,11 +28,14 @@ INSTALLED_APPS = [
     'cloudinary',               # Low-level SDK
     'ckeditor',
     'blog',
-    'scraper',   
+    'scraper',  
+    'whitenoise.runserver_nostatic',  # Disable static file handling in development 
+    'whitenoise',  # Add WhiteNoise for static file handling in production
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise middleware for static file handling
     # If using WhiteNoise, it would go here, but since you use Cloudinary, it is not needed.
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -63,15 +69,15 @@ WSGI_APPLICATION = 'core.wsgi.app'
 # Cloudinary Configuration
 # This dictionary format is required for the django-cloudinary-storage engine
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dsi0pqrcy',
-    'API_KEY': '474493794259973',
-    'API_SECRET': 'ytnPQexg8XvYC0XdO2ORlxr-Ji8',
+    'CLOUD_NAME': os.getenv('CLOUD_NAME'),
+    'API_KEY': os.getenv('API_KEY'),
+    'API_SECRET': os.getenv('API_SECRET'),
 }
 
 # Database
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://neondb_owner:npg_Qo1sEgTr5iwv@ep-proud-frost-aibysccf-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require',
+        default=os.getenv('DATABASE_URL'),
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -90,18 +96,21 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Storage Engines
 # Use Hashed storage to bust cache on Cloudinary
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticCloudinaryStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Security Settings
+
 CSRF_TRUSTED_ORIGINS = [
     "https://mastersgrant.com",
     "https://www.mastersgrant.com",
+    "http://localhost:8000",
 ]
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
