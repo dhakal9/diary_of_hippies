@@ -39,20 +39,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',  # Add this line to use WhiteNoise with runserver
-    'whitenoise',
     'ckeditor',
     'blog',
     'scraper',
     'cloudinary',
     'cloudinary_storage',
-      # Add this line to use WhiteNoise with runserver
     
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -168,20 +164,19 @@ USE_TZ = True
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
+# Where your source static files live
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
+# Where collectstatic gathers files
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# STATIC_ROOT for collectstatic
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-# Media files
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Cloudinary storage
 STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-
-
 
 
 AUTOSLUG_SLUGIFY_FUNCTION = 'django.utils.text.slugify'
