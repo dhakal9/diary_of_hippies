@@ -90,7 +90,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Storage Engines
 # Use Hashed storage to bust cache on Cloudinary
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticCloudinaryStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Security Settings
