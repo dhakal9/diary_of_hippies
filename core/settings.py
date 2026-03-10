@@ -43,9 +43,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'ckeditor',
     'blog',
-    'scraper',
-    
-    
+    'scraper',   
 ]
 
 MIDDLEWARE = [
@@ -86,13 +84,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.app'
 
-cloudinary.config(
-    cloud_name='dsi0pqrcy',
-    api_key='474493794259973',
-    api_secret='ytnPQexg8XvYC0XdO2ORlxr-Ji8',	
-    CLOUDINARY_URL='cloudinary://474493794259973:ytnPQexg8XvYC0XdO2ORlxr-Ji8@dsi0pqrcy',
-)
-
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dsi0pqrcy',
+    'API_KEY': '474493794259973',
+    'API_SECRET': 'ytnPQexg8XvYC0XdO2ORlxr-Ji8',
+}
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
