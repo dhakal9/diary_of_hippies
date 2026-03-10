@@ -166,21 +166,21 @@ USE_TZ = True
 
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles") 
-
-# 2. Keep this as 'static' (this is where your custom CSS/JS lives)
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
-# 3. Use WhiteNoise to fix the "image/gif" and MIME type issues on Vercel
-# This is the most important step for production
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# 3. Keep Cloudinary ONLY for Media (User uploads)
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
+
+
+# STATIC_ROOT for collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Cloudinary storage
+STATICFILES_STORAGE = "cloudinary_storage.storage.StaticHashedCloudinaryStorage"
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
 
 
 
