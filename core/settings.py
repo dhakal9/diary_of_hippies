@@ -122,3 +122,14 @@ AUTOSLUG_SLUGIFY_FUNCTION = 'django.utils.text.slugify'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # wjwOEl8qWN5q46cJ
+# // {
+# //   "version": 2,
+# //   "routes": [
+# //     {
+# //       "src": "/(.*)",
+# //       "dest": "api/index.py"
+# //     }
+# //   ]
+# // }
+
+# // vercel.json
