@@ -96,7 +96,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Storage Engines
 # Use Hashed storage to bust cache on Cloudinary
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Security Settings
