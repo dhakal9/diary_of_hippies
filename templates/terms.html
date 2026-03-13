@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Terms of Service - MastersGrant{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item active" aria-current="page">Terms of Service</li>
+{% endblock %}
+
+{% block content %}
+<main class="terms-container">
+    <div class="container">
+        <section class="terms-header">
+            <h1>Terms of Service</h1>
+            <p class="last-updated">Last Updated: March 13, 2026</p>
+            <hr>
+        </section>
+
+        <article class="terms-content">
+            <p>Welcome to <strong>mastersgrant.com</strong>. By accessing our website, you agree to comply with and be bound by the following terms and conditions. Please read them carefully.</p>
+
+            <h3>1. Nature of Information</h3>
+            <p>MastersGrant is an educational resource portal. We provide guides, tips, and links to scholarships and grants. <strong>We are not a scholarship provider</strong>, and we do not grant financial aid directly. All information is provided "as is" for informational purposes only.</p>
+
+            <h3>2. No Guarantee of Success</h3>
+            <p>While our application guides are designed to help you succeed, using our content does not guarantee that you will be awarded any scholarship or admission. The final decision rests solely with the awarding organization or university.</p>
+
+            <h3>3. Intellectual Property</h3>
+            <p>Unless otherwise stated, all content, including guides, Python scripts, and technical articles on this site, is the intellectual property of MastersGrant. You may not reproduce, redistribute, or scrape our content for commercial use without explicit permission.</p>
+
+            <h3>4. External Links & Third Parties</h3>
+            <p>Our website contains links to external university portals and government websites. We do not control these sites and are not responsible for their content, availability, or accuracy. Clicking these links is at your own risk.</p>
+
+            <h3>5. Limitation of Liability</h3>
+            <p>In no event shall mastersgrant.com or its owners be liable for any damages (including, without limitation, damages for loss of data or profit) arising out of the use or inability to use the materials on our website.</p>
+
+            <h3>6. AdSense & Third-Party Advertising</h3>
+            <p>This website uses Google AdSense and other advertising platforms to serve ads. These companies may use cookies to serve ads based on your prior visits to this or other websites.</p>
+
+            <h3>7. Changes to Terms</h3>
+            <p>We reserve the right to modify these terms at any time. We encourage users to frequently check this page for any changes to stay informed.</p>
+
+            <h3>8. Contact Information</h3>
+            <p>If you have any questions about these Terms of Service, please contact us at: <br>
+            <strong>Email:</strong> mastersgrant3@gmail.com</p>
+        </article>
+    </div>
+</main>
+
+<style>
+    .terms-container {
+        line-height: 1.6;
+        color: #333;
+        padding: 40px 20px;
+        max-width: 900px;
+        margin: auto;
+    }
+    .terms-header h1 {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+    .last-updated {
+        color: #7f8c8d;
+        font-style: italic;
+    }
+    .terms-content h3 {
+        margin-top: 30px;
+        color: #2980b9;
+        font-size: 1.4rem;
+    }
+    .terms-content p {
+        margin-bottom: 15px;
+    }
+    hr {
+        border: 0;
+        border-top: 1px solid #eee;
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}

@@ -15,6 +15,9 @@ class IndexView(ListView):
 class PrivacyPolicyView(TemplateView):
     template_name = 'privacy_policy.html'
 
+class TermsView(TemplateView):
+    template_name = 'terms.html'
+
 class OpportunityDetailView(DetailView):
     """Detail Page: Optimized for single object retrieval."""
     model = Opportunity
