@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{%block content%}
+{%load static%}
+
+<section class="error-section centred">
+    <div class="auto-container">
+        <div class="inner-box">
+            <h1>404</h1>
+            <h2>page is not found. <br>The page is doesn’t exist.</h2>
+            <a href="{% url 'index'%}" class="theme-btn">Go To Home</a>
+        </div>
+    </div>
+</section>
+{%endblock content%}

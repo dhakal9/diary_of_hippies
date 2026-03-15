@@ -8,6 +8,7 @@ from .views import (
     ScholarshipListView,
     PrivacyPolicyView,
     TermsView,
+    AboutUsView,
     
     
 )
@@ -20,6 +21,7 @@ urlpatterns = [
     path('', IndexView.as_view(), name="index"),
     path('privacy-policy/', PrivacyPolicyView.as_view(), name='privacy_policy'),
     path('terms/', TermsView.as_view(), name='terms'),
+    path('about-us/', AboutUsView.as_view(), name='about_us'),
     # Opportunities (Scholarships, Grants, etc.)
     # SEO Tip: Using 'scholarships' in the path helps rank for that high-volume keyword
     path('scholarships/<slug:slug>/', OpportunityDetailView.as_view(), name="opportunity_detail"),

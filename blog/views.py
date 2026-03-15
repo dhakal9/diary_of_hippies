@@ -1,7 +1,28 @@
+from django.conf import settings
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
 from .models import Opportunity, Guide, Category
 from django.db.models import Q
-from django.views.generic import ListView
+from django.views.generic import ListView, View
+from .forms import ContactForm
+from django.core.mail import send_mail
+from django.contrib import messages
+import requests
+
+
+
+
+def error_404(request, exception):
+        return render(request,'404.html')
+
+def error_500(request):
+        return render(request,'500.html')
+        
+def error_403(request, exception):
+        return render(request,'403.html')
+
+def error_400(request,  exception):
+        return render(request,'400.html')
 
 # blog/views.py
 class IndexView(ListView):
@@ -17,6 +38,9 @@ class PrivacyPolicyView(TemplateView):
 
 class TermsView(TemplateView):
     template_name = 'terms.html'
+
+class AboutUsView(TemplateView):
+    template_name = 'about_us.html'
 
 class OpportunityDetailView(DetailView):
     """Detail Page: Optimized for single object retrieval."""
@@ -39,8 +63,99 @@ class GuideListView(ListView):
     context_object_name = 'guides'
     paginate_by = 10
 
-class ContactUs(TemplateView):
-    template_name = 'contact_us.html'
+# class ContactUs(TemplateView):
+#     template_name = 'contact_us.html'
+
+
+
+class ContactUs(View):
+
+    template_name = "contact_us.html"
+
+    def get(self, request):
+        form = ContactForm()
+        return render(request, self.template_name, {
+            "form": form,
+            "RECAPTCHA_SITE_KEY": settings.RECAPTCHA_SITE_KEY
+        })
+
+    def post(self, request):
+
+        form = ContactForm(request.POST)
+
+        if form.is_valid():
+
+            name = form.cleaned_data["username"]
+            email = form.cleaned_data["email"]
+            subject = form.cleaned_data["subject"]
+            message = form.cleaned_data["message"]
+        # verify captcha
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+
+        data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+
+        r = requests.post(
+            'https://www.google.com/recaptcha/api/siteverify',
+            data=data
+        )
+
+        result = r.json()
+
+        if not result['success']:
+            messages.error(request, "Captcha verification failed.")
+            return redirect("contact")
+
+        # Email to admin
+        message_body = f"""
+            New Contact Message
+
+            Name: {name}
+            Email: {email}
+
+            Message:
+            {message}
+            """
+
+        send_mail(
+            subject,
+            message_body,
+            settings.EMAIL_HOST_USER,
+            ["dhakalamrit19@gmail.com"],
+            fail_silently=False
+        )
+
+        # Auto reply to user
+        auto_reply = f"""
+Hi {name},
+
+Thank you for contacting MastersGrant.
+
+We have received your message and will respond soon.
+
+Your message:
+{message}
+
+Best Regards,
+MastersGrant Team
+"""
+
+        send_mail(
+            "We received your message",
+            auto_reply,
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=True
+        )
+
+        messages.success(request,"Your message has been sent successfully!")
+
+        return redirect("contact")
+
+
+
 
 
 class GuideDetailView(DetailView):

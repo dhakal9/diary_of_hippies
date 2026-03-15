@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{%block content%}
+{%load static%}
+
+<section class="error-section centred">
+    <div class="auto-container">
+        <div class="inner-box">
+            <h1>400</h1>
+            <h2>Bad Request. <br>Please Try again.</h2>
+            <a href="{% url 'index'%}" class="theme-btn">Go To Home</a>
+        </div>
+    </div>
+</section>
+{%endblock content%}
