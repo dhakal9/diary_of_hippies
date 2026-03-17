@@ -1,65 +1,210 @@
 {% extends "base.html" %}
+{%load static %}
 {% block title %}About Us - MastersGrant{% endblock %}
 
 {% block breadcrumb_items %}
-    <li class="breadcrumb-item active" aria-current="page">About Us</li>
+
+<li class="breadcrumb-item active" aria-current="page">About Us</li>
 {% endblock %}
 
 {% block content %}
-<main class="max-w-4xl mx-auto px-6 py-12">
-        
-        <section class="text-center mb-16">
-            <h2 class="text-4xl font-extrabold text-gray-900 mb-4">Empowering Your Journey to Advanced Education</h2>
-            <p class="text-lg text-gray-600">Bridging the gap between ambitious students and global Master's funding.</p>
-        </section>
 
-        <section class="grid md:grid-cols-2 gap-12 items-center mb-16">
-            <div>
-                <h3 class="text-2xl font-bold mb-4 text-blue-700">Our Mission</h3>
-                <p class="leading-relaxed mb-4">
-                    At <strong>Masters Grant</strong>, we believe that financial barriers should never stand in the way of academic excellence. Our mission is to simplify the complex landscape of international grants, scholarships, and fellowships.
-                </p>
-                <p class="leading-relaxed">
-                    We specialize in Master's level funding, providing students with the roadmap they need to navigate global educational opportunities with confidence.
-                </p>
+<main>
+
+<!-- HERO -->
+
+<section class="py-5 text-center" style="background: linear-gradient(135deg, #eef2ff, #f8fafc);">
+    <div class="container py-5">
+        <h1 class="fw-bold display-5 mb-3">
+            Empowering Your Journey to Global Education 🌍
+        </h1>
+        <p class="text-muted lead mx-auto" style="max-width: 650px;">
+            MastersGrant connects ambitious students with fully funded scholarships, fellowships, and global opportunities.
+        </p>
+    </div>
+</section>
+
+<!-- FOUNDER SECTION -->
+
+<section class="py-5 bg-white">
+    <div class="container">
+
+
+    <div class="row align-items-center g-5">
+
+        <!-- IMAGE -->
+        <div class="col-md-5 text-center">
+            <img src="{% static 'images/founder.png' %}" 
+                 class="img-fluid rounded-4 shadow"
+                 alt="Founder"
+                 style="max-height: 400px; object-fit: cover;">
+        </div>
+
+        <!-- TEXT -->
+        <div class="col-md-7">
+            <h2 class="fw-bold mb-3">👋 About the Founder</h2>
+
+            <p class="text-muted">
+                Hi, I’m <strong>Amrit Dhakal</strong>, a Computer Science graduate and the creator of MastersGrant.
+            </p>
+
+            <p class="text-muted">
+                I built this platform to solve a real problem — finding genuine scholarships is confusing, time-consuming, and often filled with misinformation.
+            </p>
+
+            <p class="text-muted">
+                MastersGrant simplifies everything by providing verified opportunities, clear guidance, and a structured path to help students succeed globally.
+            </p>
+
+            <div class="mt-4">
+                <span class="badge bg-primary me-2">Founder</span>
+                <span class="badge bg-success me-2">Developer</span>
+                <span class="badge bg-dark">Mentor</span>
             </div>
-            <div class="bg-blue-100 p-8 rounded-2xl border-l-4 border-blue-600 shadow-sm">
-                <h3 class="text-xl font-semibold mb-3">Why Choose Us?</h3>
-                <ul class="space-y-2 text-gray-700">
-                    <li>✓ Verified, High-Value Scholarships</li>
-                    <li>✓ Expert Application Frameworks</li>
-                    <li>✓ Global Reach & Local Insights</li>
-                    <li>✓ 100% Free Resources</li>
+        </div>
+
+    </div>
+
+</div>
+
+
+</section>
+
+<!-- MISSION + WHY -->
+
+<section class="py-5" style="background-color: #f9fafb;">
+    <div class="container">
+
+
+    <div class="row g-5 align-items-center">
+
+        <!-- MISSION -->
+        <div class="col-md-6">
+            <h2 class="fw-bold text-primary mb-3">Our Mission</h2>
+            <p class="text-muted">
+                We believe financial barriers should never stop talented students from achieving their dreams.
+            </p>
+            <p class="text-muted">
+                Our mission is to simplify global scholarship access and make opportunities transparent and accessible for everyone.
+            </p>
+        </div>
+
+        <!-- WHY US -->
+        <div class="col-md-6">
+            <div class="p-4 bg-white rounded-4 shadow-sm border">
+
+                <h5 class="fw-bold mb-3">Why Choose MastersGrant?</h5>
+
+                <ul class="list-unstyled text-muted">
+                    <li class="mb-2">✔ Verified & Trusted Scholarships</li>
+                    <li class="mb-2">✔ Step-by-Step Application Guidance</li>
+                    <li class="mb-2">✔ Global Opportunities</li>
+                    <li class="mb-2">✔ Completely Free Platform</li>
                 </ul>
+
             </div>
-        </section>
+        </div>
 
-        <section class="mb-16">
-            <h3 class="text-2xl font-bold text-center mb-8">What We Offer</h3>
-            <div class="grid sm:grid-cols-3 gap-6 text-center">
-                <div class="p-6 bg-white rounded-xl shadow-md border border-gray-100">
-                    <div class="text-3xl mb-3">🎓</div>
-                    <h4 class="font-bold mb-2">Curated Listings</h4>
-                    <p class="text-sm text-gray-500">Verified Master’s scholarships across all major academic hubs.</p>
-                </div>
-                <div class="p-6 bg-white rounded-xl shadow-md border border-gray-100">
-                    <div class="text-3xl mb-3">✍️</div>
-                    <h4 class="font-bold mb-2">Application Strategy</h4>
-                    <p class="text-sm text-gray-500">Guides on writing winning Statements of Purpose and Proposals.</p>
-                </div>
-                <div class="p-6 bg-white rounded-xl shadow-md border border-gray-100">
-                    <div class="text-3xl mb-3">⏰</div>
-                    <h4 class="font-bold mb-2">Real-Time Updates</h4>
-                    <p class="text-sm text-gray-500">Stay ahead of deadlines with our frequent database updates.</p>
-                </div>
+    </div>
+
+</div>
+
+
+</section>
+
+<!-- WHAT WE OFFER -->
+
+<section class="py-5 bg-white">
+    <div class="container">
+
+
+    <h2 class="text-center fw-bold mb-5">What We Offer</h2>
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
+                <div class="fs-1 mb-3">🎓</div>
+                <h5 class="fw-bold">Curated Scholarships</h5>
+                <p class="text-muted small">
+                    Verified opportunities from top universities worldwide.
+                </p>
             </div>
-        </section>
+        </div>
 
-        <section class="bg-gray-900 text-white p-10 rounded-3xl text-center">
-            <h3 class="text-2xl font-bold mb-4">Have Questions?</h3>
-            <p class="mb-6 opacity-90">We are here to help you navigate your academic future.</p>
-            <a href="{% url 'contact' %}" class="inline-block bg-blue-600 hover:bg-blue-500 transition px-8 py-3 rounded-full font-semibold">Get In Touch</a>
-        </section>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
+                <div class="fs-1 mb-3">✍️</div>
+                <h5 class="fw-bold">Winning Strategies</h5>
+                <p class="text-muted small">
+                    Learn to craft SOPs, CVs, and strong applications.
+                </p>
+            </div>
+        </div>
 
-    </main>
-    {% endblock %}
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4 hover-card">
+                <div class="fs-1 mb-3">⏰</div>
+                <h5 class="fw-bold">Real-Time Updates</h5>
+                <p class="text-muted small">
+                    Stay updated with deadlines and new opportunities.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+</section>
+
+<!-- TRUST -->
+
+<section class="py-5 text-center" style="background-color: #f9fafb;">
+    <div class="container">
+
+
+    <h2 class="fw-bold mb-3">Trusted by Students Worldwide</h2>
+    <p class="text-muted mx-auto" style="max-width: 600px;">
+        Our goal is to become the most reliable scholarship platform for students seeking global education opportunities.
+    </p>
+
+</div>
+
+
+</section>
+
+<!-- CTA -->
+
+<section class="py-5 text-center text-white" style="background: linear-gradient(135deg, #2563eb, #4f46e5);">
+    <div class="container">
+
+
+    <h2 class="fw-bold mb-3">Start Your Journey Today 🚀</h2>
+    <p class="mb-4">Explore scholarships and take the next step toward your future.</p>
+
+    <a href="{% url 'contact' %}" class="btn btn-light btn-lg px-4">
+        Contact Us
+    </a>
+
+</div>
+
+
+</section>
+
+</main>
+
+<!-- CUSTOM CSS -->
+
+<style>
+.hover-card {
+    transition: all 0.3s ease;
+}
+.hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+</style>
+
+{% endblock %}

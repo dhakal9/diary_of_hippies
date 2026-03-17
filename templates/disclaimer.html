@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Disclaimer - MastersGrant{% endblock %}
+
+{% block breadcrumb_items %}
+
+<li class="breadcrumb-item active" aria-current="page">Disclaimer</li>
+{% endblock %}
+
+{% block content %}
+
+<main>
+
+<!-- HERO -->
+
+<section class="py-5 text-center" style="background: linear-gradient(135deg, #eef2ff, #f8fafc);">
+    <div class="container py-5">
+        <h1 class="fw-bold display-5 mb-3">Disclaimer</h1>
+        <p class="text-muted lead mx-auto" style="max-width: 650px;">
+            Please read this disclaimer carefully before using MastersGrant.
+        </p>
+    </div>
+</section>
+
+<!-- CONTENT -->
+
+<section class="py-5 bg-white">
+    <div class="container" style="max-width: 900px;">
+
+
+    <!-- GENERAL INFO -->
+    <div class="mb-5">
+        <h4 class="fw-bold mb-3 text-primary">1. General Information</h4>
+        <p class="text-muted">
+            The information provided on <strong>MastersGrant</strong> is for general informational purposes only.
+            While we strive to keep all information accurate and up to date, we make no guarantees of completeness,
+            reliability, or accuracy.
+        </p>
+    </div>
+
+    <!-- NO GUARANTEE -->
+    <div class="mb-5">
+        <h4 class="fw-bold mb-3 text-primary">2. No Guarantee of Results</h4>
+        <p class="text-muted">
+            MastersGrant does not guarantee that users will receive scholarships, grants, or funding opportunities.
+            Application outcomes depend on individual qualifications, eligibility, and decisions made by respective institutions.
+        </p>
+    </div>
+
+    <!-- EXTERNAL LINKS -->
+    <div class="mb-5">
+        <h4 class="fw-bold mb-3 text-primary">3. External Links</h4>
+        <p class="text-muted">
+            Our website may contain links to external websites. We do not have control over the content,
+            policies, or practices of these third-party websites and are not responsible for any loss or damage
+            caused by their use.
+        </p>
+    </div>
+
+    <!-- NOT OFFICIAL -->
+    <div class="mb-5">
+        <h4 class="fw-bold mb-3 text-primary">4. Not an Official Organization</h4>
+        <p class="text-muted">
+            MastersGrant is an independent platform and is not affiliated with any government,
+            university, or scholarship provider unless explicitly stated.
+        </p>
+    </div>
+
+    <!-- USER RESPONSIBILITY -->
+    <div class="mb-5">
+        <h4 class="fw-bold mb-3 text-primary">5. User Responsibility</h4>
+        <p class="text-muted">
+            Users are advised to verify all scholarship details from official sources before applying.
+            MastersGrant is not responsible for any decisions made based on the information provided on this website.
+        </p>
+    </div>
+
+    <!-- CONSENT -->
+    <div class="mb-5">
+        <h4 class="fw-bold mb-3 text-primary">6. Consent</h4>
+        <p class="text-muted">
+            By using our website, you hereby consent to our disclaimer and agree to its terms.
+        </p>
+    </div>
+
+    <!-- UPDATE -->
+    <div class="mb-5">
+        <h4 class="fw-bold mb-3 text-primary">7. Updates</h4>
+        <p class="text-muted">
+            We may update, amend, or make changes to this disclaimer at any time without prior notice.
+        </p>
+    </div>
+
+</div>
+
+</section>
+
+<!-- CTA -->
+
+<section class="py-5 text-center text-white" style="background: linear-gradient(135deg, #2563eb, #4f46e5);">
+    <div class="container">
+        <h4 class="fw-bold mb-3">Still have questions?</h4>
+        <p class="mb-4">Feel free to reach out to us anytime.</p>
+        <a href="{% url 'contact' %}" class="btn btn-light px-4">
+            Contact Us
+        </a>
+    </div>
+</section>
+
+</main>
+
+{% endblock %}

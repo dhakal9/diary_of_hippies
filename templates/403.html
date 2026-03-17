@@ -1,15 +1,91 @@
 {% extends "base.html" %}
+{% load static %}
 
-{%block content%}
-{%load static%}
+{% block content %}
 
-<section class="error-section centred">
-    <div class="auto-container">
-        <div class="inner-box">
-            <h1>403</h1>
-            <h2>Forbidden <br>The server understands the request but can't provide additional access.</h2>
-            <a href="{% url 'index'%}" class="theme-btn">Go To Home</a>
-        </div>
+<style>
+.error-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, #f8f9fa, #eef2f7);
+    padding: 40px 20px;
+}
+
+.error-box {
+    max-width: 600px;
+}
+
+.error-code {
+    font-size: 120px;
+    font-weight: 800;
+    color: #0d6efd;
+    margin-bottom: 10px;
+}
+
+.error-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.error-text {
+    color: #6c757d;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+.home-btn {
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 8px;
+    background: #0d6efd;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.home-btn:hover {
+    background: #0b5ed7;
+    transform: translateY(-2px);
+}
+
+/* subtle animation */
+.error-code {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+</style>
+
+<section class="error-wrapper">
+    <div class="error-box">
+
+```
+    <div class="error-code">403</div>
+
+    <div class="error-title">
+        Oops! Access Denied
     </div>
+
+    <p class="error-text">
+        You don't have permission to access this resource.
+        Please try again later or return to the homepage.
+    </p>
+
+    <a href="{% url 'index' %}" class="home-btn">
+        Go Back Home
+    </a>
+
+</div>
+```
+
 </section>
-{%endblock content%}
+
+{% endblock content %}

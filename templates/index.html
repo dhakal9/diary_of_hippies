@@ -176,7 +176,7 @@ Find Scholarships & Financial Aid 2026 | StudentFundingHub
 
                         <h3 class="h6 fw-bold mb-2 flex-grow-1">
                             <a href="{{ opt.get_absolute_url }}" class="text-dark text-decoration-none stretched-link">
-                                {{ opt.title|truncatechars:55 }}
+                                {{ opt.title }}
                             </a>
                         </h3>
 
@@ -252,7 +252,7 @@ Find Scholarships & Financial Aid 2026 | StudentFundingHub
 <script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
 
 <!-- ================= GUIDES ================= -->
-<h2 class="fw-bold mb-4">Master Your Scholarship Application</h2>
+<h2 class="fw-bold mb-4">Career Growth with MastersGrant</h2>
 
 <div class="row g-4">
     <div class="col-md-4">
@@ -271,7 +271,42 @@ Find Scholarships & Financial Aid 2026 | StudentFundingHub
             </div>
         </div>
     </div>
-</div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm hover-top">
+            <div class="card-body">
+                <h6 class="fw-bold text-primary">
+                    CV & SOP Tips
+                </h6>
+                <p class="small text-muted">
+                    Craft a compelling CV and Statement of Purpose for scholarships.    
+                </p>
+                <a href="{% url 'guide_list' %}"
+                   class="small fw-bold text-decoration-none">
+                    Read Guides →  
+                </a>
+            </div>
+        </div>
+                
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm hover-top">
+            <div class="card-body">
+                <h6 class="fw-bold text-primary">
+                    Internships
+                </h6>
+                <p class="small text-muted">
+                    Discover internship opportunities and gain valuable experience.
+                </p>
+                <a href="{% url 'internships' %}"
+                   class="small fw-bold text-decoration-none">
+                    Discover Internships →  
+                </a>
+            </div>
+        </div>
+                
+    </div>
+
+
 
 <!-- ================= STYLES ================= -->
 <style>

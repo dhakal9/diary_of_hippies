@@ -42,6 +42,9 @@ class TermsView(TemplateView):
 class AboutUsView(TemplateView):
     template_name = 'about_us.html'
 
+class DisclaimerView(TemplateView):
+    template_name = 'disclaimer.html'
+
 class OpportunityDetailView(DetailView):
     """Detail Page: Optimized for single object retrieval."""
     model = Opportunity
