@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles', 
+    'django.contrib.sites', # Required
+    'django.contrib.sitemaps', # Required
     'cloudinary',               # Low-level SDK
     'ckeditor',
     'blog',
@@ -41,6 +43,8 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',  # Disable static file handling in development 
     'whitenoise',  # Add WhiteNoise for static file handling in production
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

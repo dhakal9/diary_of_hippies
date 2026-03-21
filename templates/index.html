@@ -203,6 +203,66 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
     <div class="py-3">Responsive In-Feed Ad Unit</div>
 </div>
 
+<section class="py-5" style="background: #f8f9fa;">
+  <div class="container text-center">
+
+    <h3 class="fw-bold mb-3">🌍 Top Study Destinations</h3>
+    <p class="text-muted mb-4">Choose your destination and explore top scholarships</p>
+
+    <!-- Countries Row -->
+    <div class="d-flex flex-nowrap overflow-auto justify-content-md-center gap-3 pb-3" id="countryList">
+
+      <div class="country-item active" data-country="usa">
+        <img src="https://flagcdn.com/w80/us.png">
+        <span>USA</span>
+      </div>
+
+      <div class="country-item" data-country="uk">
+        <img src="https://flagcdn.com/w80/gb.png">
+        <span>UK</span>
+      </div>
+
+      <div class="country-item" data-country="canada">
+        <img src="https://flagcdn.com/w80/ca.png">
+        <span>Canada</span>
+      </div>
+
+      <div class="country-item" data-country="australia">
+        <img src="https://flagcdn.com/w80/au.png">
+        <span>Australia</span>
+      </div>
+
+      <div class="country-item" data-country="germany">
+        <img src="https://flagcdn.com/w80/de.png">
+        <span>Germany</span>
+      </div>
+
+      <div class="country-item" data-country="nz">
+        <img src="https://flagcdn.com/w80/nz.png">
+        <span>NZ</span>
+      </div>
+
+      <div class="country-item" data-country="japan">
+        <img src="https://flagcdn.com/w80/jp.png">
+        <span>Japan</span>
+      </div>
+
+      <div class="country-item" data-country="france">
+        <img src="https://flagcdn.com/w80/fr.png">
+        <span>France</span>
+      </div>
+
+    </div>
+
+    <!-- Dynamic Content -->
+    <div class="mt-4 p-4 bg-white rounded-4 shadow-2" id="countryContent">
+      <h5 class="fw-bold">🇺🇸 Study in USA</h5>
+      <p class="text-muted">Top universities, global exposure, and high-paying opportunities.</p>
+      <a href="/study-in-usa/" class="btn btn-primary btn-sm">View Scholarships</a>
+    </div>
+
+  </div>
+</section>
 
 <section class="process-section">
     <div class="container">
@@ -310,6 +370,40 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
 
 <!-- ================= STYLES ================= -->
 <style>
+
+.country-item {
+  min-width: 90px;
+  padding: 10px;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  border: 1px solid #eee;
+}
+
+.country-item img {
+  width: 40px;
+  display: block;
+  margin: 0 auto 5px;
+}
+
+.country-item span {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.country-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.country-item.active {
+  border: 2px solid #0d6efd;
+  background: #eef4ff;
+}
+
+/* Hover Effect for Cards */
 .hover-top {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
@@ -444,5 +538,68 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
     }
 }
 </style>
+<script>
+const data = {
+  usa: {
+    title: "🇺🇸 Study in USA",
+    desc: "Top universities, global exposure, and high-paying opportunities.",
+    link: "/study-in-usa/"
+  },
+  uk: {
+    title: "🇬🇧 Study in UK",
+    desc: "Shorter degrees with world-class academic excellence.",
+    link: "/study-in-uk/"
+  },
+  canada: {
+    title: "🇨🇦 Study in Canada",
+    desc: "Affordable education with PR opportunities.",
+    link: "/study-in-canada/"
+  },
+  australia: {
+    title: "🇦🇺 Study in Australia",
+    desc: "High quality education and great lifestyle.",
+    link: "/study-in-australia/"
+  },
+  germany: {
+    title: "🇩🇪 Study in Germany",
+    desc: "Low or no tuition fees and strong engineering programs.",
+    link: "/study-in-germany/"
+  },
+  nz: {
+    title: "🇳🇿 Study in New Zealand",
+    desc: "Safe, peaceful and student-friendly country.",
+    link: "/study-in-newzealand/"
+  },
+  japan: {
+    title: "🇯🇵 Study in Japan",
+    desc: "Technology-driven education and innovation hub.",
+    link: "/study-in-japan/"
+  },
+  france: {
+    title: "🇫🇷 Study in France",
+    desc: "Top business schools and cultural experience.",
+    link: "/study-in-france/"
+  }
+};
+
+const items = document.querySelectorAll('.country-item');
+const content = document.getElementById('countryContent');
+
+items.forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelector('.country-item.active').classList.remove('active');
+    item.classList.add('active');
+
+    const country = item.getAttribute('data-country');
+    const c = data[country];
+
+    content.innerHTML = `
+      <h5 class="fw-bold">${c.title}</h5>
+      <p class="text-muted">${c.desc}</p>
+      <a href="${c.link}" class="btn btn-primary btn-sm">View Scholarships</a>
+    `;
+  });
+});
+</script>
 
 {% endblock %}
