@@ -7,7 +7,22 @@
 {% block meta_description %}
 {{ guide.meta_description|default:guide.title }}
 {% endblock %}
-
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ guide.title|escapejs }}",
+  "author": {
+    "@type": "Person",
+    "name": "Amrit Dhakal"
+  },
+  "datePublished": "{{ guide.created_at|date:'c' }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ request.build_absolute_uri }}"
+  }
+}
+</script>
 {% block content %}
 <main class="container my-5">
     <div class="row">

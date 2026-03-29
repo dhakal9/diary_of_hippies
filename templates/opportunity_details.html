@@ -1,7 +1,24 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{{ opportunity.title }} | StudentFundingHub
+{{ opportunity.title }} | Masters Grant
+<head>
+    <title>{{ scholarship.name }} | Masters Grant</title>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "name": "{{ opportunity.title |escapejs }}",
+      "description": "{{ opportunity.description|truncatewords:30|escapejs }}",
+      "funder": {
+        "@type": "Organization",
+        "name": "{{ opportunity.host|escapejs }}"
+      },
+      "url": "{{ request.build_absolute_uri }}",
+      "validThrough": "{{ opportunity.deadline|date:'Y-m-d' }}"
+    }
+    </script>
+</head>
 {% endblock %}
 
 {% block content %}
@@ -210,5 +227,6 @@
 }
 
 </style>
+
 
 {% endblock %}

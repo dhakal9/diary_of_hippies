@@ -11,9 +11,9 @@
     <meta property="og:title" content="Masters Grant | Scholarships & Financial Aid 2026">
     <meta property="og:description" content="Daily updated scholarships and grants for international students.">
     <!-- <meta property="og:image" content="{% static 'images/logo.png' %}"> -->
-    <meta property="og:url" content="https://mastersgrant.com/">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:type" content="website">
-    <link rel="canonical" href="https://mastersgrant.com/"> <!-- Added for Redirect -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}"> <!-- Added for Redirect -->
     <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/logo.png' %}">
 
     <link rel="apple-touch-icon" href="{% static 'images/logo.png' %}">
@@ -29,9 +29,9 @@
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Masters Grant",
-        "url": "https://mastersgrant.com/",
+        "url": "{{ request.build_absolute_uri }}",
         "logo": "{% static 'images/logo.png' %}",
-        "description": "A comprehensive scholarship and financial aid portal for 2026."
+        "description": "A comprehensive international scholarship and financial aid portal for 2026."
         }
     </script>
     <style>
