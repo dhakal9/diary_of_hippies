@@ -7,303 +7,158 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
 
 {% block content %}
 
-<!-- ================= HERO ================= -->
-<section class="py-5 mb-5 rounded-4 shadow-sm"
-         style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
-    <div class="container text-center py-5">
+<section class="hero-section position-relative pt-5 pb-5">
+    <div class="container position-relative z-1 pt-4 pb-5">
+        <div class="row align-items-center">
+            
+            <div class="col-lg-7 text-white pb-5">
+                <h1 class="display-4 fw-bold mb-3">Find Your Perfect Scholarship</h1>
+                <p class="fs-5 mb-4 text-white-50">Discover funding opportunities to support your education.</p>
+                
+                <form action="{% url 'scholarship_list' %}" method="GET" class="search-box bg-white p-2 rounded-3 shadow-sm d-flex flex-column flex-md-row gap-2">
+                    <input type="text" name="q" class="form-control border-0 shadow-none" placeholder="Search scholarships...">
+                    <button type="submit" class="btn btn-orange px-4 fw-bold">Search</button>
+                </form>
+            </div>
 
-        <h1 class="display-4 fw-bold mb-3">
-            Your Journey to <span class="text-primary">Free Education</span> Starts Here
-        </h1>
+            <div class="col-lg-5 d-none d-lg-block position-relative hero-img-col">
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Student" class="img-fluid rounded-4 shadow-lg object-fit-cover" style="height: 400px; width: 100%;">
+            </div>
 
-        <p class="lead text-muted mb-4">
-            Discover verified scholarships, grants, and fellowships worldwide for 2026.
-        </p>
+        </div>
+    </div>
+</section>
 
-        <form action="{% url 'scholarship_list' %}" method="GET"
-              class="row justify-content-center">
-            <div class="col-md-7">
-                <div class="input-group input-group-lg shadow-sm">
-                    <span class="input-group-text bg-white border-end-0">
-                        <i class="fas fa-search text-muted"></i>
-                    </span>
-                    <input type="text" name="q"
-                           class="form-control border-start-0"
-                           placeholder="Search by country, degree, or subject">
+<section class="container info-cards-section">
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card">
+                <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
+                    <i class="fas fa-search-dollar fs-3"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Search & Apply Easily</h5>
+                <p class="text-muted small mb-0">Find and apply for scholarships in just a few clicks.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card">
+                <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
+                    <i class="fas fa-user-graduate fs-3"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Expert Guidance</h5>
+                <p class="text-muted small mb-0">Get tips and advice from our scholarship experts.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card">
+                <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
+                    <i class="fas fa-heart fs-3"></i>
+                </div>
+                <h5 class="fw-bold text-dark">Success Stories</h5>
+                <p class="text-muted small mb-0">Read inspiring stories from successful students.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container mt-5 pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h3 class="fw-bold text-dark mb-0">Featured Scholarships</h3>
+        <a href="{% url 'scholarship_list' %}" class="text-primary text-decoration-none fw-semibold">View All Scholarships <i class="fas fa-angle-right"></i></a>
+    </div>
+
+    <div class="row g-4">
+        {% for opt in latest_opportunities|slice:":3" %}
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm scholarship-card rounded-3 overflow-hidden">
+                <div class="img-container bg-light" style="height: 200px;">
+                    {% if opt.image %}
+                        <img src="{{ opt.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ opt.title }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1513258496099-48168024aec0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" class="w-100 h-100 object-fit-cover" alt="Scholarship">
+                    {% endif %}
+                </div>
+                
+                <div class="card-body d-flex flex-column p-4">
+                    <h5 class="fw-bold mb-3">
+                        <a href="{{ opt.get_absolute_url }}" class="text-dark text-decoration-none">{{ opt.title }}</a>
+                    </h5>
+                    <p class="small text-muted mb-4 fw-medium">
+                        {{ opt.amount|default:"Fully Funded" }} | 
+                        {{ opt.country|default:"International" }} | 
+                        Deadline: {{ opt.deadline|date:"M d, Y" }}
+                    </p>
+                    <div class="mt-auto text-center">
+                        <a href="{{ opt.get_absolute_url }}" class="btn btn-orange w-50 fw-semibold rounded-pill py-2">Apply Now</a>
+                    </div>
                 </div>
             </div>
-        </form>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted">
+            <p>No featured scholarships available right now.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
 
+<section class="container mt-5 pt-4">
+    <div class="border-bottom pb-2 mb-4">
+        <h3 class="fw-bold text-dark mb-0">Browse by Category</h3>
     </div>
     
+    <div class="d-flex flex-wrap gap-3">
+        <a href="{% url 'scholarship_list' %}?level=Undergraduate" class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-graduation-cap text-primary"></i> Undergraduate
+        </a>
+        <a href="{% url 'scholarship_list' %}?level=Graduate" class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-user-tie text-primary"></i> Graduate
+        </a>
+        <a href="{% url 'scholarship_list' %}?category=STEM" class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-atom text-success"></i> STEM
+        </a>
+        <a href="{% url 'scholarship_list' %}?category=Arts" class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-palette text-orange"></i> Arts & Humanities
+        </a>
+    </div>
 </section>
 
-
-<!-- ================= QUICK FILTERS ================= -->
-<div class="row mb-5 text-center g-4">
-
-    <!-- Undergraduate -->
-    <div class="col-md-3 col-6">
-        <a href="{% url 'scholarship_list' %}?level=Undergraduate"
-           class="card h-100 p-4 border-0 shadow-sm hover-top text-decoration-none">
-            <i class="fas fa-user-graduate fa-2x text-primary mb-3"></i>
-            <h6 class="fw-bold text-dark">Undergraduate</h6>
-            <p class="small text-muted mb-0">Bachelor level funding</p>
-        </a>
+<section class="container mt-5 pt-4 mb-5 pb-5">
+    <div class="border-bottom pb-2 mb-4">
+        <h3 class="fw-bold text-dark mb-0">Scholarship Resources & Tips</h3>
     </div>
 
-    <!-- Masters -->
-    <div class="col-md-3 col-6">
-        <a href="{% url 'scholarship_list' %}?level=Masters"
-           class="card h-100 p-4 border-0 shadow-sm hover-top text-decoration-none">
-            <i class="fas fa-graduation-cap fa-2x text-success mb-3"></i>
-            <h6 class="fw-bold text-dark">Masters</h6>
-            <p class="small text-muted mb-0">Fully funded programs</p>
-        </a>
-    </div>
-
-    <!-- PhD -->
-    <div class="col-md-3 col-6">
-        <a href="{% url 'scholarship_list' %}?level=PhD"
-           class="card h-100 p-4 border-0 shadow-sm hover-top text-decoration-none">
-            <i class="fas fa-microscope fa-2x text-warning mb-3"></i>
-            <h6 class="fw-bold text-dark">PhD & Research</h6>
-            <p class="small text-muted mb-0">Doctoral funding</p>
-        </a>
-    </div>
-
-    <!-- Guides -->
-    <div class="col-md-3 col-6">
-        <a href="{% url 'guide_list' %}"
-           class="card h-100 p-4 border-0 shadow-sm hover-top text-decoration-none">
-            <i class="fas fa-book-open fa-2x text-danger mb-3"></i>
-            <h6 class="fw-bold text-dark">Application Guides</h6>
-            <p class="small text-muted mb-0">Win scholarships</p>
-        </a>
-    </div>
-
-    <!-- Research Grants -->
-    <div class="col-md-3 col-6">
-        <a href="{% url 'scholarship_list' %}?type=Research"
-           class="card h-100 p-4 border-0 shadow-sm hover-top text-decoration-none">
-            <i class="fas fa-flask fa-2x text-info mb-3"></i>
-            <h6 class="fw-bold text-dark">Research Grants</h6>
-            <p class="small text-muted mb-0">Funded research projects</p>
-        </a>
-    </div>
-
-    <!-- Fellowships -->
-    <div class="col-md-3 col-6">
-        <a href="{% url 'scholarship_list' %}?type=Fellowship"
-           class="card h-100 p-4 border-0 shadow-sm hover-top text-decoration-none">
-            <i class="fas fa-handshake fa-2x text-secondary mb-3"></i>
-            <h6 class="fw-bold text-dark">Fellowships</h6>
-            <p class="small text-muted mb-0">Global fellowships</p>
-        </a>
-    </div>
-
-    <!-- Fully Funded -->
-    <div class="col-md-3 col-6">
-        <a href="{% url 'scholarship_list' %}?funding=Fully+Funded"
-           class="card h-100 p-4 border-0 shadow-sm hover-top text-decoration-none">
-            <i class="fas fa-coins fa-2x text-success mb-3"></i>
-            <h6 class="fw-bold text-dark">Fully Funded</h6>
-            <p class="small text-muted mb-0">No tuition, stipend included</p>
-        </a>
-    </div>
-
-    <!-- Country Based -->
-    <div class="col-md-3 col-6">
-        <a href="{% url 'scholarship_list' %}?filter=country"
-           class="card h-100 p-4 border-0 shadow-sm hover-top text-decoration-none">
-            <i class="fas fa-globe fa-2x text-primary mb-3"></i>
-            <h6 class="fw-bold text-dark">By Country</h6>
-            <p class="small text-muted mb-0">Study destination wise</p>
-        </a>
-    </div>
-
-</div>
-
-
-<!-- ================= RECENT SCHOLARSHIPS ================= -->
-<div class="d-flex justify-content-between align-items-center mt-4 mb-4">
-    <h2 class="fw-bold">
-        <i class="fas fa-fire text-danger me-2"></i>Recently Added Scholarships
-    </h2>
-    <a href="{% url 'scholarship_list' %}" class="btn btn-outline-primary btn-sm">
-        View All
-    </a>
-</div>
-
-<div class="row">
-    {% for opt in latest_opportunities %}
-    <div class="col-md-6 mb-4">
-        <article class="card h-100 border-0 shadow-sm hover-top overflow-hidden">
-            <div class="row g-0 h-100">
-                <div class="col-4">
-                    <div class="h-100 d-flex align-items-center justify-content-center bg-white p-2 border-end" style="min-height: 120px; position: relative;">
-                        
-                        {% if opt.image %}
-                            <img src="{{ opt.image.url }}" class="img-fluid h-100 object-fit-cover" alt="{{ opt.title }}">
-                        {% elif opt.logo_url %}
-                            <img src="{{ opt.logo_url }}" 
-                                class="img-fluid main-logo" 
-                                style="max-height: 70px; width: auto;"
-                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            
-                            <div class="placeholder-gradient w-100 h-100 d-none align-items-center justify-content-center text-white fw-bold position-absolute top-0 start-0">
-                                {{ opt.category.name|slice:":1" }}
-                            </div>
-                        {% else %}
-                            <div class="placeholder-gradient w-100 h-100 d-flex align-items-center justify-content-center text-white fw-bold">
-                                {{ opt.category.name|slice:":1" }}
-                            </div>
-                        {% endif %}
-                    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=500&q=60" class="card-img-top object-fit-cover" height="200" alt="Application Tips">
+                <div class="card-body p-4 d-flex flex-column text-center">
+                    <h5 class="fw-bold text-dark mb-2">Application Tips</h5>
+                    <p class="text-muted small mb-4">How to Write a Winning Essay</p>
+                    <a href="{% url 'guide_list' %}" class="btn btn-primary w-50 mx-auto rounded-pill mt-auto fw-semibold py-2">Learn More</a>
                 </div>
-
-                <div class="col-8">
-                    <div class="card-body d-flex flex-column h-100">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge rounded-pill bg-light text-primary border border-primary-subtle small">
-                                {{ opt.category.name|default:"Scholarship" }}
-                            </span>
-                            <small class="text-muted" style="font-size: 0.75rem;">
-                                <i class="far fa-calendar-alt me-1"></i>
-                                {{ opt.deadline|date:"M d" }}
-                            </small>
-                        </div>
-
-                        <h3 class="h6 fw-bold mb-2 flex-grow-1">
-                            <a href="{{ opt.get_absolute_url }}" class="text-dark text-decoration-none stretched-link">
-                                {{ opt.title }}
-                            </a>
-                        </h3>
-
-                        <div class="mt-auto pt-2 border-top">
-                            <p class="small fw-bold text-success mb-0">
-                                <i class="fas fa-hand-holding-usd me-1"></i>
-                                {{ opt.amount|truncatechars:30 }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
-        </article>
-    </div>
-    {% empty %}
-    <p class="text-muted">No scholarships available right now.</p>
-    {% endfor %}
-</div>
-
-<!-- ================= IN-FEED AD ================= -->
-<div class="my-5 p-4 bg-light border rounded text-center">
-    <small class="text-muted d-block mb-2">ADVERTISEMENT</small>
-    <div class="py-3">Responsive In-Feed Ad Unit</div>
-</div>
-
-<section class="py-5" style="background: #f8f9fa;">
-  <div class="container text-center">
-
-    <h3 class="fw-bold mb-3">🌍 Top Study Destinations</h3>
-    <p class="text-muted mb-4">Choose your destination and explore top scholarships</p>
-
-    <!-- Countries Row -->
-    <div class="d-flex flex-nowrap overflow-auto justify-content-md-center gap-3 pb-3" id="countryList">
-
-      <div class="country-item active" data-country="usa">
-        <img src="https://flagcdn.com/w80/us.png">
-        <span>USA</span>
-      </div>
-
-      <div class="country-item" data-country="uk">
-        <img src="https://flagcdn.com/w80/gb.png">
-        <span>UK</span>
-      </div>
-
-      <div class="country-item" data-country="canada">
-        <img src="https://flagcdn.com/w80/ca.png">
-        <span>Canada</span>
-      </div>
-
-      <div class="country-item" data-country="australia">
-        <img src="https://flagcdn.com/w80/au.png">
-        <span>Australia</span>
-      </div>
-
-      <div class="country-item" data-country="germany">
-        <img src="https://flagcdn.com/w80/de.png">
-        <span>Germany</span>
-      </div>
-
-      <div class="country-item" data-country="nz">
-        <img src="https://flagcdn.com/w80/nz.png">
-        <span>NZ</span>
-      </div>
-
-      <div class="country-item" data-country="japan">
-        <img src="https://flagcdn.com/w80/jp.png">
-        <span>Japan</span>
-      </div>
-
-      <div class="country-item" data-country="france">
-        <img src="https://flagcdn.com/w80/fr.png">
-        <span>France</span>
-      </div>
-
-    </div>
-
-    <!-- Dynamic Content -->
-    <div class="mt-4 p-4 bg-white rounded-4 shadow-2" id="countryContent">
-      <h5 class="fw-bold">🇺🇸 Study in USA</h5>
-      <p class="text-muted">Top universities, global exposure, and high-paying opportunities.</p>
-      <a href="/study-in-usa/" class="btn btn-primary btn-sm">View Scholarships</a>
-    </div>
-
-  </div>
-</section>
-
-<section class="process-section">
-    <div class="container">
-        <h2 class="section-title">How It Works</h2>
-        <div class="process-wrapper">
-            <div class="process-item">
-                <div class="icon-circle">
-                    <i class="fas fa-search"></i>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=500&q=60" class="card-img-top object-fit-cover" height="200" alt="Interview Prep">
+                <div class="card-body p-4 d-flex flex-column text-center">
+                    <h5 class="fw-bold text-dark mb-2">Scholarship Interview Prep</h5>
+                    <p class="text-muted small mb-4">Dos and Don'ts for success</p>
+                    <a href="{% url 'guide_list' %}" class="btn btn-primary w-50 mx-auto rounded-pill mt-auto fw-semibold py-2">Learn More</a>
                 </div>
-                <h3>Explore</h3>
-                <p>Browse Master's programs and funding opportunities from all over the world.</p>
             </div>
+        </div>
 
-            <div class="connector"></div>
-
-            <div class="process-item">
-                <div class="icon-circle">
-                    <i class="fas fa-balance-scale"></i>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" class="card-img-top object-fit-cover" height="200" alt="Financial Aid">
+                <div class="card-body p-4 d-flex flex-column text-center">
+                    <h5 class="fw-bold text-dark mb-2">Financial Aid & Budgeting Guide</h5>
+                    <p class="text-muted small mb-4">Manage your funds abroad</p>
+                    <a href="{% url 'guide_list' %}" class="btn btn-primary w-50 mx-auto rounded-pill mt-auto fw-semibold py-2">Learn More</a>
                 </div>
-                <h3>Compare</h3>
-                <p>Analyze grants, eligibility criteria, and benefits to find your perfect match.</p>
-            </div>
-
-            <div class="connector"></div>
-
-            <div class="process-item">
-                <div class="icon-circle">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h3>Decide</h3>
-                <p>Shortlist the top programs that fit your career goals and financial needs.</p>
-            </div>
-
-            <div class="connector"></div>
-
-            <div class="process-item highlight">
-                <div class="icon-circle">
-                    <i class="fas fa-paper-plane"></i>
-                </div>
-                <h3>Apply</h3>
-                <p>Follow our guided steps to submit a winning application with confidence.</p>
             </div>
         </div>
     </div>
@@ -311,295 +166,108 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
 
 <script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
 
-<!-- ================= GUIDES ================= -->
-<h2 class="fw-bold mb-4">Career Growth with MastersGrant</h2>
-
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm hover-top">
-            <div class="card-body">
-                <h6 class="fw-bold text-primary">
-                    Scholarship Essay Writing
-                </h6>
-                <p class="small text-muted">
-                    7 expert tips to write a winning motivation letter in 2026.
-                </p>
-                <a href="{% url 'guide_list' %}"
-                   class="small fw-bold text-decoration-none">
-                    Read Guides →
-                </a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm hover-top">
-            <div class="card-body">
-                <h6 class="fw-bold text-primary">
-                    CV & SOP Tips
-                </h6>
-                <p class="small text-muted">
-                    Craft a compelling CV and Statement of Purpose for scholarships.    
-                </p>
-                <a href="{% url 'guide_list' %}"
-                   class="small fw-bold text-decoration-none">
-                    Read Guides →  
-                </a>
-            </div>
-        </div>
-                
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm hover-top">
-            <div class="card-body">
-                <h6 class="fw-bold text-primary">
-                    Internships
-                </h6>
-                <p class="small text-muted">
-                    Discover internship opportunities and gain valuable experience.
-                </p>
-                <a href="{% url 'internships' %}"
-                   class="small fw-bold text-decoration-none">
-                    Discover Internships →  
-                </a>
-            </div>
-        </div>
-                
-    </div>
-
-
-
-<!-- ================= STYLES ================= -->
 <style>
+    /* Color Palette matching the image */
+    :root {
+        --primary-blue: #1C5BB7; /* Main branding blue */
+        --brand-orange: #F37021; /* Buttons */
+        --light-bg: #f8f9fa;
+        --dark-text: #212529;
+    }
 
-.country-item {
-  min-width: 90px;
-  padding: 10px;
-  border-radius: 12px;
-  background: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  border: 1px solid #eee;
-}
+    body {
+        background-color: var(--light-bg);
+        font-family: 'Inter', -apple-system, sans-serif;
+    }
 
-.country-item img {
-  width: 40px;
-  display: block;
-  margin: 0 auto 5px;
-}
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #1C5BB7 0%, #2A75D3 100%);
+        padding-bottom: 120px !important; /* Extra padding for overlapping cards */
+    }
 
-.country-item span {
-  font-size: 13px;
-  font-weight: 500;
-}
+    /* Orange Button */
+    .btn-orange {
+        background-color: var(--brand-orange);
+        color: white;
+        border: none;
+        transition: background-color 0.1s;
+    }
+    .btn-orange:hover {
+        background-color: #d65d18;
+        color: white;
+    }
+    .text-orange {
+        color: var(--brand-orange);
+    }
 
-.country-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-}
+    /* Form Styling */
+    .search-box select, .search-box input {
+        font-size: 0.95rem;
+    }
+    .search-box select:focus, .search-box input:focus {
+        box-shadow: none;
+        outline: none;
+    }
 
-.country-item.active {
-  border: 2px solid #0d6efd;
-  background: #eef4ff;
-}
-
-/* Hover Effect for Cards */
-.hover-top {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.hover-top:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 30px rgba(0,0,0,.12);
-}
-.bg-soft-primary {
-    background-color: #e7f0fd;
-}
-.object-fit-cover {
-    object-fit: cover;
-}
-
-/* Modern Gradient Placeholder */
-.placeholder-gradient {
-    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-    font-size: 2rem;
-    min-width: 100%;
-}
-
-/* Optional: Different colors for different categories */
-.col-4:has(.placeholder-gradient) {
-    border-right: 1px solid rgba(0,0,0,0.05);
-}
-
-.hover-top {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.hover-top:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important;
-}
-
-.bg-soft-primary {
-    background-color: #eef2ff;
-    color: #4e73df;
-}
-:root {
-    --primary-blue: #0d6efd;
-    --accent-gold: #ffc107;
-    --dark-navy: #0a0f1e;
-    --text-gray: #6c757d;
-}
-
-.process-section {
-    padding: 80px 0;
-    background-color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    text-align: center;
-}
-
-.section-title {
-    font-size: 2.5rem;
-    color: var(--dark-navy);
-    margin-bottom: 50px;
-    font-weight: 800;
-}
-
-.process-wrapper {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.process-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 250px;
-}
-
-.icon-circle {
-    width: 100px;
-    height: 100px;
-    border: 3px solid var(--accent-gold);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    color: var(--accent-gold);
-    margin-bottom: 20px;
-    background: white;
-    transition: all 0.3s ease;
-}
-
-/* The Highlight effect for the 'Apply' step */
-.process-item.highlight .icon-circle {
-    background: var(--accent-gold);
-    color: white;
-    box-shadow: 0 0 20px rgba(255, 193, 7, 0.4);
-}
-
-.connector {
-    flex: 0.5;
-    height: 2px;
-    border-top: 3px dotted #dee2e6;
-    margin-top: 50px;
-}
-
-.process-item h3 {
-    color: var(--dark-navy);
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-    font-weight: 700;
-}
-
-.process-item p {
-    color: var(--text-gray);
-    font-size: 0.95rem;
-    line-height: 1.6;
-}
-
-/* Responsive View */
-@media (max-width: 768px) {
-    .process-wrapper {
-        flex-direction: column;
+    /* Overlapping Info Cards */
+    .info-cards-section {
+        margin-top: -60px;
+        position: relative;
+        z-index: 10;
+    }
+    .info-card {
+        transition: transform 0.3s ease;
+    }
+    .info-card:hover {
+        transform: translateY(-5px);
+    }
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
         align-items: center;
+        justify-content: center;
     }
-    .connector {
-        width: 2px;
-        height: 40px;
-        border-top: none;
-        border-left: 3px dotted #dee2e6;
-        margin: 20px 0;
+    .bg-soft-blue {
+        background-color: #e6f0ff;
     }
-}
+
+    /* Category Pills */
+    .category-pill {
+        background: white;
+        color: var(--dark-text);
+        padding: 10px 24px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #e9ecef;
+        transition: all 0.2s;
+    }
+    .category-pill:hover {
+        background: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+    .category-pill:hover i {
+        color: white !important;
+    }
+
+    /* Scholarship Cards Hover */
+    .scholarship-card {
+        transition: box-shadow 0.3s ease;
+    }
+    .scholarship-card:hover {
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+    }
+    
+    .object-fit-cover {
+        object-fit: cover;
+    }
 </style>
-<script>
-const data = {
-  usa: {
-    title: "🇺🇸 Study in USA",
-    desc: "Top universities, global exposure, and high-paying opportunities.",
-    link: "/study-in-usa/"
-  },
-  uk: {
-    title: "🇬🇧 Study in UK",
-    desc: "Shorter degrees with world-class academic excellence.",
-    link: "/study-in-uk/"
-  },
-  canada: {
-    title: "🇨🇦 Study in Canada",
-    desc: "Affordable education with PR opportunities.",
-    link: "/study-in-canada/"
-  },
-  australia: {
-    title: "🇦🇺 Study in Australia",
-    desc: "High quality education and great lifestyle.",
-    link: "/study-in-australia/"
-  },
-  germany: {
-    title: "🇩🇪 Study in Germany",
-    desc: "Low or no tuition fees and strong engineering programs.",
-    link: "/study-in-germany/"
-  },
-  nz: {
-    title: "🇳🇿 Study in New Zealand",
-    desc: "Safe, peaceful and student-friendly country.",
-    link: "/study-in-newzealand/"
-  },
-  japan: {
-    title: "🇯🇵 Study in Japan",
-    desc: "Technology-driven education and innovation hub.",
-    link: "/study-in-japan/"
-  },
-  france: {
-    title: "🇫🇷 Study in France",
-    desc: "Top business schools and cultural experience.",
-    link: "/study-in-france/"
-  }
-};
-
-const items = document.querySelectorAll('.country-item');
-const content = document.getElementById('countryContent');
-
-items.forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelector('.country-item.active').classList.remove('active');
-    item.classList.add('active');
-
-    const country = item.getAttribute('data-country');
-    const c = data[country];
-
-    content.innerHTML = `
-      <h5 class="fw-bold">${c.title}</h5>
-      <p class="text-muted">${c.desc}</p>
-      <a href="${c.link}" class="btn btn-primary btn-sm">View Scholarships</a>
-    `;
-  });
-});
-</script>
 
 {% endblock %}

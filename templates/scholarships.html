@@ -1,159 +1,227 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}
-Fully Funded Scholarships 2026 | Study Abroad Without IELTS
-{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
-{% block metadescription %}
-Explore fully funded scholarships for international students 2026. Find scholarships in USA, Europe, UK with deadlines, benefits, and eligibility.
-{% endblock %}
+{% block metadescription %}{{ meta_description }}{% endblock %}
 
 {% block breadcrumb_items %}
-<li class="breadcrumb-item active">Scholarships</li>
+<li class="breadcrumb-item active" aria-current="page">{{ page_h1 }}</li>
 {% endblock %}
 
 {% block content %}
+<div class="row mb-5">
+    
+    <div class="col-lg-3 mb-4 mb-lg-0">
+        <div class="card shadow-sm border-0 sticky-top" style="top: 85px; z-index: 10;">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h5 class="fw-bold"><i class="fas fa-filter text-primary me-2"></i> Filter Results</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" action="">
+                    {% if request.GET.type %}
+                        <input type="hidden" name="type" value="{{ request.GET.type }}">
+                    {% endif %}
 
-{% if request.resolver_match.url_name == "summer_schools" %}
-  <h1 class="mb-4">Summer Schools</h1>
-{% elif request.resolver_match.url_name == "internships" %}
-  <h1 class="mb-4">Internships</h1>
-{% elif request.resolver_match.url_name == "conferences" %}
-  <h1 class="mb-4">Conferences & Youth Summits</h1>
-{% elif request.resolver_match.url_name == "exchange_programs" %}
-  <h1 class="mb-4">Exchange Programs</h1>
-{% elif request.GET.type %}
-  <h1 class="mb-4">{{ request.GET.type|slugify|title }}</h1>
-{% else %}
-  <h1 class="mb-4">All Scholarships</h1>
-{% endif %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Keyword Search</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="e.g. Fulbright, UK, IT..." value="{{ request.GET.q }}">
+                        </div>
+                    </div>
 
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Education Level</label>
+                        <select name="level" class="form-select bg-light">
+                            <option value="">All Levels</option>
+                            <option value="Undergraduate" {% if request.GET.level == "Undergraduate" %}selected{% endif %}>Undergraduate</option>
+                            <option value="Masters" {% if request.GET.level == "Masters" %}selected{% endif %}>Masters</option>
+                            <option value="PhD" {% if request.GET.level == "PhD" %}selected{% endif %}>PhD</option>
+                        </select>
+                    </div>
 
-<p class="text-muted mb-4">
-  Browse verified international scholarships including Erasmus Mundus, Fulbright, Chevening, and other fully funded study abroad opportunities.
-</p>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">Opportunity Type</label>
+                        <select name="type" class="form-select bg-light">
+                            <option value="">All Types</option>
+                            <option value="Scholarship" {% if request.GET.type == "Scholarship" %}selected{% endif %}>Scholarship</option>
+                            <option value="Grant" {% if request.GET.type == "Grant" %}selected{% endif %}>Grant</option>
+                            <option value="Fellowship" {% if request.GET.type == "Fellowship" %}selected{% endif %}>Fellowship</option>
+                            <option value="summer-school" {% if request.GET.type == "summer-school" %}selected{% endif %}>Summer School</option>
+                            <option value="Internship" {% if request.GET.type == "Internship" %}selected{% endif %}>Internship</option>
+                        </select>
+                    </div>
 
-<!-- FILTER BAR -->
-<form method="get" class="row g-2 mb-4">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">Apply Filters</button>
+                    
+                    {% if request.GET.q or request.GET.level or request.GET.type %}
+                        <a href="{{ request.path }}" class="btn btn-link text-muted w-100 mt-2 text-decoration-none small">Clear Filters</a>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
 
-  {% if request.GET.type %}
-    <input type="hidden" name="type" value="{{ request.GET.type }}">
-  {% endif %}
-
-  <div class="col-md-4">
-    <input type="text" name="q" class="form-control"
-           placeholder="Search by title, country, or field"
-           value="{{ request.GET.q }}">
-  </div>
-
-  <div class="col-md-3">
-    <select name="level" class="form-select">
-      <option value="">All Levels</option>
-      <option value="Undergraduate" {% if request.GET.level == "Undergraduate" %}selected{% endif %}>Undergraduate</option>
-      <option value="Masters" {% if request.GET.level == "Masters" %}selected{% endif %}>Masters</option>
-      <option value="PhD" {% if request.GET.level == "PhD" %}selected{% endif %}>PhD</option>
-    </select>
-  </div>
-
-  <div class="col-md-3">
-    <select name="type" class="form-select">
-      <option value="">All Types</option>
-      <option value="Scholarship" {% if request.GET.type == "Scholarship" %}selected{% endif %}>Scholarship</option>
-      <option value="Grant" {% if request.GET.type == "Grant" %}selected{% endif %}>Grant</option>
-      <option value="Fellowship" {% if request.GET.type == "Fellowship" %}selected{% endif %}>Fellowship</option>
-      <option value="summer-school"{% if request.GET.type == "summer-school" %}selected{% endif %}>Summer School</option>
-      <option value="Internship"{% if request.GET.type == "Internship" %}selected{% endif %}>Internships</option>
-    </select>
-  </div>
-
-  <div class="col-md-2">
-    <button class="btn btn-primary w-100">Search</button>
-  </div>
-</form>
-
-
-<!-- AD SLOT -->
-<div class="mb-4 text-center p-3 bg-light border rounded">
-  <small class="text-muted">ADVERTISEMENT</small>
-</div>
-
-<!-- SCHOLARSHIP LIST -->
-{% for scholarship in opportunities %}
-<div class="card mb-3 shadow-sm border-0">
-  <div class="card-body">
-    <div class="d-flex justify-content-between">
-      <!-- <div class="h-100 d-flex align-items-center justify-content-center bg-white p-2 border-end" style="min-height: 120px; position: relative;"></div>
-        {% if scholarship.image %}
-          <img src="{{ scholarship.image.url }}" class="img-fluid h-100 object-fit-cover" alt="{{ scholarship.title }}">
-        {% elif scholarship.logo_url %}
-          <img src="{{ scholarship.logo_url }}" 
-              class="img-fluid main-logo" 
-              style="max-height: 70px; width: auto;"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        {% endif %}
-      </div> -->
-      <span class="badge bg-primary">{{ scholarship.opportunity_type }}</span>
-      <small class="text-danger fw-bold">
-        Deadline: {{ scholarship.deadline|date:"M d, Y" }}
-      </small>
+        <div class="mt-4 text-center p-3 bg-light border border-dashed rounded shadow-sm d-none d-lg-block">
+            <small class="text-muted d-block mb-2">Advertisement</small>
+            </div>
     </div>
 
-    <h2 class="h5 fw-bold mt-2">
-      <a href="{% url 'opportunity_detail' scholarship.slug %}"
-         class="text-decoration-none text-dark">
-        {{ scholarship.title }}
-      </a>
-    </h2>
+    <div class="col-lg-9">
+        
+        <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3">
+            <div>
+                <h1 class="h3 fw-bold mb-1 text-dark">{{ page_h1 }}</h1>
+                <p class="text-muted mb-0 small">Browse verified international funding and study abroad opportunities.</p>
+            </div>
+            <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill border">{{ page_obj.paginator.count }} Opportunities Found</span>
+        </div>
 
-    <p class="mb-1 text-success fw-bold">
-      {{ scholarship.amount }}
-    </p>
+        {% for scholarship in opportunities %}
+        <div class="card mb-4 shadow-sm border-0 opportunity-card overflow-hidden">
+            <div class="row g-0">
+                
+                <div class="col-md-4 col-lg-3 position-relative bg-light" style="min-height: 180px;">
+                    {% if scholarship.image %}
+                        <img src="{{ scholarship.image.url }}" class="img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0" alt="{{ scholarship.title }}">
+                    {% elif scholarship.logo_url %}
+                        <div class="d-flex align-items-center justify-content-center h-100 w-100 p-4 bg-white border-end">
+                            <img src="{{ scholarship.logo_url }}" class="img-fluid" style="max-height: 90px;" alt="{{ scholarship.title }} Logo">
+                        </div>
+                    {% else %}
+                        <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100 bg-primary bg-gradient text-white p-3 text-center">
+                            <i class="fas fa-globe-americas fa-2x mb-2 opacity-75"></i>
+                            <span class="small fw-bold">{{ scholarship.opportunity_type|default:"Opportunity" }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    <span class="badge bg-dark position-absolute top-0 start-0 m-2 d-md-none opacity-75">
+                        {{ scholarship.opportunity_type }}
+                    </span>
+                </div>
 
-    <p class="small text-muted mb-2">
-      Host : {{ scholarship.target_countries }}
-    </p>
+                <div class="col-md-8 col-lg-9">
+                    <div class="card-body d-flex flex-column h-100 p-4">
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-soft-primary text-primary border d-none d-md-inline-block">
+                                <i class="fas fa-tag me-1"></i> {{ scholarship.opportunity_type }}
+                            </span>
+                            
+                            <span class="text-danger small fw-bold bg-soft-danger px-2 py-1 rounded">
+                                <i class="far fa-clock me-1"></i> Deadline: {{ scholarship.deadline|date:"M d, Y"|default:"Varies" }}
+                            </span>
+                        </div>
 
-    <a href="{% url 'opportunity_detail' scholarship.slug %}"
-       class="btn btn-sm btn-outline-primary">
-      View Details →
-    </a>
-  </div>
-</div>
-{% empty %}
-<p>No scholarships found.</p>
-{% endfor %}
+                        <h2 class="h5 fw-bold mb-2">
+                            <a href="{% url 'opportunity_detail' scholarship.slug %}" class="text-decoration-none text-dark hover-primary stretched-link">
+                                {{ scholarship.title }}
+                            </a>
+                        </h2>
 
-<!-- PAGINATION -->
-{% if is_paginated %}
-<nav class="mt-4">
-  <ul class="pagination justify-content-center">
-    {% if page_obj.has_previous %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-      </li>
-    {% endif %}
+                        <div class="d-flex flex-wrap gap-3 mb-3 small text-muted">
+                            {% if scholarship.target_countries %}
+                            <div title="Host Country">
+                                <i class="fas fa-map-marker-alt text-danger me-1"></i> {{ scholarship.target_countries }}
+                            </div>
+                            {% endif %}
+                            
+                            {% if scholarship.education_level %}
+                            <div title="Education Level">
+                                <i class="fas fa-user-graduate text-success me-1"></i> {{ scholarship.education_level }}
+                            </div>
+                            {% endif %}
+                            
+                            {% if scholarship.amount %}
+                            <div title="Funding Status" class="fw-bold text-success">
+                                <i class="fas fa-hand-holding-usd me-1"></i> {{ scholarship.amount }}
+                            </div>
+                            {% endif %}
+                        </div>
 
-    <li class="page-item active">
-      <span class="page-link">{{ page_obj.number }}</span>
-    </li>
+                        <p class="card-text text-muted small mb-0 d-none d-md-block" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            {{ scholarship.description|striptags|truncatewords:25 }}
+                        </p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if forloop.counter == 3 %}
+        <div class="mb-4 text-center p-3 bg-light border border-dashed rounded shadow-sm d-lg-none">
+            <small class="text-muted d-block mb-2">Advertisement</small>
+        </div>
+        {% endif %}
 
-    {% if page_obj.has_next %}
-      <li class="page-item">
-       <a class="page-link"
-        href="?{% for key, value in request.GET.items %}
-                {% if key != 'page' %}
-                  {{ key }}={{ value }}&
+        {% empty %}
+        <div class="text-center py-5 bg-white shadow-sm rounded border">
+            <div class="text-muted mb-3">
+                <i class="fas fa-search-minus fa-3x"></i>
+            </div>
+            <h4 class="fw-bold text-dark">No opportunities found</h4>
+            <p class="text-muted">Try adjusting your filters or search terms to find what you're looking for.</p>
+            <a href="{% url 'scholarship_list' %}" class="btn btn-outline-primary mt-2">Clear All Filters</a>
+        </div>
+        {% endfor %}
+
+        {% if is_paginated %}
+        <nav aria-label="Page navigation" class="mt-5">
+            <ul class="pagination justify-content-center custom-pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link shadow-sm" href="?{{ query_string }}&page={{ page_obj.previous_page_number }}">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    </li>
                 {% endif %}
-              {% endfor %}
-              page={{ page_obj.next_page_number }}">
-        Next
-      </a>
 
-      </li>
-    {% endif %}
-  </ul>
-</nav>
-{% endif %}
+                <li class="page-item disabled">
+                    <span class="page-link bg-light text-dark fw-bold border-0 mx-2 shadow-sm rounded">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
 
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link shadow-sm" href="?{{ query_string }}&page={{ page_obj.next_page_number }}">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    </div>
+</div>
+
+<style>
+    /* Styling Enhancements specific to this page */
+    .bg-soft-primary { background-color: rgba(28, 91, 183, 0.1); }
+    .bg-soft-danger { background-color: rgba(220, 53, 69, 0.1); }
+    
+    .opportunity-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 12px;
+    }
+    .opportunity-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+    }
+    
+    .hover-primary:hover { color: var(--primary-blue) !important; }
+    
+    .custom-pagination .page-link {
+        border-radius: 8px;
+        margin: 0 4px;
+        color: var(--dark-text);
+        border: 1px solid #dee2e6;
+    }
+    .custom-pagination .page-link:hover {
+        background-color: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+</style>
 {% endblock %}

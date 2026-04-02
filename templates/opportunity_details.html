@@ -1,232 +1,208 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}
-{{ opportunity.title }} | Masters Grant
-<head>
-    <title>{{ scholarship.name }} | Masters Grant</title>
+{% block title %}{{ opportunity.title }} | MastersGrant{% endblock %}
+
+{% block extra_head %}
+<style>
+    #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 9999; }
+    #progress-bar { height: 100%; background: #0d6efd; width: 0%; transition: width 0.1s ease; }
     
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "name": "{{ opportunity.title |escapejs }}",
-      "description": "{{ opportunity.description|truncatewords:30|escapejs }}",
-      "funder": {
-        "@type": "Organization",
-        "name": "{{ opportunity.host|escapejs }}"
-      },
-      "url": "{{ request.build_absolute_uri }}",
-      "validThrough": "{{ opportunity.deadline|date:'Y-m-d' }}"
+    /* Sticky Mobile CTA */
+    @media (max-width: 768px) {
+        .mobile-sticky-apply {
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: white; padding: 15px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            z-index: 1000; display: flex; justify-content: center;
+        }
+        body { padding-bottom: 80px; }
     }
-    </script>
-</head>
+</style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalOccupationalProgram",
+  "name": "{{ opportunity.title|escapejs }}",
+  "description": "{{ opportunity.description|striptags|truncatewords:50|escapejs }}",
+  "provider": {
+    "@type": "Organization",
+    "name": "{{ opportunity.host|default:'Official Provider'|escapejs }}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "category": "Scholarship"
+  },
+  "endDate": "{{ opportunity.deadline|date:'Y-m-d' }}"
+}
+</script>
 {% endblock %}
 
 {% block content %}
+<div id="progress-container"><div id="progress-bar"></div></div>
 
-<div class="container my-4">
+<div class="container my-5">
     <div class="row justify-content-center">
 
-        <!-- ================= MAIN CONTENT ================= -->
         <div class="col-lg-8">
 
-            <!-- Breadcrumb -->
-            <nav class="mb-4 small text-muted">
-                <a href="{% url 'index' %}" class="text-decoration-none">Home</a> ›
-                <a href="{% url 'scholarship_list' %}" class="text-decoration-none">Scholarships</a> ›
-                <span class="text-dark">{{ opportunity.title|truncatechars:50 }}</span>
+            <nav class="mb-3 d-flex align-items-center justify-content-between">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="{% url 'index' %}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'scholarship_list' %}" class="text-decoration-none">Scholarships</a></li>
+                    <li class="breadcrumb-item active text-truncate" style="max-width: 150px;">{{ opportunity.title }}</li>
+                </ol>
+                <span class="badge bg-soft-primary text-primary border px-3 rounded-pill">
+                    {{ opportunity.opportunity_type }}
+                </span>
             </nav>
 
-            <!-- Title -->
-            <h1 class="fw-bold mb-3 lh-sm">
-                {{ opportunity.title }}
-            </h1>
-
-            <div class="opportunity-image mb-4">
-                <img src="{{ opportunity.image.url }}" alt="{{ opportunity.title }}" class="img-fluid rounded">
+            <h1 class="display-6 fw-bold mb-3 text-dark lh-sm">{{ opportunity.title }}</h1>
+            
+            <div class="d-flex align-items-center mb-4 text-muted small">
+                <div class="me-3"><i class="fas fa-check-circle text-success me-1"></i> Verified Opportunity</div>
+                <div class="me-3"><i class="far fa-eye me-1"></i> 5 min read</div>
+                <div><i class="far fa-calendar-alt me-1"></i> Updated: {{ opportunity.created_at|date:"M d, Y" }}</div>
             </div>
-                   
-            <!-- Deadline -->
-            <p class="text-muted mb-4">
-                <i class="far fa-calendar-alt me-1"></i>
-                Application Deadline:
-                <span class="text-danger fw-bold">
-                    {{ opportunity.deadline|date:"d F Y" }}
-                </span>
-            </p>
 
-            <!-- Quick Facts -->
-            <div class="card border-0 shadow-sm mb-5">
-                <div class="card-body">
-                    <div class="row small">
-                        <div class="col-md-4 mb-2">
-                            <strong>Funding Type</strong><br>
-                            <span class="text-muted">{{ opportunity.amount }}</span>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <strong>Study Level</strong><br>
-                            <span class="text-muted">{{ opportunity.education_level }}</span>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <strong>Host</strong><br>
-                            <span class="text-muted">{{ opportunity.target_countries }}</span>
-                        </div>
+            <div class="featured-image-wrapper mb-5 shadow-sm rounded overflow-hidden">
+                <img src="{{ opportunity.image.url }}" alt="{{ opportunity.title }}" class="img-fluid w-100">
+            </div>
+
+            <div class="card border-0 bg-white shadow-sm mb-5 overflow-hidden">
+                <div class="row g-0">
+                    <div class="col-md-4 border-end border-light text-center p-4">
+                        <i class="fas fa-hand-holding-usd fa-2x text-primary mb-2"></i>
+                        <h6 class="text-muted small text-uppercase fw-bold">Funding</h6>
+                        <p class="mb-0 fw-bold text-dark">{{ opportunity.amount }}</p>
+                    </div>
+                    <div class="col-md-4 border-end border-light text-center p-4">
+                        <i class="fas fa-user-graduate fa-2x text-success mb-2"></i>
+                        <h6 class="text-muted small text-uppercase fw-bold">Degree Level</h6>
+                        <p class="mb-0 fw-bold text-dark">{{ opportunity.education_level }}</p>
+                    </div>
+                    <div class="col-md-4 text-center p-4">
+                        <i class="fas fa-clock fa-2x text-danger mb-2"></i>
+                        <h6 class="text-muted small text-uppercase fw-bold">Deadline</h6>
+                        <p class="mb-0 fw-bold text-danger">{{ opportunity.deadline|date:"d M Y" }}</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Description -->
-            <article class="scholarship-content mb-5">
+            <article class="scholarship-main-content">
+                <div class="lead-text mb-4">
+                    Looking for a chance to study in {{ opportunity.target_countries }}? The <strong>{{ opportunity.title }}</strong> is a prestigious opportunity 
+                    offering {{ opportunity.amount }} for {{ opportunity.education_level }} students. Below are the full details on how to apply.
+                </div>
+
                 {{ opportunity.description|safe }}
             </article>
 
-            <!-- In-content Ad -->
-            <div class="my-5 p-4 bg-light border rounded text-center">
-                <small class="text-muted d-block mb-2">ADVERTISEMENT</small>
-                <div class="ad-box py-3">
-                    In-Article Responsive Ad
+            <div class="my-5 p-4 bg-light border border-dashed rounded text-center">
+                <small class="text-muted d-block mb-2">STORY CONTINUES BELOW</small>
                 </div>
-            </div>
 
-            <!-- Apply Button -->
-            <div class="text-center my-5">
-                <a href="{{ opportunity.official_link }}"
-                   target="_blank"
-                   rel="nofollow noopener"
-                   class="btn btn-lg btn-primary px-5 py-3 fw-bold">
-                    Apply Now
+            <div class="apply-box bg-dark text-white p-5 rounded-3 shadow-lg text-center my-5">
+                <h3 class="fw-bold mb-3">Ready to Apply?</h3>
+                <p class="opacity-75 mb-4">Ensure you have all documents ready before the {{ opportunity.deadline|date:"M d" }} deadline.</p>
+                <a href="{{ opportunity.official_link }}" target="_blank" rel="nofollow" class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow">
+                    Apply on Official Website <i class="fas fa-external-link-alt ms-2"></i>
                 </a>
-                <p class="small text-muted mt-2">
-                    Application is free and handled by the official provider
-                </p>
+                <p class="small opacity-50 mt-3 mb-0">No application fee required through our portal.</p>
             </div>
 
         </div>
 
-        <!-- ================= RIGHT SIDEBAR ================= -->
-        <aside class="col-lg-4 d-none d-lg-block">
-
-            <div class="sticky-sidebar">
-
-                <!-- AdSense Card -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 100px;">
+                
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body text-center">
-                        <small class="text-muted d-block mb-2">ADVERTISEMENT</small>
-                        <div class="ad-box py-4">
-                            Sidebar Ad (300x600 / Responsive)
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">Share this Opportunity</h6>
+                        <div class="d-flex gap-2">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-secondary flex-grow-1"><i class="fab fa-facebook-f"></i></a>
+                            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-secondary flex-grow-1"><i class="fab fa-twitter"></i></a>
+                            <a href="https://api.whatsapp.com/send?text={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-secondary flex-grow-1"><i class="fab fa-whatsapp"></i></a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Related Scholarships -->
                 {% if related_items %}
-                <div class="card border-0 shadow-sm">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-0 pt-3">
+                        <h6 class="fw-bold mb-0">You Might Also Like</h6>
+                    </div>
                     <div class="card-body">
-                        <h6 class="fw-bold mb-3">
-                            Related Scholarships
-                        </h6>
-
-                        <ul class="list-unstyled mb-0">
-                            {% for r in related_items %}
-                            <li class="mb-3">
-                                <a href="{% url 'opportunity_detail' r.slug %}"
-                                   class="text-decoration-none text-dark small">
-                                    {{ r.title|truncatechars:65 }}
+                        {% for r in related_items %}
+                        <div class="d-flex mb-3 align-items-start border-bottom pb-2">
+                            <div class="flex-grow-1">
+                                <a href="{% url 'opportunity_detail' r.slug %}" class="text-decoration-none text-dark small fw-bold d-block mb-1">
+                                    {{ r.title|truncatechars:60 }}
                                 </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-
+                                <span class="text-success x-small fw-bold">{{ r.amount }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}
 
+                <div class="text-center p-3 bg-light border rounded">
+                    <small class="text-muted">Advertisement</small>
+                    <div style="height: 250px;"></div>
+                </div>
             </div>
-        </aside>
-
+        </div>
     </div>
 </div>
 
-<!-- ================= STYLES ================= -->
+<div class="mobile-sticky-apply d-md-none">
+    <a href="{{ opportunity.official_link }}" class="btn btn-primary w-100 fw-bold py-3">Apply Now <i class="fas fa-paper-plane ms-2"></i></a>
+</div>
+
+<script>
+    // Reading Progress Bar Logic
+    window.onscroll = function() {
+        var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var scrolled = (winScroll / height) * 100;
+        document.getElementById("progress-bar").style.width = scrolled + "%";
+    };
+</script>
+
 <style>
-.scholarship-content {
-    font-size: 1.08rem;
-    line-height: 1.9;
-    color: #2d2d2d;
-}
-
-.scholarship-content h2,
-.scholarship-content h3 {
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
-}
-
-.scholarship-content ul,
-.scholarship-content ol {
-    padding-left: 1.4rem;
-    margin-bottom: 1.5rem;
-}
-
-.scholarship-content li {
-    margin-bottom: 0.6rem;
-}
-
-/* Sticky Sidebar */
-.sticky-sidebar {
-    position: sticky;
-    top: 90px;
-}
-
-/* Hover effect */
-.hover-top {
-    transition: transform .25s ease, box-shadow .25s ease;
-}
-.hover-top:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0,0,0,.12);
-}
-/* Styling for the transformed scraper content */
-.opp-intro {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.opp-requirements {
-    border-left: 5px solid #1a237e; /* Matches your image generator color */
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 0 8px 8px 0;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
-}
-
-.opp-requirements h4 {
-    margin-top: 0;
-    color: #1a237e;
-    font-weight: bold;
-}
-
-.source-attribution {
-    margin-top: 30px;
-    padding: 15px;
-    background: #fffdf0; /* Subtle warning yellow */
-    border: 1px dashed #ccc;
-    border-radius: 5px;
-}
-.opportunity-image {
-    max-width: 100%;
-    aspect-ratio: 1200 / 630; /* Facebook post ratio */
-    overflow: hidden;
-}
-
-.opportunity-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
+    /* Content Readability */
+    .scholarship-main-content {
+        font-family: 'Inter', -apple-system, sans-serif;
+        font-size: 1.15rem; /* Larger font for reading */
+        line-height: 1.8;
+        color: #1a1a1a;
+    }
+    .lead-text {
+        font-size: 1.25rem;
+        color: #4a4a4a;
+        border-left: 4px solid #0d6efd;
+        padding-left: 20px;
+        margin-top: 30px;
+    }
+    .scholarship-main-content h2 {
+        font-weight: 800;
+        margin-top: 2.5rem;
+        margin-bottom: 1.2rem;
+        color: #000;
+    }
+    .scholarship-main-content p { margin-bottom: 1.5rem; }
+    
+    .bg-soft-primary { background-color: rgba(13, 110, 253, 0.08); }
+    .featured-image-wrapper { max-height: 450px; }
+    .x-small { font-size: 0.75rem; }
+    
+    /* Scraper content overrides */
+    .opp-requirements {
+        background: #fdfdfd !important;
+        border: 1px solid #eee !important;
+        padding: 30px !important;
+        border-radius: 12px !important;
+    }
 </style>
-
-
 {% endblock %}

@@ -1,102 +1,188 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Study Abroad Guides | SOP, Essays & Scholarships{% endblock %}
+{% block title %}Application Guides & Success Stories | MastersGrant{% endblock %}
 {% block meta_description %}
-Complete guides for SOP writing, scholarship essays, study abroad applications, and admissions success.
+Master your study abroad application with our expert-written guides on SOPs, Motivation Letters, and Scholarship Essays.
 {% endblock %}
 
 {% block content %}
-<main class="container my-5">
+<section class="bg-primary text-white py-5 mb-5 shadow-sm">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">Application Success Hub</h1>
+                <p class="lead opacity-75">Step-by-step guides, proven templates, and expert tips to help you secure fully funded scholarships worldwide.</p>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-end">
+                <i class="fas fa-book-open fa-5x opacity-25"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<main class="container">
     <div class="row">
 
-        <!-- Main Content -->
         <div class="col-lg-8">
-
-            <h1 class="fw-bold mb-4">Study Abroad & Scholarship Guides</h1>
-
-            {% for guide in guides %}
-            <article class="card border-0 shadow-sm mb-4">
-                <div class="card-body">
-
-                    <h2 class="h5 fw-bold">
-                        <a href="{{ guide.get_absolute_url }}" class="text-dark text-decoration-none">
-                            {{ guide.title }}
-                        </a>
-                    </h2>
-
-                    <p class="text-muted small mb-2">
-                        <i class="far fa-clock"></i> {{ guide.created_at|date:"F d, Y" }} · {{ guide.author }}
-                    </p>
-
-                    <p class="text-secondary">
-                        {{ guide.content|striptags|truncatewords:30 }}
-                    </p>
-
-                    <a href="{{ guide.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
-                        Read Full Guide →
-                    </a>
+            
+            {% if guides and page_obj.number == 1 %}
+                {% with featured=guides.0 %}
+                <div class="card border-0 shadow-lg mb-5 overflow-hidden featured-card">
+                    <div class="row g-0">
+                        <div class="col-md-12">
+                            <div class="card-body p-4 p-md-5">
+                                <span class="badge bg-danger mb-3 px-3 py-2 rounded-pill">MUST READ</span>
+                                <h2 class="display-6 fw-bold">
+                                    <a href="{{ featured.get_absolute_url }}" class="text-dark text-decoration-none hover-primary">
+                                        {{ featured.title }}
+                                    </a>
+                                </h2>
+                                <p class="text-muted my-3 lead">
+                                    {{ featured.content|striptags|truncatewords:40 }}
+                                </p>
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="ms-0">
+                                        <small class="text-dark fw-bold d-block">{{ featured.author }}</small>
+                                        <small class="text-muted">{{ featured.created_at|date:"M d, Y" }} · 5 min read</small>
+                                    </div>
+                                </div>
+                                <a href="{{ featured.get_absolute_url }}" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                                    Start Reading →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </article>
-
-            {% if forloop.counter == 3 %}
-            <!-- In-content Ad -->
-            <div class="my-4 text-center p-3 bg-white border rounded">
-                <small class="text-muted d-block mb-2">ADVERTISEMENT</small>
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-XXXX"
-                     data-ad-slot="XXXX"
-                     data-ad-format="auto"></ins>
-            </div>
+                {% endwith %}
             {% endif %}
 
-            {% endfor %}
+            <h3 class="fw-bold mb-4 d-flex align-items-center">
+                <span class="me-3">Latest Guides</span>
+                <hr class="flex-grow-1 opacity-10">
+            </h3>
 
-            <!-- Pagination -->
-            <nav class="mt-4">
-                <ul class="pagination">
+            <div class="row">
+                {% for guide in guides %}
+                    {% if page_obj.number == 1 and forloop.first %}
+                        {% else %}
+                    <div class="col-12 mb-4">
+                        <article class="card border-0 shadow-sm h-100 guide-hover-card">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="text-primary small fw-bold text-uppercase tracking-wider">Application Tips</span>
+                                    <small class="text-muted"><i class="far fa-calendar-alt me-1"></i> {{ guide.created_at|date:"M d, Y" }}</small>
+                                </div>
+                                
+                                <h2 class="h4 fw-bold">
+                                    <a href="{{ guide.get_absolute_url }}" class="text-dark text-decoration-none hover-primary">
+                                        {{ guide.title }}
+                                    </a>
+                                </h2>
+
+                                <p class="text-secondary mb-3">
+                                    {{ guide.content|striptags|truncatewords:25 }}
+                                </p>
+
+                                <div class="d-flex align-items-center justify-content-between mt-auto">
+                                    <span class="small text-muted"><i class="far fa-user me-1"></i> By {{ guide.author }}</span>
+                                    <a href="{{ guide.get_absolute_url }}" class="fw-bold text-primary text-decoration-none small">
+                                        Read More <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    {% endif %}
+
+                    {% if forloop.counter == 4 %}
+                    <div class="col-12 my-4">
+                        <div class="p-4 bg-light border rounded-3 text-center position-relative">
+                            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-white text-muted border px-3">Advertisement</span>
+                            <div class="py-3">
+                                <ins class="adsbygoogle"
+                                     style="display:block"
+                                     data-ad-client="ca-pub-XXXX"
+                                     data-ad-slot="XXXX"
+                                     data-ad-format="auto"></ins>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if is_paginated %}
+            <nav class="mt-5">
+                <ul class="pagination justify-content-center">
                     {% if page_obj.has_previous %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        <a class="page-link shadow-sm rounded-pill px-4 mx-1" href="?page={{ page_obj.previous_page_number }}">
+                            <i class="fas fa-chevron-left me-2"></i> Previous
+                        </a>
                     </li>
                     {% endif %}
 
                     <li class="page-item active">
-                        <span class="page-link">{{ page_obj.number }}</span>
+                        <span class="page-link shadow-sm rounded-pill px-4 mx-1">{{ page_obj.number }}</span>
                     </li>
 
                     {% if page_obj.has_next %}
                     <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        <a class="page-link shadow-sm rounded-pill px-4 mx-1" href="?page={{ page_obj.next_page_number }}">
+                            Next <i class="fas fa-chevron-right ms-2"></i>
+                        </a>
                     </li>
                     {% endif %}
                 </ul>
             </nav>
+            {% endif %}
         </div>
 
-        <!-- Sidebar -->
         <div class="col-lg-4">
-            <div class="sticky-top" style="top:90px;">
+            <div class="sticky-top" style="top:100px;">
 
-                <!-- Sidebar Ad -->
-                <div class="card border-0 shadow-sm mb-4 p-3 text-center" style="height:400px;">
-                    <small class="text-muted">SPONSORED</small>
-                    <ins class="adsbygoogle"
-                         style="display:block;height:100%"
-                         data-ad-client="ca-pub-XXXX"
-                         data-ad-slot="XXXX"></ins>
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Search Guides</h5>
+                        <form action="{% url 'guide_list' %}" method="get">
+                            <div class="input-group">
+                                <input type="text" name="q" class="form-control bg-light border-0" placeholder="Search keywords...">
+                                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
-                <!-- SEO Topics -->
-                <div class="card border-0 shadow-sm p-4">
-                    <h5 class="fw-bold mb-3">Popular Topics</h5>
-                    <ul class="list-unstyled small">
-                        <li>✔ SOP for USA</li>
-                        <li>✔ SOP for Canada</li>
-                        <li>✔ Erasmus Motivation Letter</li>
-                        <li>✔ Scholarship Essay Samples</li>
-                        <li>✔ Fully Funded Scholarships</li>
-                    </ul>
+                <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+                    <div class="card-header bg-dark text-white border-0 py-3">
+                        <h5 class="fw-bold mb-0">Success Templates</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                            <span><i class="fas fa-file-alt text-primary me-2"></i> SOP for USA</span>
+                            <i class="fas fa-chevron-right text-muted small"></i>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                            <span><i class="fas fa-map-marker-alt text-danger me-2"></i> Study in Canada Guide</span>
+                            <i class="fas fa-chevron-right text-muted small"></i>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                            <span><i class="fas fa-university text-success me-2"></i> Erasmus Motivation Letter</span>
+                            <i class="fas fa-chevron-right text-muted small"></i>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                            <span><i class="fas fa-pen-nib text-warning me-2"></i> Scholarship Essay Tips</span>
+                            <i class="fas fa-chevron-right text-muted small"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white border rounded shadow-sm p-3 text-center mb-4">
+                    <small class="text-muted d-block mb-3 uppercase small tracking-widest">Sponsored Content</small>
+                    <div style="min-height: 250px; background: #f9f9f9;" class="d-flex align-items-center justify-content-center">
+                        <span class="text-muted small">Google Ad Placement</span>
+                    </div>
                 </div>
 
             </div>
@@ -104,4 +190,40 @@ Complete guides for SOP writing, scholarship essays, study abroad applications, 
 
     </div>
 </main>
+
+<style>
+    /* Styling for the new blog layout */
+    .featured-card {
+        border-radius: 20px;
+        transition: transform 0.3s ease;
+    }
+    .guide-hover-card {
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        border-left: 0px solid var(--bs-primary) !important;
+    }
+    .guide-hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+        border-left: 5px solid var(--bs-primary) !important;
+    }
+    .hover-primary:hover {
+        color: #0d6efd !important;
+    }
+    .tracking-wider {
+        letter-spacing: 1px;
+    }
+    .bg-soft-primary {
+        background-color: #e7f0ff;
+    }
+    .pagination .page-link {
+        border: none;
+        color: #444;
+        font-weight: 600;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: var(--bs-primary);
+        color: white;
+    }
+</style>
 {% endblock %}

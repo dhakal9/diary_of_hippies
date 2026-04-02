@@ -179,19 +179,16 @@ class ScholarshipListView(ListView):
         level = self.request.GET.get("level")
         type_ = self.request.GET.get("type")
 
-        # 🔥 FORCE Summer School when using /summer-schools/
+        # 🔥 FORCE Categories based on URL
         if self.request.resolver_match.url_name == "summer_schools":
             qs = qs.filter(opportunity_type="Summer School")
             return qs.order_by("-created_at")
-        # 🔥 FORCE Internships when using /internships/
         if self.request.resolver_match.url_name == "internships":
             qs = qs.filter(opportunity_type="Internship")
             return qs.order_by("-created_at")
-        # 🔥 FORCE Conferences when using /conferences/
         if self.request.resolver_match.url_name == "conferences":
             qs = qs.filter(opportunity_type="Conference")
             return qs.order_by("-created_at")
-        # 🔥 FORCE Exchange Programs when using /exchange_programs/
         if self.request.resolver_match.url_name == "exchange_programs":
             qs = qs.filter(opportunity_type="Exchange Program")
             return qs.order_by("-created_at")
@@ -214,3 +211,56 @@ class ScholarshipListView(ListView):
 
         return qs.order_by("-created_at")
 
+    def get_context_data(self, **kwargs):
+        """ Inject dynamic SEO Data based on the current page/filters """
+        context = super().get_context_data(**kwargs)
+        
+        url_name = self.request.resolver_match.url_name
+        q = self.request.GET.get("q", "")
+        level = self.request.GET.get("level", "")
+        type_ = self.request.GET.get("type", "")
+
+        # Default SEO
+        title = "Fully Funded Scholarships 2026 | Study Abroad"
+        desc = "Explore fully funded scholarships for international students 2026. Find scholarships worldwide with deadlines and eligibility."
+        h1 = "All Scholarships & Opportunities"
+
+        # Dynamic SEO based on URL
+        if url_name == "summer_schools":
+            title = "Fully Funded Summer Schools 2026 | International Students"
+            desc = "Find the best fully funded summer schools and short courses abroad for international students in 2026."
+            h1 = "Summer Schools"
+        elif url_name == "internships":
+            title = "Paid International Internships 2026 | Global Opportunities"
+            desc = "Apply for paid international internships and traineeships abroad for students and graduates."
+            h1 = "International Internships"
+        elif url_name == "conferences":
+            title = "International Conferences & Youth Summits 2026"
+            desc = "Discover fully funded international conferences, youth summits, and forums around the world."
+            h1 = "Conferences & Youth Summits"
+        elif url_name == "exchange_programs":
+            title = "Student Exchange Programs 2026 | Study Abroad"
+            desc = "Explore global student exchange programs and cultural exchange opportunities for 2026."
+            h1 = "Exchange Programs"
+        
+        # Dynamic SEO based on Search/Filters (Overrides Defaults)
+        elif q:
+            title = f"Search Results for '{q}' | MastersGrant"
+            h1 = f"Search Results for '{q}'"
+        elif level or type_:
+            level_text = level if level else ""
+            type_text = type_.replace("-", " ").title() if type_ else "Scholarships"
+            title = f"{level_text} {type_text} 2026 | Fully Funded"
+            h1 = f"{level_text} {type_text}".strip()
+            
+        context['page_title'] = title
+        context['meta_description'] = desc
+        context['page_h1'] = h1
+        
+        # Preserve query parameters for pagination
+        query_params = self.request.GET.copy()
+        if 'page' in query_params:
+            del query_params['page']
+        context['query_string'] = query_params.urlencode()
+
+        return context
