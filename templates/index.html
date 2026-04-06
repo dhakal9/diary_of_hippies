@@ -89,7 +89,7 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
                         Deadline: {{ opt.deadline|date:"M d, Y" }}
                     </p>
                     <div class="mt-auto text-center">
-                        <a href="{{ opt.get_absolute_url }}" class="btn btn-orange w-50 fw-semibold rounded-pill py-2">Apply Now</a>
+                        <a href="{{ opt.get_absolute_url }}" class="btn btn-orange w-50 fw-semibold rounded-pill py-2">See Details</a>
                     </div>
                 </div>
             </div>
@@ -120,6 +120,68 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
         <a href="{% url 'scholarship_list' %}?category=Arts" class="category-pill text-decoration-none shadow-sm">
             <i class="fas fa-palette text-orange"></i> Arts & Humanities
         </a>
+    </div>
+</section>
+
+<section class="container mt-5 pt-4 mb-5">
+    <div class="border-bottom pb-2 mb-4">
+        <h3 class="fw-bold text-dark mb-0">Success Stories</h3>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 p-4 testimonial-card">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://i.pravatar.cc/150?img=32" class="rounded-circle border border-2 border-primary-light" width="60" height="60" alt="Student">
+                    <div class="ms-3">
+                        <h6 class="fw-bold mb-0">Aatish Thapa</h6>
+                        <small class="text-primary fw-semibold">US Scholar</small>
+                    </div>
+                </div>
+                <div class="position-relative">
+                    <i class="fas fa-quote-left text-primary-light opacity-25 position-absolute top-0 start-0 fs-1"></i>
+                    <p class="text-muted small mb-0 ps-4 pt-2 italic">
+                        "The detailed requirements here helped me tailor my application. I'm now pursuing my Master's in Civil Engineering at Texas State University!"
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 p-4 testimonial-card">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://i.pravatar.cc/150?img=11" class="rounded-circle border border-2 border-primary-light" width="60" height="60" alt="Student">
+                    <div class="ms-3">
+                        <h6 class="fw-bold mb-0">David Osei</h6>
+                        <small class="text-primary fw-semibold">Chevening Fellow</small>
+                    </div>
+                </div>
+                <div class="position-relative">
+                    <i class="fas fa-quote-left text-primary-light opacity-25 position-absolute top-0 start-0 fs-1"></i>
+                    <p class="text-muted small mb-0 ps-4 pt-2 italic">
+                        "The search filters saved me hundreds of hours. I found a fully-funded fellowship that perfectly aligned with my engineering background."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 p-4 testimonial-card">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://i.pravatar.cc/150?img=5" class="rounded-circle border border-2 border-primary-light" width="60" height="60" alt="Student">
+                    <div class="ms-3">
+                        <h6 class="fw-bold mb-0">Elena Rostova</h6>
+                        <small class="text-primary fw-semibold">Erasmus+ Scholar</small>
+                    </div>
+                </div>
+                <div class="position-relative">
+                    <i class="fas fa-quote-left text-primary-light opacity-25 position-absolute top-0 start-0 fs-1"></i>
+                    <p class="text-muted small mb-0 ps-4 pt-2 italic">
+                        "The guidance articles and deadlines listed here helped me organize my application process perfectly. Truly a life-changer!"
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -267,6 +329,26 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
     
     .object-fit-cover {
         object-fit: cover;
+    }
+    .text-primary-light {
+        color: #e6f0ff;
+    }
+    
+    .testimonial-card {
+        transition: transform 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+    }
+
+    .italic {
+        font-style: italic;
+    }
+    
+    .border-primary-light {
+        border-color: #e6f0ff !important;
     }
 </style>
 

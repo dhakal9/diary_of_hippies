@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Opportunity, Guide, Category
+from .models import Opportunity, EducationLevel, Country, Guide, Category, SuccessStory
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -8,33 +8,24 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Opportunity)
 class OpportunityAdmin(admin.ModelAdmin):
-    # What you see in the list view (Crucial for fast management)
-    list_display = ('title', 'opportunity_type', 'education_level', 'deadline', 'deadline_note', 'is_active', 'created_at')
+    # list_display cannot contain 'education_levels' directly. 
+    # Use the custom method 'get_education_levels' instead.
+    list_display = ('title', 'opportunity_type', 'get_education_levels', 'deadline', 'is_active')
     
-    # Filters on the right side (Helps you find specific content quickly)
-    list_filter = ('is_active', 'opportunity_type', 'education_level', 'category', 'created_at')
+    # Updated list_filter to use the new related field
+    list_filter = ('opportunity_type', 'is_active', 'education_levels', 'funding_type')
     
-    # Search functionality
-    search_fields = ('title', 'description', 'target_countries')
+    search_fields = ('title', 'description', 'meta_title')
+    prepopulated_fields = {'slug': ('title',)}
     
-    # Auto-fills the slug while you type the title (Great for SEO speed)
-    prepopulated_fields = {"slug": ("title",)}
-    
-    # Grouping fields for better UI
-    fieldsets = (
-        ('Basic Information', {
-            'fields': ('title', 'slug', 'opportunity_type', 'category', 'image')
-        }),
-        ('Financials & Eligibility', {
-            'fields': ('amount', 'deadline', 'deadline_note', 'education_level', 'target_countries')
-        }),
-        ('Content & Links', {
-            'fields': ('description', 'official_link', 'is_active')
-        }),
-    )
+    # This allows you to select multiple levels and countries easily in the admin
+    filter_horizontal = ('education_levels', 'target_countries', 'host_countries')
 
-    # Performance: only loads needed data for the foreign key dropdown
-    list_select_related = ('category',)
+    # Custom method to show education levels in the list view
+    def get_education_levels(self, obj):
+        return ", ".join([level.name for level in obj.education_levels.all()])
+    
+    get_education_levels.short_description = 'Education Levels'
     
 
 @admin.register(Guide)
@@ -43,3 +34,7 @@ class GuideAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     search_fields = ('title', 'content')
 
+@admin.register(SuccessStory)
+class SuccessStoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'created_at')
+    search_fields = ('name', 'story')

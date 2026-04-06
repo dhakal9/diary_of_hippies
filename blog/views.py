@@ -166,6 +166,12 @@ class GuideDetailView(DetailView):
     template_name = 'guide_detail.html'
     context_object_name = 'guide'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Fetch 4 latest guides excluding the current one
+        context['similar_guides'] = Guide.objects.exclude(id=self.object.id).order_by('-created_at')[:4]
+        return context
+
 class ScholarshipListView(ListView):
     model = Opportunity
     template_name = "scholarships.html"

@@ -7,6 +7,8 @@
 {% block meta_description %}
 {{ guide.meta_description|default:guide.title }}
 {% endblock %}
+
+{% block extra_head %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -23,27 +25,45 @@
   }
 }
 </script>
+{% endblock %}
+
 {% block content %}
 <main class="container my-5">
     <div class="row">
 
-        <!-- Content -->
-        <div class="col-lg-8">
+        <div class="col-lg-8 pe-lg-4">
+            
+            <nav aria-label="breadcrumb" class="mb-3" style="background-color: #fcb716;">
+              <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a href="/guides/" class="text-decoration-none">Guides</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ guide.title|truncatechars:30 }}</li>
+              </ol>
+            </nav>
 
-            <h1 class="fw-bold mb-3">{{ guide.title }}</h1>
+            <h1 class="fw-bold mb-3 lh-base">{{ guide.title }}</h1>
 
-            <p class="text-muted small mb-4">
-                <i class="far fa-user"></i> {{ guide.author }} ·
-                <i class="far fa-clock"></i> {{ guide.created_at|date:"F d, Y" }}
-            </p>
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+                <p class="text-muted small mb-0">
+                    <i class="far fa-user me-1"></i> {{ guide.author }} &nbsp;|&nbsp;
+                    <i class="far fa-clock me-1"></i> {{ guide.created_at|date:"F d, Y" }} &nbsp;|&nbsp;
+                    <i class="fas fa-book-open me-1"></i> 5 min read
+                </p>
+                
+                <div class="social-share">
+                    <span class="small text-muted me-2">Share:</span>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ guide.title|urlencode }}" target="_blank" class="btn btn-sm btn-outline-info rounded-circle"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ guide.title|urlencode }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
 
-            <div class="guide-content mb-4">
+            <div class="guide-content mb-5">
                 {{ guide.content|safe }}
             </div>
 
-            <!-- Mid Content Ad -->
             <div class="my-5 text-center p-3 bg-light border rounded">
-                <small class="text-muted d-block mb-2">ADVERTISEMENT</small>
+                <small class="text-muted d-block mb-2" style="font-size: 11px; letter-spacing: 1px;">ADVERTISEMENT</small>
                 <ins class="adsbygoogle"
                      style="display:block"
                      data-ad-client="ca-pub-XXXX"
@@ -51,33 +71,103 @@
                      data-ad-format="auto"></ins>
             </div>
 
+            <div class="card border-0 bg-light p-4 mt-5 rounded-3">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                            {{ guide.author|make_list|first|upper }}
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h5 class="mb-1 fw-bold">About {{ guide.author }}</h5>
+                        <p class="mb-0 text-muted small">Helping international students find global funding and scholarship opportunities to achieve their academic dreams.</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <div class="sticky-top" style="top:90px;">
+        <div class="col-lg-4 mt-5 mt-lg-0">
+            
+            <div class="mb-4">
+                <h4 class="fw-bold mb-3 fs-5 border-bottom pb-2">Related Guides</h4>
+                
+                {% if similar_guides %}
+                    <div class="list-group list-group-flush">
+                        {% for similar in similar_guides %}
+                        <a href="{{ similar.get_absolute_url }}" class="list-group-item list-group-item-action px-0 py-3 border-bottom">
+                            <h6 class="mb-1 fw-semibold text-dark">{{ similar.title }}</h6>
+                            <small class="text-muted"><i class="far fa-clock me-1"></i> {{ similar.created_at|date:"M d, Y" }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small">More guides coming soon.</p>
+                {% endif %}
+            </div>
 
-                <div class="card border-0 shadow-sm p-3 mb-4 text-center" style="height:400px;">
-                    <small class="text-muted">SPONSORED</small>
+            <div class="sticky-top" style="top: 20px; z-index: 1020;">
+                <div class="card border-0 shadow-sm p-3 mb-4 text-center bg-light" style="min-height: 300px;">
+                    <small class="text-muted d-block mb-2" style="font-size: 11px; letter-spacing: 1px;">SPONSORED</small>
                     <ins class="adsbygoogle"
                          style="display:block;height:100%"
                          data-ad-client="ca-pub-XXXX"
                          data-ad-slot="XXXX"></ins>
                 </div>
-
             </div>
+            
         </div>
 
     </div>
 </main>
 
 <style>
-.guide-content h2, .guide-content h3 {
-    margin-top: 2rem;
-    font-weight: 700;
+/* Improved Typography and Spacing */
+.guide-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333;
 }
-.guide-content ul {
-    padding-left: 1.2rem;
+.guide-content h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 1.75rem;
+}
+.guide-content h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 1.4rem;
+}
+.guide-content ul, .guide-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+}
+.guide-content li {
+    margin-bottom: 0.5rem;
+}
+.guide-content p {
+    margin-bottom: 1.5rem;
+}
+.guide-content a {
+    color: #0d6efd;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.social-share a {
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+.social-share a:hover {
+    transform: translateY(-2px);
+}
+.list-group-item-action:hover h6 {
+    color: #0d6efd !important;
 }
 </style>
 {% endblock %}
