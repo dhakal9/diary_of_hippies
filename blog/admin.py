@@ -8,25 +8,28 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Opportunity)
 class OpportunityAdmin(admin.ModelAdmin):
-    # list_display cannot contain 'education_levels' directly. 
-    # Use the custom method 'get_education_levels' instead.
     list_display = ('title', 'opportunity_type', 'get_education_levels', 'deadline', 'is_active')
-    
-    # Updated list_filter to use the new related field
     list_filter = ('opportunity_type', 'is_active', 'education_levels', 'funding_type')
-    
     search_fields = ('title', 'description', 'meta_title')
     prepopulated_fields = {'slug': ('title',)}
-    
-    # This allows you to select multiple levels and countries easily in the admin
     filter_horizontal = ('education_levels', 'target_countries', 'host_countries')
 
-    # Custom method to show education levels in the list view
     def get_education_levels(self, obj):
         return ", ".join([level.name for level in obj.education_levels.all()])
     
     get_education_levels.short_description = 'Education Levels'
-    
+
+@admin.register(EducationLevel)
+class EducationLevelAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+    prepopulated_fields = {"slug": ("name",)}
+
+@admin.register(Country)
+class CountryAdmin(admin.ModelAdmin):
+    # FIXED: Replaced 'slug' with 'code' to match your Model
+    list_display = ('name', 'code')
+    search_fields = ('name', 'code')
+    # Removed prepopulated_fields because Country doesn't have a slug field
 
 @admin.register(Guide)
 class GuideAdmin(admin.ModelAdmin):

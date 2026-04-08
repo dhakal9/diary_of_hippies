@@ -179,46 +179,48 @@ class ScholarshipListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        qs = Opportunity.objects.filter(is_active=True)
+        # 1. Start with active opportunities and optimize DB hits with prefetch_related
+        qs = Opportunity.objects.filter(is_active=True).prefetch_related('education_levels', 'target_countries')
 
+        # 2. Check URL name for hard-coded category filters
+        url_name = self.request.resolver_match.url_name
+        url_map = {
+            "summer_schools": "Other", # Or 'Event' depending on your model choices
+            "internships": "Internship",
+            "conferences": "Event",
+            "exchange_programs": "Other",
+        }
+
+        if url_name in url_map:
+            qs = qs.filter(opportunity_type=url_map[url_name])
+            return qs.order_by("-created_at")
+
+        # 3. Handle normal filtering for /scholarships/
         q = self.request.GET.get("q")
         level = self.request.GET.get("level")
         type_ = self.request.GET.get("type")
 
-        # 🔥 FORCE Categories based on URL
-        if self.request.resolver_match.url_name == "summer_schools":
-            qs = qs.filter(opportunity_type="Summer School")
-            return qs.order_by("-created_at")
-        if self.request.resolver_match.url_name == "internships":
-            qs = qs.filter(opportunity_type="Internship")
-            return qs.order_by("-created_at")
-        if self.request.resolver_match.url_name == "conferences":
-            qs = qs.filter(opportunity_type="Conference")
-            return qs.order_by("-created_at")
-        if self.request.resolver_match.url_name == "exchange_programs":
-            qs = qs.filter(opportunity_type="Exchange Program")
-            return qs.order_by("-created_at")
-
-        # Normal filtering for /scholarships/
         if q:
             qs = qs.filter(
                 Q(title__icontains=q) |
-                Q(target_countries__icontains=q) |
+                # Updated: Search in related country names instead of a text field
+                Q(target_countries__name__icontains=q) | 
                 Q(description__icontains=q)
             )
 
         if level:
-            qs = qs.filter(education_level=level)
+            # Updated: Filter through the ManyToMany relationship
+            qs = qs.filter(education_levels__name__iexact=level)
 
         if type_:
             qs = qs.filter(
                 opportunity_type=type_.replace("-", " ").title()
             )
 
-        return qs.order_by("-created_at")
+        # 4. Use distinct() to avoid duplicate results caused by ManyToMany filters
+        return qs.distinct().order_by("-created_at")
 
     def get_context_data(self, **kwargs):
-        """ Inject dynamic SEO Data based on the current page/filters """
         context = super().get_context_data(**kwargs)
         
         url_name = self.request.resolver_match.url_name
@@ -232,24 +234,16 @@ class ScholarshipListView(ListView):
         h1 = "All Scholarships & Opportunities"
 
         # Dynamic SEO based on URL
-        if url_name == "summer_schools":
-            title = "Fully Funded Summer Schools 2026 | International Students"
-            desc = "Find the best fully funded summer schools and short courses abroad for international students in 2026."
-            h1 = "Summer Schools"
-        elif url_name == "internships":
-            title = "Paid International Internships 2026 | Global Opportunities"
-            desc = "Apply for paid international internships and traineeships abroad for students and graduates."
-            h1 = "International Internships"
-        elif url_name == "conferences":
-            title = "International Conferences & Youth Summits 2026"
-            desc = "Discover fully funded international conferences, youth summits, and forums around the world."
-            h1 = "Conferences & Youth Summits"
-        elif url_name == "exchange_programs":
-            title = "Student Exchange Programs 2026 | Study Abroad"
-            desc = "Explore global student exchange programs and cultural exchange opportunities for 2026."
-            h1 = "Exchange Programs"
+        seo_map = {
+            "summer_schools": ("Fully Funded Summer Schools 2026", "Find best summer schools...", "Summer Schools"),
+            "internships": ("Paid International Internships 2026", "Apply for internships...", "International Internships"),
+            "conferences": ("International Conferences 2026", "Discover conferences...", "Conferences & Youth Summits"),
+            "exchange_programs": ("Student Exchange Programs 2026", "Explore exchange programs...", "Exchange Programs"),
+        }
+
+        if url_name in seo_map:
+            title, desc, h1 = seo_map[url_name]
         
-        # Dynamic SEO based on Search/Filters (Overrides Defaults)
         elif q:
             title = f"Search Results for '{q}' | MastersGrant"
             h1 = f"Search Results for '{q}'"
@@ -259,14 +253,15 @@ class ScholarshipListView(ListView):
             title = f"{level_text} {type_text} 2026 | Fully Funded"
             h1 = f"{level_text} {type_text}".strip()
             
-        context['page_title'] = title
-        context['meta_description'] = desc
-        context['page_h1'] = h1
+        context.update({
+            'page_title': title,
+            'meta_description': desc,
+            'page_h1': h1,
+        })
         
         # Preserve query parameters for pagination
         query_params = self.request.GET.copy()
-        if 'page' in query_params:
-            del query_params['page']
+        query_params.pop('page', None)
         context['query_string'] = query_params.urlencode()
 
         return context

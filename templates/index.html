@@ -31,39 +31,58 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
 
 <section class="container info-cards-section">
     <div class="row g-4 justify-content-center">
+        
+        <!-- Card 1 -->
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card">
-                <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
-                    <i class="fas fa-search-dollar fs-3"></i>
+            <a href="{% url 'scholarship_list' %}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card clickable-card">
+                    <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
+                        <i class="fas fa-search-dollar fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Search & Apply Easily</h5>
+                    <p class="text-muted small mb-0">
+                        Find and apply for scholarships in just a few clicks.
+                    </p>
                 </div>
-                <h5 class="fw-bold text-dark">Search & Apply Easily</h5>
-                <p class="text-muted small mb-0">Find and apply for scholarships in just a few clicks.</p>
-            </div>
+            </a>
         </div>
+
+        <!-- Card 2 -->
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card">
-                <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
-                    <i class="fas fa-user-graduate fs-3"></i>
+            <a href="#" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card clickable-card">
+                    <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
+                        <i class="fas fa-user-graduate fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Expert Guidance</h5>
+                    <p class="text-muted small mb-0">
+                        Get tips and advice from our scholarship experts.
+                    </p>
                 </div>
-                <h5 class="fw-bold text-dark">Expert Guidance</h5>
-                <p class="text-muted small mb-0">Get tips and advice from our scholarship experts.</p>
-            </div>
+            </a>
         </div>
+
+        <!-- Card 3 -->
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card">
-                <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
-                    <i class="fas fa-heart fs-3"></i>
+            <a href="#" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card clickable-card">
+                    <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
+                        <i class="fas fa-heart fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Success Stories</h5>
+                    <p class="text-muted small mb-0">
+                        Read inspiring stories from successful students.
+                    </p>
                 </div>
-                <h5 class="fw-bold text-dark">Success Stories</h5>
-                <p class="text-muted small mb-0">Read inspiring stories from successful students.</p>
-            </div>
+            </a>
         </div>
+
     </div>
 </section>
 
 <section class="container mt-5 pt-4">
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-        <h3 class="fw-bold text-dark mb-0">Featured Scholarships</h3>
+        <h3 class="fw-bold text-dark mb-0">Recently Added</h3>
         <a href="{% url 'scholarship_list' %}" class="text-primary text-decoration-none fw-semibold">View All Scholarships <i class="fas fa-angle-right"></i></a>
     </div>
 
@@ -84,9 +103,9 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
                         <a href="{{ opt.get_absolute_url }}" class="text-dark text-decoration-none">{{ opt.title }}</a>
                     </h5>
                     <p class="small text-muted mb-4 fw-medium">
-                        {{ opt.amount|default:"Fully Funded" }} | 
-                        {{ opt.country|default:"International" }} | 
-                        Deadline: {{ opt.deadline|date:"M d, Y" }}
+                        {{ opt.funding_amount|default:"Fully Funded" }} | 
+                        {% for country in opt.target_countries.all %}{{ country.name }}{% if not forloop.last %}, {% endif %}{% empty %}International{% endfor %} | 
+                        Deadline: {{ opt.deadline|date:"M d, Y"|default:opt.get_deadline_type_display }}
                     </p>
                     <div class="mt-auto text-center">
                         <a href="{{ opt.get_absolute_url }}" class="btn btn-orange w-50 fw-semibold rounded-pill py-2">See Details</a>
@@ -108,19 +127,45 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
     </div>
     
     <div class="d-flex flex-wrap gap-3">
-        <a href="{% url 'scholarship_list' %}?level=Undergraduate" class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-graduation-cap text-primary"></i> Undergraduate
+    
+        <!-- Scholarships -->
+        <a href="{% url 'scholarship_list' %}" 
+        class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-award text-primary"></i> Scholarships
         </a>
-        <a href="{% url 'scholarship_list' %}?level=Graduate" class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-user-tie text-primary"></i> Graduate
+
+        <!-- RA & TA Positions -->
+        <a href="#" 
+        class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-chalkboard-teacher text-info"></i> RA & TA Positions
         </a>
-        <a href="{% url 'scholarship_list' %}?category=STEM" class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-atom text-success"></i> STEM
+
+        <!-- Internship -->
+        <a href="{% url 'internships' %}" 
+        class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-laptop-code text-success"></i> Internship
         </a>
-        <a href="{% url 'scholarship_list' %}?category=Arts" class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-palette text-orange"></i> Arts & Humanities
+
+        <!-- Exchange Programs -->
+        <a href="{% url 'exchange_programs' %}" 
+        class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-exchange-alt text-warning"></i> Exchange Programs
         </a>
-    </div>
+
+        <!-- Summer Schools -->
+        <a href="#" 
+        class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-umbrella-beach text-orange"></i> Summer Schools
+        </a>
+
+        <!-- Conferences -->
+        <a href="#" 
+        class="category-pill text-decoration-none shadow-sm">
+            <i class="fas fa-users text-danger"></i> Conferences
+        </a>
+    </div>    
+
+
 </section>
 
 <section class="container mt-5 pt-4 mb-5">
@@ -129,59 +174,26 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
     </div>
 
     <div class="row g-4">
+        {% for story in success_stories %}
         <div class="col-md-4">
             <div class="card h-100 border-0 shadow-sm rounded-3 p-4 testimonial-card">
                 <div class="d-flex align-items-center mb-3">
-                    <img src="https://i.pravatar.cc/150?img=32" class="rounded-circle border border-2 border-primary-light" width="60" height="60" alt="Student">
+                    <img src="{{ story.image.url }}" class="rounded-circle border border-2 border-primary-light" width="60" height="60" alt="Student">
                     <div class="ms-3">
-                        <h6 class="fw-bold mb-0">Aatish Thapa</h6>
-                        <small class="text-primary fw-semibold">US Scholar</small>
+                        <h6 class="fw-bold mb-0">{{ story.name }}</h6>
+                        <small class="text-primary fw-semibold">{{ story.title }} </small>
                     </div>
                 </div>
                 <div class="position-relative">
                     <i class="fas fa-quote-left text-primary-light opacity-25 position-absolute top-0 start-0 fs-1"></i>
                     <p class="text-muted small mb-0 ps-4 pt-2 italic">
-                        "The detailed requirements here helped me tailor my application. I'm now pursuing my Master's in Civil Engineering at Texas State University!"
+                        {{ story.story|safe }}
                     </p>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 p-4 testimonial-card">
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://i.pravatar.cc/150?img=11" class="rounded-circle border border-2 border-primary-light" width="60" height="60" alt="Student">
-                    <div class="ms-3">
-                        <h6 class="fw-bold mb-0">David Osei</h6>
-                        <small class="text-primary fw-semibold">Chevening Fellow</small>
-                    </div>
-                </div>
-                <div class="position-relative">
-                    <i class="fas fa-quote-left text-primary-light opacity-25 position-absolute top-0 start-0 fs-1"></i>
-                    <p class="text-muted small mb-0 ps-4 pt-2 italic">
-                        "The search filters saved me hundreds of hours. I found a fully-funded fellowship that perfectly aligned with my engineering background."
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 p-4 testimonial-card">
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://i.pravatar.cc/150?img=5" class="rounded-circle border border-2 border-primary-light" width="60" height="60" alt="Student">
-                    <div class="ms-3">
-                        <h6 class="fw-bold mb-0">Elena Rostova</h6>
-                        <small class="text-primary fw-semibold">Erasmus+ Scholar</small>
-                    </div>
-                </div>
-                <div class="position-relative">
-                    <i class="fas fa-quote-left text-primary-light opacity-25 position-absolute top-0 start-0 fs-1"></i>
-                    <p class="text-muted small mb-0 ps-4 pt-2 italic">
-                        "The guidance articles and deadlines listed here helped me organize my application process perfectly. Truly a life-changer!"
-                    </p>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
+        
     </div>
 </section>
 
@@ -295,7 +307,15 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
     .bg-soft-blue {
         background-color: #e6f0ff;
     }
+    .clickable-card {
+        transition: all 0.25s ease;
+        cursor: pointer;
+    }
 
+    .clickable-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+    }
     /* Category Pills */
     .category-pill {
         background: white;
@@ -350,6 +370,7 @@ Find Scholarships & Financial Aid 2026 | MastersGrant
     .border-primary-light {
         border-color: #e6f0ff !important;
     }
+
 </style>
 
 {% endblock %}

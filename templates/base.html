@@ -215,6 +215,7 @@
                         <li><a class="dropdown-item" href="{% url 'summer_schools' %}">Summer Schools</a></li>
                         <li><a class="dropdown-item" href="{% url 'exchange_programs' %}">Exchange Programs</a></li>
                         <li><a class="dropdown-item" href="{% url 'conferences' %}">Conferences</a></li>
+                        <li><a class="dropdown-item" href="#">RA & TA Positions</a></li>
                     </ul>
                 </li>
                 
@@ -247,11 +248,11 @@
 
 <main class="main-wrapper">
     {% if request.path != '/' %}
-    <div class="container mt-4">
+    <!-- <div class="container mt-4">
         <div class="bg-light border border-dashed rounded text-center text-muted py-3 small shadow-sm">
             placeholder for banner ad (728x90) - <a href="{% url 'contact' %}" class="text-decoration-none">Advertise with us</a>
         </div>
-    </div>
+    </div> -->
     {% endif %}
 
     {% block content %}{% endblock %}
