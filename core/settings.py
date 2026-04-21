@@ -112,7 +112,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # Use Hashed storage to bust cache on Cloudinary
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
+WHITENOISE_MAX_AGE = 31536000
+WHITENOISE_MANIFEST_STRICT = False
 
 # Security Settings
 
