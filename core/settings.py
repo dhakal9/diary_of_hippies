@@ -111,7 +111,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # Storage Engines
 # Use Hashed storage to bust cache on Cloudinary
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Security Settings
@@ -163,3 +163,6 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # reCAPTCHA Settings
 RECAPTCHA_SITE_KEY = os.getenv('RECAPTCHA_SITE_KEY')
 RECAPTCHA_SECRET_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
+
+
+WHITENOISE_MAX_AGE = 31536000  # 1 year in seconds

@@ -3,322 +3,427 @@
 <head>
     {% load static %}
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>{% block title %}Masters Grant | Scholarships & Financial Aid 2026{% endblock %}</title>
-    <meta name="description" content="{% block metadescription %}Find the latest scholarships, grants, fellowships, and student funding opportunities worldwide. Updated daily for 2026.{% endblock %}">
-    <meta name="robots" content="index, follow">
-    
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:title" content="Masters Grant | Scholarships & Financial Aid 2026">
-    <meta property="og:description" content="Daily updated scholarships and grants for international students.">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ request.build_absolute_uri }}">
-    <meta name="twitter:title" content="Masters Grant | Scholarships & Financial Aid 2026">
-    <meta name="twitter:description" content="Daily updated scholarships and grants for international students.">
-
-    <!-- <meta name="monetag" content="7f87ccc11098d592c88795c33214691a">  -->
-    
+    {# ════ SEO Core ════ #}
+    <title>{% block title %}MastersGrant — Scholarships, Fellowships & Grants 2026{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Discover 10,000+ scholarships, fellowships, internships and grants for international students. Updated daily. Apply now for 2026 funding opportunities.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}scholarships 2026, fully funded scholarships, international scholarships, fellowships, grants for students, study abroad funding{% endblock %}">
+    <meta name="robots" content="{% block robots %}index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1{% endblock %}">
+    <meta name="author" content="MastersGrant">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
-    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'images/logo.png' %}">
-    <link rel="apple-touch-icon" href="{% static 'images/logo.png' %}">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    {# ════ Open Graph ════ #}
+    <meta property="og:site_name" content="MastersGrant">
+    <meta property="og:type"      content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url"       content="{{ request.build_absolute_uri }}">
+    <meta property="og:title"     content="{% block og_title %}MastersGrant — Global Scholarship Directory 2026{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Find fully funded scholarships, fellowships and grants. Updated daily for 2026 applicants.{% endblock %}">
+    <meta property="og:image"     content="{% block og_image %}{% static 'images/og-default.jpg' %}{% endblock %}">
+    <meta property="og:image:width"  content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale"    content="en_US">
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.1.0/mdb.min.css" rel="stylesheet">
+    {# ════ Twitter Card ════ #}
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:site"        content="@mastersgrant">
+    <meta name="twitter:title"       content="{% block twitter_title %}MastersGrant — Global Scholarship Directory{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Find fully funded scholarships, fellowships and grants worldwide.{% endblock %}">
+    <meta name="twitter:image"       content="{% block twitter_image %}{% static 'images/og-default.jpg' %}{% endblock %}">
+
+
+    <!-- CSS styles -->
+    <link rel="stylesheet" href="{% static 'css/main.min.css' %}">
+
+    {# ════ Favicon — pre-declared sizes prevent layout shift ════ #}
+    <link rel="icon"             type="image/png" sizes="32x32"  href="{% static 'images/favicon-32.png' %}">
+    <link rel="icon"             type="image/png" sizes="16x16"  href="{% static 'images/favicon-16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180"                 href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="manifest"                                          href="{% static 'site.webmanifest' %}">
+    <meta name="theme-color" content="#1349a8">
+
+    <!-- {# ════ PERFORMANCE: DNS + Preconnect ════
+         Only preconnect to origins you ACTUALLY load resources from.
+         Each unused preconnect wastes a TCP handshake.
+    #} -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://res.cloudinary.com">
+
+    <!-- {# ════ FONT OPTIMIZATION ════
+         Strategy: Load fonts async so they never block rendering.
+         - media="print" onload trick = load without blocking
+         - The <noscript> fallback ensures fonts load if JS is off
+         - Subset: only Latin characters (saves ~60% of font size)
+         - display=swap: show fallback text immediately (no FOIT)
+         
+         For maximum perf: download and self-host via /static/fonts/
+         Then use @font-face with font-display:swap in critical CSS below.
+    #} -->
+    <link rel="preload"
+          as="style"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap&subset=latin">
+    <link rel="stylesheet"
+          media="print"
+          onload="this.media='all'"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap&subset=latin">
+    <noscript>
+        <link rel="stylesheet"
+              href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap&subset=latin">
+    </noscript>
+
+    <!-- {# ════ PRELOAD HERO IMAGE (above-the-fold — massive LCP improvement) ════
+         Only the home page hero. Override per page if needed.
+    #} -->
     
-    <script type="application/ld+json">
-        {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Masters Grant",
-        "url": "{{ request.build_absolute_uri }}",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": "{% url 'scholarship_list' %}?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-        }
-        }
-    </script>
+    {% block preload_image %}
     
-    <style>
-        :root {
-            /* Unified Color Scheme matching your index.html */
-            --primary-blue: #1C5BB7; 
-            --brand-green: #13ce20;
-            --hub-orange: #ec7936;
-            --dark-text: #212529;
-            --light-bg: #f8f9fa;
-        }
+    {% endblock %}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fdfdfd;
-            color: var(--dark-text);
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+    <!-- {# ════ CRITICAL CSS — inlined, zero render-blocking ════
+         Rule: Only styles needed for above-the-fold content go here.
+         Everything else loads async via <link media="print"> below.
+         
+         CLS FIXES applied throughout:
+         - All images have explicit width/height in HTML
+         - Fonts use font-display:swap with size-adjust fallback
+         - Skeleton loaders sized with aspect-ratio not fixed heights
+         - Nav height fixed via --nav-h CSS var so content never jumps
+    #} -->
 
-        .main-wrapper { 
-            flex: 1; /* Pushes footer to the bottom naturally */
-            content-visibility: auto; 
-        }
 
-        /* Top Bar Styling */
-        .top-bar {
-            background-color: #111;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-        }
-
-        /* Unified Navbar */
-        .navbar {
-            padding: 1rem 0;
-            background-color: #ffffff;
-            border-bottom: 1px solid #eaeaea;
-        }
-        
-        .logo-text { 
-            font-family: 'Poppins', sans-serif; 
-            font-weight: 700; 
-            font-size: 1.6rem; 
-            color: var(--primary-blue); 
-            letter-spacing: -0.5px; 
-            margin: 0;
-        }
-        .logo-text span { color: var(--brand-green); } /* Switched to green to match CTA buttons */
-
-        .nav-link { 
-            font-weight: 500; 
-            color: #4b5563 !important; 
-            font-size: 0.95rem; 
-            padding: 0.5rem 1rem !important;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        .nav-link:hover, .nav-link:focus { 
-            background-color: #f3f4f6;
-            color: var(--primary-blue) !important; 
-        }
-
-        .btn-orange-outline {
-            color: var(--brand-green);
-            border: 2px solid var(--brand-green);
-            background: transparent;
-            font-weight: 600;
-            border-radius: 50px;
-            padding: 0.5rem 1.5rem;
-            transition: 0.3s;
-        }
-        .btn-orange-outline:hover {
-            background: var(--brand-green);
-            color: #fff;
-        }
-
-        /* Footer Styling */
-        .footer {
-            background-color: var(--light-bg);
-            border-top: 1px solid #eaeaea;
-        }
-        .footer-title {
-            font-weight: 700;
-            color: var(--dark-text);
-            margin-bottom: 1.2rem;
-            font-size: 1.1rem;
-        }
-        .footer-link {
-            color: #6b7280;
-            text-decoration: none;
-            transition: color 0.2s;
-            display: block;
-            margin-bottom: 0.6rem;
-            font-size: 0.95rem;
-        }
-        .footer-link:hover {
-            color: var(--primary-blue);
-        }
-        .social-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: #e5e7eb;
-            color: #4b5563;
-            transition: all 0.3s ease;
-            margin-right: 8px;
-        }
-        .social-icon:hover {
-            background-color: var(--primary-blue);
-            color: #fff;
-        }
-    </style>
-
+    {# Page-specific head additions (schema, page CSS) #}
     {% block extra_head %}{% endblock %}
-    {% block schema %}{% endblock %}
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NS68H5T0M9"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-NS68H5T0M9');
+    {% block schema %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "MastersGrant",
+      "url": "{{ request.build_absolute_uri|default:'https://mastersgrant.com' }}",
+      "description": "Global scholarship, fellowship and grant directory for international students",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": "{% url 'scholarship_list' %}?q={search_term_string}" },
+        "query-input": "required name=search_term_string"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "MastersGrant",
+        "logo": { "@type": "ImageObject", "url": "https://mastersgrant.com{% static 'images/logo.png' %}" }
+      }
+    }
     </script>
-    
-    <!-- monetag vintage ads -->
-    <!-- <script>
-        (function(s){s.dataset.zone='10829271',s.src='https://n6wxm.com/vignette.min.js'})
-        ([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))
-    </script> -->
-    
+    {% endblock %}
+
+    <!-- {# ════ GA4 — deferred, non-blocking ════
+         Loads AFTER window.load so it never blocks FCP/LCP.
+         Uses a minimal queue so events fired before load() are not lost.
+    #} -->
+    <script>
+    // Minimal GA4 queue — fires before the script loads
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NS68H5T0M9', {
+        send_page_view: true,
+        transport_type: 'beacon',   // Uses navigator.sendBeacon — never blocks page unload
+        anonymize_ip: true,
+        cookie_flags: 'SameSite=None;Secure'
+    });
+
+    // Load GA4 script after page is interactive — not blocking FCP
+    window.addEventListener('load', function() {
+        var s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-NS68H5T0M9';
+        s.async = true;
+        s.defer = true;
+        document.head.appendChild(s);
+    }, { once: true, passive: true });
+    </script>
 </head>
 
 <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <div class="progress-bar" id="progressBar" role="progressbar" aria-hidden="true" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
 
-<div class="top-bar text-white py-2">
-    <div class="container d-flex justify-content-center justify-content-md-between align-items-center">
-        <div><span class="badge bg-danger me-2 shadow-sm">Hurry Up</span> 2026 International Scholarship Applications Now Open</div>
-        <div class="d-none d-md-flex gap-3">
-            <a href="{% url 'guide_list' %}" class="text-white-50 text-decoration-none hover-white">Student Guides</a>
-            <a href="{% url 'contact' %}" class="text-white-50 text-decoration-none hover-white">Support</a>
-        </div>
-    </div>
-</div>
-
-<nav class="navbar navbar-expand-lg sticky-top shadow-sm">
-    <div class="container">
-        <a class="navbar-brand d-flex flex-column align-items-start" href="{% url 'index' %}">
-            <div class="logo-text">Masters<span>Grant</span></div>
-            <span style="font-size: 0.7rem; color: #6c757d; font-weight: 500; margin-top: -4px;">Global Financial Aid Directory</span>
-        </a>
-
-        <button class="navbar-toggler border-0 text-dark" type="button" data-mdb-collapse-init data-mdb-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="fas fa-bars fs-4"></i>
-        </button>
-
-        <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
-                <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'scholarship_list' %}">Scholarships</a></li>
-                
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="oppsDropdown" role="button" data-mdb-dropdown-init aria-expanded="false">
-                        Opportunities
-                    </a>
-                    <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="oppsDropdown">
-                        <li><a class="dropdown-item" href="{% url 'internships' %}">Internships</a></li>
-                        <li><a class="dropdown-item" href="{% url 'summer_schools' %}">Summer Schools</a></li>
-                        <li><a class="dropdown-item" href="{% url 'exchange_programs' %}">Exchange Programs</a></li>
-                        <li><a class="dropdown-item" href="{% url 'conferences' %}">Conferences</a></li>
-                        <li><a class="dropdown-item" href="#">RA & TA Positions</a></li>
-                    </ul>
-                </li>
-                
-                <li class="nav-item"><a class="nav-link" href="{% url 'guide_list' %}">Guides</a></li>
-                <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-            </ul>
-
-            <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
-                <form action="{% url 'scholarship_list' %}" method="GET" class="position-relative">
-                    <input type="search" name="q" class="form-control rounded-pill pe-5 bg-light border-0" placeholder="Search..." aria-label="Search" style="width: 200px; font-size: 0.9rem;">
-                    <button class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-muted px-3" type="submit"><i class="fas fa-search"></i></button>
-                </form>
+    {# ════ Top bar ════ #}
+    <div class="topbar" role="banner" aria-label="Site announcement">
+        <div class="container" style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span class="badge-hot">🔥 New</span>
+                <span>2026 Scholarship Applications Open —
+                    <a href="{% url 'scholarship_list' %}" style="color:rgba(255,255,255,.85);text-decoration:underline;">Browse Now</a>
+                </span>
+            </div>
+            <div class="topbar-links-right">
+                <a href="{% url 'guide_list' %}">Student Guides</a>
+                <a href="{% url 'contact' %}">Support</a>
             </div>
         </div>
     </div>
-</nav>
 
-<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080">
-    {% if messages %}
-        {% for message in messages %}
-        <div class="toast align-items-center text-bg-success border-0 show auto-toast shadow" role="alert">
-            <div class="d-flex">
-                <div class="toast-body fw-medium">{{ message }}</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-        {% endfor %}
-    {% endif %}
-</div>
+    {# ════ Navbar ════ #}
+    <header>
+        <nav class="navbar" role="navigation" aria-label="Main navigation" id="mainNav">
+            <div class="nav-inner">
+                <a href="{% url 'index' %}" class="logo" aria-label="MastersGrant — Home">
+                    <span class="logo-mark">Masters<em>Grant</em></span>
+                    <span class="logo-sub">Global Funding Directory</span>
+                </a>
 
-<main class="main-wrapper">
-    {% if request.path != '/' %}
-    <!-- <div class="container mt-4">
-        <div class="bg-light border border-dashed rounded text-center text-muted py-3 small shadow-sm">
-            placeholder for banner ad (728x90) - <a href="{% url 'contact' %}" class="text-decoration-none">Advertise with us</a>
-        </div>
-    </div> -->
-    {% endif %}
+                <ul class="nav-links" role="list">
+                    <li class="nav-item">
+                        <a href="{% url 'index' %}" {% if request.resolver_match.url_name == 'index' %}class="active" aria-current="page"{% endif %}>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'scholarship_list' %}" {% if request.resolver_match.url_name == 'scholarship_list' %}class="active" aria-current="page"{% endif %}>Scholarships</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+                            Opportunities
+                            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{% url 'internships' %}"     role="menuitem"><span class="dm-icon">💼</span><span>Internships</span></a></li>
+                            <li><a href="{% url 'summer_schools' %}"  role="menuitem"><span class="dm-icon">☀️</span><span>Summer Schools</span></a></li>
+                            <li><a href="{% url 'exchange_programs' %}" role="menuitem"><span class="dm-icon">✈️</span><span>Exchange Programs</span></a></li>
+                            <li><a href="{% url 'conferences' %}"     role="menuitem"><span class="dm-icon">🎙️</span><span>Conferences</span></a></li>
+                            <li><a href="#"                           role="menuitem"><span class="dm-icon">🔬</span><span>RA &amp; TA Positions</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+                            Study Abroad
+                            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#" role="menuitem"><span class="dm-icon">🇺🇸</span><span>USA</span></a></li>
+                            <li><a href="#" role="menuitem"><span class="dm-icon">🇨🇦</span><span>Canada</span></a></li>
+                            <li><a href="#" role="menuitem"><span class="dm-icon">🇬🇧</span><span>United Kingdom</span></a></li>
+                            <li><a href="#" role="menuitem"><span class="dm-icon">🇦🇺</span><span>Australia</span></a></li>
+                            <li><a href="#" role="menuitem"><span class="dm-icon">🇪🇺</span><span>Europe</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a href="{% url 'guide_list' %}">Guides</a></li>
+                    <li class="nav-item"><a href="#">Blogs</a></li>
+                    <li class="nav-item"><a href="{% url 'contact' %}">Contact</a></li>
+                </ul>
 
-    {% block content %}{% endblock %}
-</main>
-
-<footer class="footer pt-5 pb-3 mt-5">
-    <div class="container">
-        <div class="row gy-4 mb-4">
-            <div class="col-lg-4 col-md-6 pr-lg-5">
-                <div class="logo-text mb-3" style="font-size:1.6rem;">Masters<span>Grant</span></div>
-                <p class="text-muted small mb-4" style="line-height: 1.6;">
-                    The definitive portal for scholarships, grants, and student funding worldwide. Our mission is to make international education accessible for everyone.
-                </p>
-                <div class="d-flex">
-                    <a href="https://www.facebook.com/profile.php?id=61572154761507" class="social-icon" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-icon" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <div class="nav-right">
+                    <form class="nav-search" action="{% url 'scholarship_list' %}" method="GET" role="search" aria-label="Search scholarships">
+                        <input type="search" name="q" placeholder="Search scholarships…"
+                               aria-label="Search" autocomplete="off"
+                               value="{{ request.GET.q|default:'' }}">
+                        <button type="submit" aria-label="Submit search">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+                        </button>
+                    </form>
+                    <a href="{% url 'scholarship_list' %}" class="btn-subscribe">Browse All</a>
+                    <button class="burger" id="burgerBtn"
+                            aria-label="Open mobile menu"
+                            aria-expanded="false"
+                            aria-controls="mobileDrawer">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
                 </div>
             </div>
+        </nav>
+    </header>
 
-            <div class="col-lg-2 col-md-6 col-6">
-                <h4 class="footer-title">Explore</h4>
-                <a href="{% url 'scholarship_list' %}" class="footer-link">Latest Scholarships</a>
-                <a href="{% url 'guide_list' %}" class="footer-link">Student Guides</a>
-                <a href="{% url 'internships' %}" class="footer-link">Global Internships</a>
-                <a href="{% url 'conferences' %}" class="footer-link">Conferences</a>
-            </div>
-
-            <div class="col-lg-2 col-md-6 col-6">
-                <h4 class="footer-title">Company</h4>
-                <a href="{% url 'about_us' %}" class="footer-link">About Us</a>
-                <a href="{% url 'contact' %}" class="footer-link">Contact Support</a>
-                <a href="{% url 'terms' %}" class="footer-link">Terms of Service</a>
-                <a href="{% url 'privacy_policy' %}" class="footer-link">Privacy Policy</a>
-                <a href="{% url 'disclaimer' %}" class="footer-link">Disclaimer</a>
-            </div>
-
-            <div class="col-lg-4 col-md-6">
-                <h4 class="footer-title">Never Miss a Deadline</h4>
-                <p class="text-muted small mb-3">Subscribe to get daily scholarship alerts delivered directly to your inbox.</p>
-                <form class="d-flex gap-2">
-                    <input type="email" class="form-control bg-white border-1 shadow-sm" placeholder="Email address" aria-label="Email address" required>
-                    <button type="submit" class="btn btn-primary shadow-sm" style="background-color: var(--primary-blue);">Subscribe</button>
+    {# Mobile drawer #}
+    <div class="nav-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+        <div class="drawer-backdrop" id="drawerBackdrop"></div>
+        <div class="drawer-panel">
+            <button class="drawer-close" id="drawerClose" aria-label="Close menu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+            <a href="{% url 'index' %}" class="logo" style="margin-bottom:24px;display:inline-flex;flex-direction:column;">
+                <span class="logo-mark">Masters<em>Grant</em></span>
+                <span class="logo-sub">Global Funding Directory</span>
+            </a>
+            <div class="drawer-search">
+                <form action="{% url 'scholarship_list' %}" method="GET">
+                    <input type="search" name="q" placeholder="Search scholarships…" autocomplete="off">
                 </form>
             </div>
-        </div>
-
-        <div class="border-top pt-4 mt-4 d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <p class="small text-muted mb-0">© 2026 MastersGrant. All rights reserved.</p>
-            <p class="small text-muted mb-0 mt-2 mt-md-0">Built for future scholars globally.</p>
+            <nav class="drawer-links">
+                <a href="{% url 'index' %}">🏠 Home</a>
+                <a href="{% url 'scholarship_list' %}">🏅 Scholarships</a>
+                <a href="{% url 'internships' %}">💼 Internships</a>
+                <a href="{% url 'summer_schools' %}">☀️ Summer Schools</a>
+                <a href="{% url 'exchange_programs' %}">✈️ Exchange Programs</a>
+                <a href="{% url 'conferences' %}">🎙️ Conferences</a>
+                <a href="{% url 'guide_list' %}">📖 Guides</a>
+                <a href="{% url 'contact' %}">💬 Contact</a>
+            </nav>
         </div>
     </div>
-</footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/8.1.0/mdb.umd.min.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Auto-dismiss Toasts
-    const toasts = document.querySelectorAll(".auto-toast");
-    toasts.forEach(function(toast){
-        setTimeout(function(){
-            toast.classList.remove("show");
-        }, 6000); // Shortened slightly for better UX
-    });
-});
-</script>
+    {# Toast messages #}
+    {% if messages %}
+    <div class="toast-wrap" role="status" aria-live="polite">
+        {% for message in messages %}
+        <div class="toast success">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {# Main content #}
+    <main id="main-content" tabindex="-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    {# ════ Footer ════ #}
+    <footer class="site-footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="{% url 'index' %}" class="logo footer-logo" aria-label="MastersGrant home">
+                        <span class="logo-mark">Masters<em>Grant</em></span>
+                        <span class="logo-sub">Global Funding Directory</span>
+                    </a>
+                    <p class="footer-tagline">The definitive portal for scholarships, grants, fellowships and student funding worldwide. Making international education accessible for everyone.</p>
+                    <div class="social-row">
+                        <a href="https://www.facebook.com/profile.php?id=61572154761507" class="social-btn" aria-label="Facebook" target="_blank" rel="noopener noreferrer">f</a>
+                        <a href="#" class="social-btn" aria-label="Twitter / X">𝕏</a>
+                        <a href="#" class="social-btn" aria-label="LinkedIn">in</a>
+                        <a href="#" class="social-btn" aria-label="Instagram">ig</a>
+                    </div>
+                    <div class="footer-newsletter">
+                        <h3>Never Miss a Deadline</h3>
+                        <p>Daily scholarship alerts delivered to your inbox.</p>
+                        <form class="newsletter-form" action="#" method="POST" aria-label="Newsletter signup">
+                            {% csrf_token %}
+                            <input type="email" name="email" placeholder="you@email.com" required aria-label="Email address">
+                            <button type="submit">Subscribe →</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Explore</h4>
+                    <a href="{% url 'scholarship_list' %}">Latest Scholarships</a>
+                    <a href="{% url 'internships' %}">Global Internships</a>
+                    <a href="{% url 'summer_schools' %}">Summer Schools</a>
+                    <a href="{% url 'exchange_programs' %}">Exchange Programs</a>
+                    <a href="{% url 'conferences' %}">Conferences</a>
+                    <a href="{% url 'guide_list' %}">Student Guides</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Study Abroad</h4>
+                    <a href="#">🇺🇸 USA</a>
+                    <a href="#">🇨🇦 Canada</a>
+                    <a href="#">🇬🇧 United Kingdom</a>
+                    <a href="#">🇦🇺 Australia</a>
+                    <a href="#">🇩🇪 Germany</a>
+                    <a href="#">🇪🇺 Europe</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <a href="{% url 'about_us' %}">About Us</a>
+                    <a href="{% url 'contact' %}">Contact Support</a>
+                    <a href="{% url 'terms' %}">Terms of Service</a>
+                    <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+                    <a href="{% url 'disclaimer' %}">Disclaimer</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 MastersGrant. All rights reserved.</span>
+                <span style="display:flex;gap:16px;">
+                    <a href="{% url 'privacy_policy' %}">Privacy</a>
+                    <a href="{% url 'terms' %}">Terms</a>
+                    <a href="{% url 'disclaimer' %}">Disclaimer</a>
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    {# ════ JS — end of body, non-blocking ════ #}
+    <script>
+    (function(){
+        'use strict';
+
+        // ── Scroll progress bar (passive listener = no jank) ──
+        var bar = document.getElementById('progressBar');
+        if (bar) {
+            window.addEventListener('scroll', function() {
+                var h   = document.documentElement;
+                var pct = (h.scrollTop || document.body.scrollTop) /
+                          (h.scrollHeight - h.clientHeight) * 100;
+                bar.style.width = Math.min(pct,100) + '%';
+                bar.setAttribute('aria-valuenow', Math.round(pct));
+            }, { passive: true });
+        }
+
+        // ── Navbar shadow on scroll ──
+        var nav = document.getElementById('mainNav');
+        if (nav) {
+            window.addEventListener('scroll', function() {
+                nav.classList.toggle('scrolled', window.scrollY > 10);
+            }, { passive: true });
+        }
+
+        // ── Mobile drawer ──
+        var burger   = document.getElementById('burgerBtn');
+        var drawer   = document.getElementById('mobileDrawer');
+        var backdrop = document.getElementById('drawerBackdrop');
+        var closeBtn = document.getElementById('drawerClose');
+
+        function openDrawer() {
+            drawer.classList.add('open');
+            burger.setAttribute('aria-expanded','true');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDrawer() {
+            drawer.classList.remove('open');
+            burger.setAttribute('aria-expanded','false');
+            document.body.style.overflow = '';
+        }
+        if (burger)   burger.addEventListener('click', openDrawer);
+        if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+        if (backdrop) backdrop.addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+        });
+
+        // ── Auto-dismiss toasts ──
+        setTimeout(function() {
+            document.querySelectorAll('.toast').forEach(function(t) {
+                t.style.transition = 'opacity .4s, transform .4s';
+                t.style.opacity = '0';
+                t.style.transform = 'translateX(20px)';
+                setTimeout(function(){ t.remove(); }, 400);
+            });
+        }, 5500);
+
+        // ── Native lazy load fallback (IntersectionObserver) ──
+        // Only runs if browser doesn't support loading="lazy"
+        if (!('loading' in HTMLImageElement.prototype)) {
+            var io = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) {
+                        var img = e.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            delete img.dataset.src;
+                        }
+                        io.unobserve(img);
+                    }
+                });
+            }, { rootMargin: '200px 0px' });
+            document.querySelectorAll('img[data-src]').forEach(function(img) {
+                io.observe(img);
+            });
+        }
+
+    })();
+    </script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

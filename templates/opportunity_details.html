@@ -74,12 +74,24 @@
                     <div class="col-md-4 border-end border-light text-center p-4">
                         <i class="fas fa-hand-holding-usd fa-2x text-primary mb-2"></i>
                         <h6 class="text-muted small text-uppercase fw-bold">Funding</h6>
-                        <p class="mb-0 fw-bold text-dark">{{ opportunity.amount }}</p>
+                        <p class="mb-0 fw-bold text-dark">
+                            {% if opportunity.provides_stipend %}
+                                Stipend Amount: {{ opportunity.stipend_amount }}
+                            {% else %}
+                                Funding Amount: {{ opportunity.funding_amount }}
+                            {% endif %}
+                        </p>
                     </div>
                     <div class="col-md-4 border-end border-light text-center p-4">
                         <i class="fas fa-user-graduate fa-2x text-success mb-2"></i>
                         <h6 class="text-muted small text-uppercase fw-bold">Degree Level</h6>
-                        <p class="mb-0 fw-bold text-dark">{{ opportunity.education_level }}</p>
+                        <p class="mb-0 fw-bold text-dark">
+                            {% for level in opportunity.education_levels.all %}
+                                <span>{{ level.name }}</span>{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                No education levels specified.
+                            {% endfor %} 
+                        </p>
                     </div>
                     <div class="col-md-4 text-center p-4">
                         <i class="fas fa-clock fa-2x text-danger mb-2"></i>

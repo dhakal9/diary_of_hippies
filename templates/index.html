@@ -1,376 +1,591 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-Find Scholarships & Financial Aid 2026 | MastersGrant
+{% block title %}MastersGrant — Find Scholarships, Fellowships & Grants 2026{% endblock %}
+{% block meta_description %}Discover 10,000+ fully funded scholarships, fellowships, internships and grants for international students. Updated daily. Search by country, level and deadline.{% endblock %}
+{% block meta_keywords %}fully funded scholarships 2026, international scholarships, masters scholarships, phd funding, fellowship opportunities, study abroad grants{% endblock %}
+
+{% block og_title %}MastersGrant — Global Scholarship Directory 2026{% endblock %}
+{% block og_description %}Find fully funded scholarships, fellowships and grants for international students. 10,000+ opportunities updated daily.{% endblock %}
+
+{% block schema %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Latest Scholarships 2026",
+  "description": "Recently added scholarships, fellowships and grants on MastersGrant",
+  "numberOfItems": {{ latest_opportunities|length }},
+  "itemListElement": [
+    {% for opt in latest_opportunities|slice:":6" %}
+    {
+      "@type": "ListItem",
+      "position": {{ forloop.counter }},
+      "item": {
+        "@type": "EducationalOccupationalProgram",
+        "name": "{{ opt.title|escapejs }}",
+        "url": "{{ request.scheme }}://{{ request.get_host }}{{ opt.get_absolute_url }}",
+        "offers": {
+          "@type": "Offer",
+          "description": "{{ opt.funding_type|default:'Funding available'|escapejs }}"
+        }
+      }
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block extra_head %}
+ <link rel="stylesheet" href="{% static 'css/index.css' %}" media="print" onload="this.media='all'">
+<style>
+/* ══════════════════════════════════════════════════
+   INDEX PAGE — Additional Styles
+══════════════════════════════════════════════════ */
+
+/* ── Hero ── */
+.hero {
+    background: linear-gradient(140deg, #0c2d6b 0%, #1349a8 45%, #1a5fc8 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0 140px;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 700px 500px at 80% 20%, rgba(100,180,255,.12) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 400px at 10% 90%, rgba(14,167,110,.1) 0%, transparent 65%);
+    pointer-events: none;
+}
+/* Decorative grid pattern */
+.hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+}
+.hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: .8rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.9);
+    letter-spacing: .4px;
+    margin-bottom: 22px;
+    backdrop-filter: blur(8px);
+}
+.hero-eyebrow .dot {
+    width: 7px; height: 7px;
+    background: #0ea76e;
+    border-radius: 50%;
+    animation: pulse-dot 1.8s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+    0%,100% { transform: scale(1); opacity:1; }
+    50% { transform: scale(1.4); opacity:.7; }
+}
+.hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.08;
+    margin-bottom: 20px;
+    letter-spacing: -.5px;
+}
+.hero h1 .highlight {
+    background: linear-gradient(135deg, #60d4a0 0%, #a3e0c5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.hero-sub {
+    font-size: 1.08rem;
+    color: rgba(255,255,255,.72);
+    line-height: 1.7;
+    margin-bottom: 36px;
+    max-width: 460px;
+}
+.hero-stats {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 38px;
+}
+.hero-stat {
+    text-align: center;
+}
+.hero-stat strong {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+}
+.hero-stat span {
+    font-size: .75rem;
+    color: rgba(255,255,255,.55);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+/* Search bar */
+.hero-search {
+    background: #fff;
+    border-radius: 16px;
+    padding: 8px 8px 8px 20px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+    max-width: 540px;
+}
+.hero-search input {
+    flex: 1;
+    font-family: var(--font-sans);
+    font-size: .95rem;
+    color: var(--ink);
+    border: none;
+    outline: none;
+    background: transparent;
+    min-width: 0;
+}
+.hero-search input::placeholder { color: var(--ink-3); }
+.hero-search-btn {
+    font-family: var(--font-sans);
+    font-size: .9rem;
+    font-weight: 700;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    white-space: nowrap;
+    transition: background .2s, transform .15s;
+    flex-shrink: 0;
+}
+.hero-search-btn:hover { background: #d45a20; transform: translateY(-1px); }
+
+/* Quick filter tags */
+.quick-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+.quick-tag {
+    font-size: .78rem;
+    font-weight: 600;
+    color: rgba(255,255,255,.7);
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 50px;
+    padding: 5px 12px;
+    transition: background .2s, color .2s;
+    backdrop-filter: blur(4px);
+}
+.quick-tag:hover { background: rgba(255,255,255,.2); color: #fff; }
+
+/* Hero right: image + floating cards */
+.hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.hero-img {
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.35);
+}
+
+</style>
 {% endblock %}
 
 {% block content %}
 
-<section class="hero-section position-relative pt-5 pb-5">
-    <div class="container position-relative z-1 pt-4 pb-5">
-        <div class="row align-items-center">
-            
-            <div class="col-lg-7 text-white pb-5">
-                <h1 class="display-4 fw-bold mb-3">Find Your Perfect Scholarship</h1>
-                <p class="fs-5 mb-4 text-white-50">Discover funding opportunities to support your education.</p>
-                
-                <form action="{% url 'scholarship_list' %}" method="GET" class="search-box bg-white p-2 rounded-3 shadow-sm d-flex flex-column flex-md-row gap-2">
-                    <input type="text" name="q" class="form-control border-0 shadow-none" placeholder="Search scholarships...">
-                    <button type="submit" class="btn btn-orange px-4 fw-bold">Search</button>
+<!-- ══ HERO ══ -->
+<section class="hero" aria-labelledby="hero-heading">
+    <div class="container">
+        <div class="hero-inner">
+            <!-- Left: text + search -->
+            <div>
+                <div class="hero-eyebrow">
+                    <span class="dot"></span>
+                    Updated Daily — 2026 Applications Open
+                </div>
+                <h1 id="hero-heading">
+                    Find Your<br>
+                    <span class="highlight">Perfect Scholarship</span>
+                </h1>
+                <p class="hero-sub">
+                    Discover fully funded scholarships, fellowships, internships and grants from world-leading universities and organisations. One search, thousands of opportunities.
+                </p>
+
+                <div class="hero-stats" aria-label="Platform statistics">
+                    <div class="hero-stat">
+                        <strong>10K+</strong>
+                        <span>Opportunities</span>
+                    </div>
+                    <div class="hero-stat">
+                        <strong>180+</strong>
+                        <span>Countries</span>
+                    </div>
+                    <div class="hero-stat">
+                        <strong>Daily</strong>
+                        <span>Updates</span>
+                    </div>
+                </div>
+
+                <form class="hero-search" action="{% url 'scholarship_list' %}" method="GET" role="search" aria-label="Search scholarships">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" aria-hidden="true" style="flex-shrink:0"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input type="search" name="q" placeholder="Search scholarships, fellowships, grants…" aria-label="Search query" autocomplete="off">
+                    <button type="submit" class="hero-search-btn">Search →</button>
                 </form>
+
+                <div class="quick-tags" aria-label="Popular searches">
+                    <span style="font-size:.75rem; color:rgba(255,255,255,.5); font-weight:500; display:flex; align-items:center;">Popular:</span>
+                    <a href="{% url 'scholarship_list' %}?q=fully+funded" class="quick-tag">Fully Funded</a>
+                    <a href="{% url 'scholarship_list' %}?q=masters" class="quick-tag">Masters</a>
+                    <a href="{% url 'scholarship_list' %}?q=phd" class="quick-tag">PhD</a>
+                    <a href="{% url 'scholarship_list' %}?q=chevening" class="quick-tag">Chevening</a>
+                    <a href="{% url 'scholarship_list' %}?q=fulbright" class="quick-tag">Fulbright</a>
+                    <a href="{% url 'scholarship_list' %}?q=erasmus" class="quick-tag">Erasmus</a>
+                </div>
             </div>
 
-            <div class="col-lg-5 d-none d-lg-block position-relative hero-img-col">
-                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Student" class="img-fluid rounded-4 shadow-lg object-fit-cover" style="height: 400px; width: 100%;">
+            <!-- Right: visual -->
+            <div class="hero-visual" aria-hidden="true">
+                <img
+                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&q=80"
+                    alt="Students studying"
+                    class="hero-img"
+                    width="420" height="315"
+                    loading="lazy"
+                    fetchpriority="high"
+                >
+                <div class="float-card fc-1">
+                    <div class="fc-icon">🎓</div>
+                    <div>
+                        <span>New Opportunity</span>
+                        <small>Every day new Updates</small>
+                    </div>
+                </div>
+                <div class="float-card fc-2">
+                    <div class="fc-icon">✅</div>
+                    <div>
+                        <span>Application Guide</span>
+                        <small>Guide from Proven Experts</small>
+                    </div>
+                </div>
             </div>
-
         </div>
     </div>
 </section>
 
-<section class="container info-cards-section">
-    <div class="row g-4 justify-content-center">
-        
-        <!-- Card 1 -->
-        <div class="col-md-4">
-            <a href="{% url 'scholarship_list' %}" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card clickable-card">
-                    <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
-                        <i class="fas fa-search-dollar fs-3"></i>
-                    </div>
-                    <h5 class="fw-bold text-dark">Search & Apply Easily</h5>
-                    <p class="text-muted small mb-0">
-                        Find and apply for scholarships in just a few clicks.
-                    </p>
-                </div>
-            </a>
+<!-- ══ STATS STRIP ══ -->
+<div class="stats-strip" aria-label="Platform statistics">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <strong class="stat-num">10,000+</strong>
+                <span class="stat-label">Active Opportunities</span>
+            </div>
+            <div class="stat-item">
+                <strong class="stat-num">180+</strong>
+                <span class="stat-label">Countries Covered</span>
+            </div>
+            <div class="stat-item">
+                <strong class="stat-num">Daily</strong>
+                <span class="stat-label">Content Updates</span>
+            </div>
+            <div class="stat-item">
+                <strong class="stat-num">Free</strong>
+                <span class="stat-label">Always Free to Use</span>
+            </div>
         </div>
+    </div>
+</div>
 
-        <!-- Card 2 -->
-        <div class="col-md-4">
-            <a href="#" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card clickable-card">
-                    <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
-                        <i class="fas fa-user-graduate fs-3"></i>
-                    </div>
-                    <h5 class="fw-bold text-dark">Expert Guidance</h5>
-                    <p class="text-muted small mb-0">
-                        Get tips and advice from our scholarship experts.
-                    </p>
-                </div>
-            </a>
+<!-- ══ HOW IT WORKS ══ -->
+<section class="section" aria-labelledby="how-heading">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title" id="how-heading">Why <span class="accent">MastersGrant?</span></h2>
         </div>
-
-        <!-- Card 3 -->
-        <div class="col-md-4">
-            <a href="#" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm p-4 text-center rounded-3 info-card clickable-card">
-                    <div class="icon-wrapper mb-3 mx-auto bg-soft-blue text-primary">
-                        <i class="fas fa-heart fs-3"></i>
-                    </div>
-                    <h5 class="fw-bold text-dark">Success Stories</h5>
-                    <p class="text-muted small mb-0">
-                        Read inspiring stories from successful students.
-                    </p>
-                </div>
-            </a>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon fi-blue">🔍</div>
+                <h3>Search & Filter Instantly</h3>
+                <p>Filter 10,000+ opportunities by country, funding type, education level and deadline. Find exactly what fits your profile in seconds.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-green">📅</div>
+                <h3>Never Miss a Deadline</h3>
+                <p>Every opportunity is tagged with a verified deadline. Subscribe to our newsletter for daily alerts on scholarships closing soon.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon fi-orange">📖</div>
+                <h3>Expert Application Guides</h3>
+                <p>From writing winning essays to acing scholarship interviews — our guides have helped thousands of students secure life-changing funding.</p>
+            </div>
         </div>
-
     </div>
 </section>
 
-<section class="container mt-5 pt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-        <h3 class="fw-bold text-dark mb-0">Recently Added</h3>
-        <a href="{% url 'scholarship_list' %}" class="text-primary text-decoration-none fw-semibold">View All Scholarships <i class="fas fa-angle-right"></i></a>
-    </div>
+<!-- ══ RECENTLY ADDED ══ -->
+<section class="section" style="padding-top:0;" aria-labelledby="recent-heading">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title" id="recent-heading">Recently <span class="accent">Added</span></h2>
+            <a href="{% url 'scholarship_list' %}" class="section-link" aria-label="View all scholarships">View all →</a>
+        </div>
 
-    <div class="row g-4">
-        {% for opt in latest_opportunities|slice:":3" %}
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm scholarship-card rounded-3 overflow-hidden">
-                <div class="img-container bg-light" style="height: 200px;">
+        <div class="opp-grid" role="list">
+            {% for opt in latest_opportunities|slice:":6" %}
+            <article class="opp-card" role="listitem" itemscope itemtype="https://schema.org/EducationalOccupationalProgram">
+                <div class="opp-thumb">
                     {% if opt.image %}
-                        <img src="{{ opt.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ opt.title }}">
+                        <img
+                            src="{{ opt.image.url }}"
+                            alt="{{ opt.title }}"
+                            width="400" height="225"
+                            loading="lazy"
+                            itemprop="image"
+                        >
                     {% else %}
-                        <img src="https://images.unsplash.com/photo-1513258496099-48168024aec0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" class="w-100 h-100 object-fit-cover" alt="Scholarship">
+                        <img
+                            src="https://images.unsplash.com/photo-1513258496099-48168024aec0?w=400&q=60"
+                            alt="Scholarship opportunity"
+                            width="400" height="225"
+                            loading="lazy"
+                        >
+                    {% endif %}
+                    <span class="opp-funding-badge">{{ opt.funding_type|default:"Funded" }}</span>
+                    {% if opt.deadline %}
+                    <span class="opp-deadline-badge">⏰ {{ opt.deadline|date:"M d" }}</span>
                     {% endif %}
                 </div>
-                
-                <div class="card-body d-flex flex-column p-4">
-                    <h5 class="fw-bold mb-3">
-                        <a href="{{ opt.get_absolute_url }}" class="text-dark text-decoration-none">{{ opt.title }}</a>
-                    </h5>
-                    <p class="small text-muted mb-4 fw-medium">
-                        {{ opt.funding_amount|default:"Fully Funded" }} | 
-                        {% for country in opt.target_countries.all %}{{ country.name }}{% if not forloop.last %}, {% endif %}{% empty %}International{% endfor %} | 
-                        Deadline: {{ opt.deadline|date:"M d, Y"|default:opt.get_deadline_type_display }}
-                    </p>
-                    <div class="mt-auto text-center">
-                        <a href="{{ opt.get_absolute_url }}" class="btn btn-orange w-50 fw-semibold rounded-pill py-2">See Details</a>
+                <div class="opp-body">
+                    <span class="opp-category" itemprop="educationalProgramMode">{{ opt.category.name }}</span>
+                    <h3 class="opp-title" itemprop="name">
+                        <a href="{{ opt.get_absolute_url }}" itemprop="url">{{ opt.title }}</a>
+                    </h3>
+                    <div class="opp-meta">
+                        {% if opt.funding_amount %}
+                        <span class="opp-tag">💰 {{ opt.funding_amount|truncatechars:22 }}</span>
+                        {% endif %}
+                        {% with opt.target_countries.all as countries %}
+                        {% if countries %}
+                        <span class="opp-tag">🌍 {% for c in countries|slice:":2" %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if countries|length > 2 %} +{{ countries|length|add:"-2" }}{% endif %}</span>
+                        {% else %}
+                        <span class="opp-tag">🌍 International</span>
+                        {% endif %}
+                        {% endwith %}
+                        {% if opt.opportunity_type %}
+                        <span class="opp-tag">🎓 {{ opt.opportunity_type }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="opp-action">
+                        <a href="{{ opt.get_absolute_url }}" class="opp-link" aria-label="View details for {{ opt.title }}">
+                            View Details →
+                        </a>
+                        <span class="opp-deadline-text">
+                            {% if opt.deadline %}Deadline: {{ opt.deadline|date:"M d, Y" }}{% else %}{{ opt.get_deadline_type_display }}{% endif %}
+                        </span>
                     </div>
                 </div>
+            </article>
+            {% empty %}
+            <div class="empty-state">
+                <p>No new opportunities in this category today.</p>
+                <a href="{% url 'scholarship_list' %}" class="btn">View All 10,000+ Scholarships</a>
             </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="col-12 text-center text-muted">
-            <p>No featured scholarships available right now.</p>
+
+        {% if latest_opportunities|length > 3 %}
+        <div style="text-align:center; margin-top:40px;">
+            <a href="{% url 'scholarship_list' %}" class="btn btn-outline">Browse All Opportunities →</a>
         </div>
-        {% endfor %}
+        {% endif %}
     </div>
 </section>
 
-<section class="container mt-5 pt-4">
-    <div class="border-bottom pb-2 mb-4">
-        <h3 class="fw-bold text-dark mb-0">Browse by Category</h3>
-    </div>
-    
-    <div class="d-flex flex-wrap gap-3">
-    
-        <!-- Scholarships -->
-        <a href="{% url 'scholarship_list' %}" 
-        class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-award text-primary"></i> Scholarships
-        </a>
-
-        <!-- RA & TA Positions -->
-        <a href="#" 
-        class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-chalkboard-teacher text-info"></i> RA & TA Positions
-        </a>
-
-        <!-- Internship -->
-        <a href="{% url 'internships' %}" 
-        class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-laptop-code text-success"></i> Internship
-        </a>
-
-        <!-- Exchange Programs -->
-        <a href="{% url 'exchange_programs' %}" 
-        class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-exchange-alt text-warning"></i> Exchange Programs
-        </a>
-
-        <!-- Summer Schools -->
-        <a href="#" 
-        class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-umbrella-beach text-orange"></i> Summer Schools
-        </a>
-
-        <!-- Conferences -->
-        <a href="#" 
-        class="category-pill text-decoration-none shadow-sm">
-            <i class="fas fa-users text-danger"></i> Conferences
-        </a>
-    </div>    
-
-
-</section>
-
-<section class="container mt-5 pt-4 mb-5">
-    <div class="border-bottom pb-2 mb-4">
-        <h3 class="fw-bold text-dark mb-0">Success Stories</h3>
-    </div>
-
-    <div class="row g-4">
-        {% for story in success_stories %}
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 p-4 testimonial-card">
-                <div class="d-flex align-items-center mb-3">
-                    <img src="{{ story.image.url }}" class="rounded-circle border border-2 border-primary-light" width="60" height="60" alt="Student">
-                    <div class="ms-3">
-                        <h6 class="fw-bold mb-0">{{ story.name }}</h6>
-                        <small class="text-primary fw-semibold">{{ story.title }} </small>
-                    </div>
-                </div>
-                <div class="position-relative">
-                    <i class="fas fa-quote-left text-primary-light opacity-25 position-absolute top-0 start-0 fs-1"></i>
-                    <p class="text-muted small mb-0 ps-4 pt-2 italic">
-                        {{ story.story|safe }}
-                    </p>
-                </div>
-            </div>
+<!-- ══ BROWSE BY CATEGORY ══ -->
+<section class="section" style="background:var(--surface-2); padding:56px 0;" aria-labelledby="cat-heading">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title" id="cat-heading">Browse by <span class="accent">Category</span></h2>
         </div>
-        {% endfor %}
-        
-    </div>
-</section>
-
-<section class="container mt-5 pt-4 mb-5 pb-5">
-    <div class="border-bottom pb-2 mb-4">
-        <h3 class="fw-bold text-dark mb-0">Scholarship Resources & Tips</h3>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=500&q=60" class="card-img-top object-fit-cover" height="200" alt="Application Tips">
-                <div class="card-body p-4 d-flex flex-column text-center">
-                    <h5 class="fw-bold text-dark mb-2">Application Tips</h5>
-                    <p class="text-muted small mb-4">How to Write a Winning Essay</p>
-                    <a href="{% url 'guide_list' %}" class="btn btn-primary w-50 mx-auto rounded-pill mt-auto fw-semibold py-2">Learn More</a>
+        <div class="cat-grid">
+            <a href="{% url 'scholarship_list' %}" class="cat-card">
+                <div class="cat-icon">🏅</div>
+                <div>
+                    <div class="cat-label">Scholarships</div>
+                    <div class="cat-count">Bachelors, Masters, PhD</div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=500&q=60" class="card-img-top object-fit-cover" height="200" alt="Interview Prep">
-                <div class="card-body p-4 d-flex flex-column text-center">
-                    <h5 class="fw-bold text-dark mb-2">Scholarship Interview Prep</h5>
-                    <p class="text-muted small mb-4">Dos and Don'ts for success</p>
-                    <a href="{% url 'guide_list' %}" class="btn btn-primary w-50 mx-auto rounded-pill mt-auto fw-semibold py-2">Learn More</a>
+            </a>
+            <a href="{% url 'internships' %}" class="cat-card">
+                <div class="cat-icon">💼</div>
+                <div>
+                    <div class="cat-label">Internships</div>
+                    <div class="cat-count">Paid & unpaid globally</div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" class="card-img-top object-fit-cover" height="200" alt="Financial Aid">
-                <div class="card-body p-4 d-flex flex-column text-center">
-                    <h5 class="fw-bold text-dark mb-2">Financial Aid & Budgeting Guide</h5>
-                    <p class="text-muted small mb-4">Manage your funds abroad</p>
-                    <a href="{% url 'guide_list' %}" class="btn btn-primary w-50 mx-auto rounded-pill mt-auto fw-semibold py-2">Learn More</a>
+            </a>
+            <a href="{% url 'exchange_programs' %}" class="cat-card">
+                <div class="cat-icon">✈️</div>
+                <div>
+                    <div class="cat-label">Exchange Programs</div>
+                    <div class="cat-count">Study abroad semesters</div>
                 </div>
-            </div>
+            </a>
+            <a href="{% url 'summer_schools' %}" class="cat-card">
+                <div class="cat-icon">☀️</div>
+                <div>
+                    <div class="cat-label">Summer Schools</div>
+                    <div class="cat-count">Short-term intensives</div>
+                </div>
+            </a>
+            <a href="{% url 'conferences' %}" class="cat-card">
+                <div class="cat-icon">🎙️</div>
+                <div>
+                    <div class="cat-label">Conferences</div>
+                    <div class="cat-count">Academic & research events</div>
+                </div>
+            </a>
+            <a href="#" class="cat-card">
+                <div class="cat-icon">🔬</div>
+                <div>
+                    <div class="cat-label">RA &amp; TA Positions</div>
+                    <div class="cat-count">Research assistantships</div>
+                </div>
+            </a>
         </div>
     </div>
 </section>
 
-<script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
+<!-- ══ SUCCESS STORIES ══ -->
+{% if success_stories %}
+<section class="section" aria-labelledby="stories-heading">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title" id="stories-heading">Success <span class="accent">Stories</span></h2>
+        </div>
+        <div class="stories-grid">
+            {% for story in success_stories %}
+            <div class="story-card" itemscope itemtype="https://schema.org/Review">
+                {% if story.image %}
+                <img src="{{ story.image.url }}" alt="{{ story.name }}" class="story-avatar" loading="lazy" itemprop="author">
+                {% else %}
+                <div class="story-avatar" style="background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--blue); font-size:1.1rem;">
+                    {{ story.name|slice:":1" }}
+                </div>
+                {% endif %}
+                <div class="story-name" itemprop="author">{{ story.name }}</div>
+                <div class="story-role">{% if story.title %}{{ story.title }}{% endif %}</div>
+                <p class="story-quote" itemprop="reviewBody">{{ story.story|safe|truncatewords:50 }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
 
-<style>
-    /* Color Palette matching the image */
-    :root {
-        --primary-blue: #1C5BB7; /* Main branding blue */
-        --brand-orange: #F37021; /* Buttons */
-        --light-bg: #f8f9fa;
-        --dark-text: #212529;
-    }
+<!-- ══ RESOURCES ══ -->
+<section class="section" style="background:var(--surface-2); padding:56px 0;" aria-labelledby="resources-heading">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title" id="resources-heading">Application <span class="accent">Resources</span></h2>
+            <a href="{% url 'guide_list' %}" class="section-link">All Guides →</a>
+        </div>
+        <div class="resources-grid">
+            <div class="resource-card">
+                <img
+                    src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=500&q=60"
+                    alt="Writing a scholarship application essay"
+                    class="resource-img"
+                    loading="lazy"
+                    width="500" height="190"
+                >
+                <div class="resource-body">
+                    <span class="resource-tag">Essay Writing</span>
+                    <h3 class="resource-title">How to Write a Winning Scholarship Essay</h3>
+                    <p class="resource-sub">Step-by-step strategies used by successful applicants</p>
+                    <a href="{% url 'guide_list' %}" class="btn btn-primary" style="font-size:.83rem; padding:9px 20px;">Read Guide →</a>
+                </div>
+            </div>
+            <div class="resource-card">
+                <img
+                    src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&q=60"
+                    alt="Scholarship interview preparation"
+                    class="resource-img"
+                    loading="lazy"
+                    width="500" height="190"
+                >
+                <div class="resource-body">
+                    <span class="resource-tag">Interview Prep</span>
+                    <h3 class="resource-title">Scholarship Interview: Dos and Don'ts</h3>
+                    <p class="resource-sub">Common questions and how to answer them confidently</p>
+                    <a href="{% url 'guide_list' %}" class="btn btn-primary" style="font-size:.83rem; padding:9px 20px;">Read Guide →</a>
+                </div>
+            </div>
+            <div class="resource-card">
+                <img
+                    src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=500&q=60"
+                    alt="Student budgeting and financial planning"
+                    class="resource-img"
+                    loading="lazy"
+                    width="500" height="190"
+                >
+                <div class="resource-body">
+                    <span class="resource-tag">Financial Planning</span>
+                    <h3 class="resource-title">Financial Aid & Budgeting Abroad</h3>
+                    <p class="resource-sub">How to manage your scholarship funding wisely</p>
+                    <a href="{% url 'guide_list' %}" class="btn btn-primary" style="font-size:.83rem; padding:9px 20px;">Read Guide →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    body {
-        background-color: var(--light-bg);
-        font-family: 'Inter', -apple-system, sans-serif;
-    }
-
-    /* Hero Section */
-    .hero-section {
-        background: linear-gradient(135deg, #1C5BB7 0%, #2A75D3 100%);
-        padding-bottom: 120px !important; /* Extra padding for overlapping cards */
-    }
-
-    /* Orange Button */
-    .btn-orange {
-        background-color: var(--brand-orange);
-        color: white;
-        border: none;
-        transition: background-color 0.1s;
-    }
-    .btn-orange:hover {
-        background-color: #d65d18;
-        color: white;
-    }
-    .text-orange {
-        color: var(--brand-orange);
-    }
-
-    /* Form Styling */
-    .search-box select, .search-box input {
-        font-size: 0.95rem;
-    }
-    .search-box select:focus, .search-box input:focus {
-        box-shadow: none;
-        outline: none;
-    }
-
-    /* Overlapping Info Cards */
-    .info-cards-section {
-        margin-top: -60px;
-        position: relative;
-        z-index: 10;
-    }
-    .info-card {
-        transition: transform 0.3s ease;
-    }
-    .info-card:hover {
-        transform: translateY(-5px);
-    }
-    .icon-wrapper {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .bg-soft-blue {
-        background-color: #e6f0ff;
-    }
-    .clickable-card {
-        transition: all 0.25s ease;
-        cursor: pointer;
-    }
-
-    .clickable-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
-    }
-    /* Category Pills */
-    .category-pill {
-        background: white;
-        color: var(--dark-text);
-        padding: 10px 24px;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        border: 1px solid #e9ecef;
-        transition: all 0.2s;
-    }
-    .category-pill:hover {
-        background: var(--primary-blue);
-        color: white;
-        border-color: var(--primary-blue);
-    }
-    .category-pill:hover i {
-        color: white !important;
-    }
-
-    /* Scholarship Cards Hover */
-    .scholarship-card {
-        transition: box-shadow 0.3s ease;
-    }
-    .scholarship-card:hover {
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
-    }
-    
-    .object-fit-cover {
-        object-fit: cover;
-    }
-    .text-primary-light {
-        color: #e6f0ff;
-    }
-    
-    .testimonial-card {
-        transition: transform 0.3s ease;
-    }
-
-    .testimonial-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
-    }
-
-    .italic {
-        font-style: italic;
-    }
-    
-    .border-primary-light {
-        border-color: #e6f0ff !important;
-    }
-
-</style>
+<!-- ══ CTA BANNER ══ -->
+<section class="section-sm" aria-labelledby="cta-heading">
+    <div class="container">
+        <div class="cta-banner">
+            <div>
+                <h2 id="cta-heading">Ready to Start Your Journey?</h2>
+                <p>Join thousands of students who found their scholarship through MastersGrant. It's free, always.</p>
+            </div>
+            <div class="cta-actions">
+                <a href="{% url 'scholarship_list' %}" class="btn btn-primary" style="font-size:.95rem; padding:14px 28px;">Browse Scholarships →</a>
+                <a href="{% url 'guide_list' %}" class="btn" style="background:rgba(255,255,255,.1); color:#fff; border:1.5px solid rgba(255,255,255,.25); font-size:.95rem; padding:14px 28px;">Read Guides</a>
+            </div>
+        </div>
+    </div>
+</section>
 
 {% endblock %}

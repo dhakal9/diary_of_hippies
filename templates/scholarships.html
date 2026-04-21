@@ -1,210 +1,1274 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ page_title }}{% endblock %}
+{# ══════════════════════════════════════════════════
+   SEO META BLOCKS
+══════════════════════════════════════════════════ #}
+{% block title %}{{ page_title|default:"Scholarships 2026 — Browse All Opportunities | MastersGrant" }}{% endblock %}
 
-{% block metadescription %}{{ meta_description }}{% endblock %}
+{% block meta_description %}{{ meta_description|default:"Browse thousands of fully funded scholarships, fellowships and grants for international students. Filter by country, level and deadline. Updated daily." }}{% endblock %}
 
-{% block breadcrumb_items %}
-<li class="breadcrumb-item active" aria-current="page">{{ page_h1 }}</li>
+{% block meta_keywords %}fully funded scholarships 2026, international scholarships, masters scholarships, phd funding, fellowship opportunities, grants for students{% endblock %}
+
+{% block og_title %}{{ page_title|default:"Scholarships 2026 | MastersGrant" }}{% endblock %}
+{% block og_description %}{{ meta_description|default:"Browse thousands of fully funded scholarships, fellowships and grants. Updated daily." }}{% endblock %}
+
+{% block schema %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "{{ page_title|default:'Scholarships 2026 — MastersGrant'|escapejs }}",
+  "description": "{{ meta_description|default:'Browse scholarships, fellowships and grants.'|escapejs }}",
+  "url": "{{ request.build_absolute_uri }}",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'index' %}" },
+      { "@type": "ListItem", "position": 2, "name": "{{ page_h1|default:'Scholarships'|escapejs }}", "item": "{{ request.build_absolute_uri }}" }
+    ]
+  }
+}
+</script>
 {% endblock %}
 
+{# ══════════════════════════════════════════════════
+   PAGE-SPECIFIC STYLES
+══════════════════════════════════════════════════ #}
+{% block extra_head %}
+<style>
+/* ── Page shell ── */
+.list-page {
+    background: var(--surface-2);
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+/* ── Page header strip ── */
+.page-header {
+    background: linear-gradient(135deg, #0c2d6b 0%, #1349a8 100%);
+    padding: 40px 0 70px;
+    position: relative;
+    overflow: hidden;
+}
+.page-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+}
+.page-header::before {
+    content: '';
+    position: absolute;
+    right: -80px; top: -80px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(100,180,255,.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+.page-header-inner {
+    position: relative;
+    z-index: 1;
+}
+.page-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .8rem;
+    color: rgba(255,255,255,.55);
+    font-weight: 500;
+    margin-bottom: 14px;
+}
+.page-breadcrumb a { color: rgba(255,255,255,.7); transition: color .2s; }
+.page-breadcrumb a:hover { color: #fff; }
+.page-breadcrumb span { color: rgba(255,255,255,.35); }
+.page-heading {
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -.4px;
+    margin-bottom: 8px;
+    line-height: 1.1;
+}
+.page-sub {
+    font-size: .95rem;
+    color: rgba(255,255,255,.6);
+    max-width: 500px;
+}
+.result-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    color: rgba(255,255,255,.9);
+    font-size: .82rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 50px;
+    backdrop-filter: blur(8px);
+    margin-top: 18px;
+}
+.result-count-badge .dot {
+    width: 7px; height: 7px;
+    background: #0ea76e;
+    border-radius: 50%;
+}
+
+/* ── Layout grid ── */
+.content-shell {
+    max-width: 1280px;
+    margin: -40px auto 0;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 28px;
+    align-items: start;
+    position: relative;
+    z-index: 10;
+}
+
+/* ── Sidebar filter panel ── */
+.filter-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: calc(var(--nav-h) + 16px);
+}
+.filter-header {
+    padding: 20px 22px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.filter-header h2 {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.filter-header h2 svg { color: var(--blue); }
+.filter-clear {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--ink-3);
+    transition: color .2s;
+}
+.filter-clear:hover { color: var(--blue); }
+.filter-body { padding: 18px 22px 22px; }
+
+.filter-group { margin-bottom: 22px; }
+.filter-group:last-child { margin-bottom: 0; }
+.filter-label {
+    display: block;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    color: var(--ink-3);
+    margin-bottom: 8px;
+}
+
+/* Search input */
+.filter-search {
+    position: relative;
+}
+.filter-search svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-3);
+    pointer-events: none;
+    width: 15px; height: 15px;
+}
+.filter-search input {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: .88rem;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px 9px 34px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+.filter-search input::placeholder { color: var(--ink-3); }
+.filter-search input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(19,73,168,.1);
+}
+
+/* Select */
+.filter-select {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: .88rem;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 32px 9px 12px;
+    color: var(--ink);
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: border-color .2s, box-shadow .2s;
+    cursor: pointer;
+}
+.filter-select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(19,73,168,.1);
+}
+
+/* Checkbox list */
+.check-list { display: flex; flex-direction: column; gap: 6px; }
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    transition: background .15s;
+}
+.check-item:hover { background: var(--surface-2); }
+.check-item input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: var(--blue);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.check-item span {
+    font-size: .86rem;
+    color: var(--ink-2);
+    font-weight: 500;
+    flex: 1;
+}
+.check-item .check-count {
+    font-size: .72rem;
+    color: var(--ink-3);
+    background: var(--surface-2);
+    padding: 1px 7px;
+    border-radius: 50px;
+}
+
+/* Filter CTA buttons */
+.filter-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 4px;
+}
+.btn-apply-filter {
+    font-family: var(--font-sans);
+    font-size: .88rem;
+    font-weight: 700;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px;
+    width: 100%;
+    transition: background .2s, transform .15s;
+}
+.btn-apply-filter:hover { background: var(--blue-dark); transform: translateY(-1px); }
+.btn-clear-filter {
+    font-family: var(--font-sans);
+    font-size: .83rem;
+    font-weight: 600;
+    background: transparent;
+    color: var(--ink-3);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px;
+    width: 100%;
+    transition: border-color .2s, color .2s;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+.btn-clear-filter:hover { border-color: var(--blue); color: var(--blue); }
+
+/* Active filter tags */
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+}
+.active-filters:empty { display: none; }
+.active-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .75rem;
+    font-weight: 700;
+    background: var(--blue-light);
+    color: var(--blue);
+    border-radius: 50px;
+    padding: 4px 10px;
+}
+.active-tag a {
+    color: var(--blue);
+    line-height: 1;
+    font-weight: 700;
+    transition: color .15s;
+}
+.active-tag a:hover { color: var(--blue-dark); }
+
+/* ── Results area ── */
+.results-area {}
+
+/* Sort + count bar */
+.results-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+}
+.results-count {
+    font-size: .9rem;
+    color: var(--ink-2);
+    font-weight: 500;
+}
+.results-count strong { color: var(--ink); font-weight: 700; }
+.sort-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.sort-label {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--ink-3);
+    white-space: nowrap;
+}
+.sort-select {
+    font-family: var(--font-sans);
+    font-size: .83rem;
+    font-weight: 600;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 28px 6px 10px;
+    color: var(--ink);
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    cursor: pointer;
+    transition: border-color .2s;
+}
+.sort-select:focus { border-color: var(--blue); }
+
+/* View toggle */
+.view-toggle {
+    display: flex;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+.view-btn {
+    background: var(--surface-2);
+    border: none;
+    padding: 6px 10px;
+    color: var(--ink-3);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    display: flex;
+    align-items: center;
+}
+.view-btn.active,
+.view-btn:hover { background: var(--blue); color: #fff; }
+
+/* ── Opportunity card (list view) ── */
+.opp-list { display: flex; flex-direction: column; gap: 16px; }
+
+.opp-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    transition: transform .22s, box-shadow .22s, border-color .22s;
+    position: relative;
+}
+.opp-row:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--blue-light);
+}
+/* Left accent bar on hover */
+.opp-row::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--blue), var(--green));
+    opacity: 0;
+    transition: opacity .22s;
+}
+.opp-row:hover::before { opacity: 1; }
+
+/* Thumb */
+.opp-row-thumb {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-3);
+    flex-shrink: 0;
+}
+.opp-row-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .4s ease;
+}
+.opp-row:hover .opp-row-thumb img { transform: scale(1.06); }
+.opp-row-placeholder {
+    width: 100%; height: 100%;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+    color: rgba(255,255,255,.7);
+    font-size: .8rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 16px;
+}
+.opp-row-placeholder svg { opacity: .5; }
+
+/* Funding pill on thumb */
+.thumb-badge {
+    position: absolute;
+    bottom: 10px; left: 10px;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 50px;
+    letter-spacing: .2px;
+}
+.thumb-badge.funded { background: var(--green); color: #fff; }
+.thumb-badge.partial { background: var(--gold); color: #fff; }
+.thumb-badge.unpaid  { background: var(--ink-3); color: #fff; }
+
+/* Deadline pill on thumb */
+.thumb-deadline {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(0,0,0,.65);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 50px;
+}
+.thumb-deadline.urgent { background: rgba(220,38,38,.85); }
+
+/* Card body */
+.opp-row-body {
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+}
+.opp-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+.opp-type-pill {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--blue);
+    background: var(--blue-light);
+    padding: 4px 10px;
+    border-radius: 50px;
+}
+.opp-deadline-flag {
+    font-size: .75rem;
+    font-weight: 600;
+    color: #dc2626;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.opp-row-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.opp-row-title a {
+    transition: color .2s;
+}
+/* Stretch link — whole card is clickable */
+.opp-row-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+.opp-row-title a:hover { color: var(--blue); }
+
+/* Meta row */
+.opp-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 4px 11px;
+}
+.meta-chip svg { flex-shrink: 0; }
+.meta-chip.funded-chip { color: var(--green); background: var(--green-light); border-color: #b3e8d5; }
+
+/* Description */
+.opp-row-desc {
+    font-size: .85rem;
+    color: var(--ink-3);
+    line-height: 1.65;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 16px;
+    flex: 1;
+}
+
+/* Bottom action row */
+.opp-row-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.opp-row-footer-left {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.edu-tag {
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--ink-3);
+    background: var(--surface-3);
+    border-radius: 50px;
+    padding: 3px 9px;
+}
+.btn-details {
+    font-family: var(--font-sans);
+    font-size: .83rem;
+    font-weight: 700;
+    color: var(--blue);
+    background: var(--blue-light);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 18px;
+    transition: background .2s, color .2s;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+}
+.btn-details:hover { background: var(--blue); color: #fff; }
+
+/* ── Grid view ── */
+.opp-grid-view {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+.opp-grid-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform .22s, box-shadow .22s, border-color .22s;
+    position: relative;
+}
+.opp-grid-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--blue-light);
+}
+.opp-grid-thumb {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    position: relative;
+    background: var(--surface-3);
+}
+.opp-grid-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .4s;
+}
+.opp-grid-card:hover .opp-grid-thumb img { transform: scale(1.06); }
+.opp-grid-body {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.opp-grid-title {
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.opp-grid-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+.opp-grid-title a:hover { color: var(--blue); }
+.opp-grid-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+}
+
+/* ── Empty state ── */
+.empty-state {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 64px 40px;
+    text-align: center;
+}
+.empty-icon {
+    width: 80px; height: 80px;
+    background: var(--surface-2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 2rem;
+}
+.empty-state h3 {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 10px;
+}
+.empty-state p { color: var(--ink-3); margin-bottom: 24px; }
+
+/* ── Pagination ── */
+.pagination-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+.page-btn {
+    font-family: var(--font-sans);
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 16px;
+    transition: background .2s, color .2s, border-color .2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+.page-btn:hover,
+.page-btn.active {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+}
+.page-btn.disabled {
+    opacity: .45;
+    pointer-events: none;
+}
+.page-info {
+    font-size: .83rem;
+    font-weight: 600;
+    color: var(--ink-3);
+    padding: 9px 14px;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .content-shell {
+        grid-template-columns: 1fr;
+        margin-top: -20px;
+    }
+    .filter-panel {
+        position: static;
+    }
+    .opp-grid-view { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+    .opp-row { grid-template-columns: 1fr; }
+    .opp-row-thumb { min-height: 200px; }
+    .opp-grid-view { grid-template-columns: 1fr; }
+    .results-bar { flex-wrap: wrap; gap: 12px; }
+    .sort-row { flex-wrap: wrap; }
+    .page-header { padding: 32px 0 60px; }
+    .content-shell { padding: 0 16px; }
+}
+@media (max-width: 480px) {
+    .page-heading { font-size: 1.6rem; }
+    .opp-row-body { padding: 16px; }
+}
+
+/* ── Skeleton loader ── */
+@keyframes shimmer {
+    0% { background-position: -600px 0; }
+    100% { background-position: 600px 0; }
+}
+.skeleton {
+    background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+    background-size: 600px 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: var(--radius-sm);
+}
+</style>
+{% endblock %}
+
+{# ══════════════════════════════════════════════════
+   CONTENT
+══════════════════════════════════════════════════ #}
 {% block content %}
-<div class="row mb-5">
-    
-    <div class="col-lg-3 mb-4 mb-lg-0">
-        <div class="card shadow-sm border-0 sticky-top" style="top: 85px; z-index: 10;">
-            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-                <h5 class="fw-bold"><i class="fas fa-filter text-primary me-2"></i> Filter Results</h5>
+<div class="list-page">
+
+    {# ── Page Header ── #}
+    <div class="page-header">
+        <div class="container page-header-inner">
+            <nav class="page-breadcrumb" aria-label="Breadcrumb">
+                <a href="{% url 'index' %}">Home</a>
+                <span>›</span>
+                <span>{{ page_h1|default:"Scholarships" }}</span>
+            </nav>
+            <h1 class="page-heading">{{ page_h1|default:"Scholarships & Opportunities" }}</h1>
+            <p class="page-sub">Verified funding for international students — updated every day.</p>
+            {% if page_obj.paginator.count %}
+            <div class="result-count-badge">
+                <span class="dot"></span>
+                {{ page_obj.paginator.count }} opportunities found
             </div>
-            <div class="card-body">
-                <form method="get" action="{% url 'scholarship_list' %}">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">Keyword Search</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" name="q" class="form-control border-start-0 bg-light" placeholder="e.g. UK, STEM, Fulbright..." value="{{ request.GET.q }}">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">Education Level</label>
-                        <select name="level" class="form-select bg-light">
-                            <option value="">All Levels</option>
-                            {% for level in all_education_levels %}
-                                <option value="{{ level.name }}" {% if request.GET.level == level.name %}selected{% endif %}>{{ level.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-muted">Opportunity Type</label>
-                        <select name="type" class="form-select bg-light">
-                            <option value="">All Types</option>
-                            <option value="Scholarship" {% if request.GET.type == "Scholarship" %}selected{% endif %}>Scholarship</option>
-                            <option value="Internship" {% if request.GET.type == "Internship" %}selected{% endif %}>Internship</option>
-                            <option value="Fellowship" {% if request.GET.type == "Fellowship" %}selected{% endif %}>Fellowship</option>
-                            <option value="Event" {% if request.GET.type == "Event" %}selected{% endif %}>Conference/Event</option>
-                            <option value="Other" {% if request.GET.type == "Other" %}selected{% endif %}>Other</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2 shadow-sm">Apply Filters</button>
-                    
-                    {% if request.GET.q or request.GET.level or request.GET.type %}
-                        <a href="{% url 'scholarship_list' %}" class="btn btn-link text-muted w-100 mt-2 text-decoration-none small">Clear Filters</a>
-                    {% endif %}
-                </form>
-            </div>
+            {% endif %}
         </div>
     </div>
 
-    <div class="col-lg-9">
-        
-        <div class="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3">
-            <div>
-                <h1 class="h3 fw-bold mb-1 text-dark">{{ page_h1 }}</h1>
-                <p class="text-muted mb-0 small">Verified funding opportunities for international students.</p>
-            </div>
-            <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill border">{{ page_obj.paginator.count }} Found</span>
-        </div>
+    {# ── Content Shell ── #}
+    <div class="content-shell">
 
-        {% for scholarship in opportunities %}
-        <div class="card mb-4 shadow-sm border-0 opportunity-card overflow-hidden">
-            <div class="row g-0">
-                
-                <div class="col-md-4 col-lg-3 position-relative bg-light" style="min-height: 180px;">
-                    {% if scholarship.image %}
-                        <img src="{{ scholarship.image.url }}" class="img-fluid w-100 h-100 object-fit-cover position-absolute top-0 start-0" alt="{{ scholarship.image_alt_text|default:scholarship.title }}">
-                    {% else %}
-                        <div class="d-flex flex-column align-items-center justify-content-center h-100 w-100 bg-primary bg-gradient text-white p-3 text-center">
-                            <i class="fas fa-graduation-cap fa-2x mb-2 opacity-75"></i>
-                            <span class="small fw-bold">{{ scholarship.get_opportunity_type_display }}</span>
-                        </div>
+        {# ══ SIDEBAR FILTER ══ #}
+        <aside aria-label="Filter scholarships">
+            <div class="filter-panel">
+                <div class="filter-header">
+                    <h2>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                        Filter Results
+                    </h2>
+                    {% if request.GET.q or request.GET.level or request.GET.type or request.GET.funding %}
+                    <a href="{% url 'scholarship_list' %}" class="filter-clear" aria-label="Clear all filters">Clear all</a>
                     {% endif %}
                 </div>
 
-                <div class="col-md-8 col-lg-9">
-                    <div class="card-body d-flex flex-column h-100 p-4">
-                        
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="badge bg-soft-primary text-primary border">
-                                <i class="fas fa-tag me-1"></i> {{ scholarship.get_opportunity_type_display }}
-                            </span>
-                            
-                            <span class="text-danger small fw-bold bg-soft-danger px-2 py-1 rounded">
-                                <i class="far fa-clock me-1"></i> 
-                                {% if scholarship.deadline_type == 'Specific Date' %}
-                                    Deadline: {{ scholarship.deadline|date:"M d, Y" }}
+                {# Active filter tags #}
+                {% if request.GET.q or request.GET.level or request.GET.type or request.GET.funding %}
+                <div class="active-filters" aria-label="Active filters">
+                    {% if request.GET.q %}
+                    <span class="active-tag">
+                        "{{ request.GET.q|truncatechars:20 }}"
+                        <a href="?{% if request.GET.level %}level={{ request.GET.level }}&{% endif %}{% if request.GET.type %}type={{ request.GET.type }}&{% endif %}{% if request.GET.funding %}funding={{ request.GET.funding }}{% endif %}" aria-label="Remove keyword filter">✕</a>
+                    </span>
+                    {% endif %}
+                    {% if request.GET.level %}
+                    <span class="active-tag">
+                        {{ request.GET.level }}
+                        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.type %}type={{ request.GET.type }}&{% endif %}{% if request.GET.funding %}funding={{ request.GET.funding }}{% endif %}" aria-label="Remove level filter">✕</a>
+                    </span>
+                    {% endif %}
+                    {% if request.GET.type %}
+                    <span class="active-tag">
+                        {{ request.GET.type }}
+                        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.level %}level={{ request.GET.level }}&{% endif %}{% if request.GET.funding %}funding={{ request.GET.funding }}{% endif %}" aria-label="Remove type filter">✕</a>
+                    </span>
+                    {% endif %}
+                    {% if request.GET.funding %}
+                    <span class="active-tag">
+                        {{ request.GET.funding }}
+                        <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.level %}level={{ request.GET.level }}&{% endif %}{% if request.GET.type %}type={{ request.GET.type }}{% endif %}" aria-label="Remove funding filter">✕</a>
+                    </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <form method="get" action="{% url 'scholarship_list' %}" id="filterForm">
+                    <div class="filter-body">
+
+                        {# Keyword #}
+                        <div class="filter-group">
+                            <label class="filter-label" for="search-input">Keyword Search</label>
+                            <div class="filter-search">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+                                <input
+                                    type="search"
+                                    id="search-input"
+                                    name="q"
+                                    placeholder="UK, STEM, Fulbright…"
+                                    value="{{ request.GET.q }}"
+                                    autocomplete="off"
+                                    aria-label="Search scholarships by keyword"
+                                >
+                            </div>
+                        </div>
+
+                        {# Education Level #}
+                        <div class="filter-group">
+                            <label class="filter-label" for="level-select">Education Level</label>
+                            <select name="level" id="level-select" class="filter-select" aria-label="Filter by education level">
+                                <option value="">All Levels</option>
+                                {% for level in all_education_levels %}
+                                <option value="{{ level.name }}" {% if request.GET.level == level.name %}selected{% endif %}>
+                                    {{ level.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        {# Opportunity Type #}
+                        <div class="filter-group">
+                            <label class="filter-label">Opportunity Type</label>
+                            <div class="check-list" role="group" aria-label="Filter by opportunity type">
+                                {% for value, label in opportunity_types %}
+                                <label class="check-item">
+                                    <input type="checkbox" name="type" value="{{ value }}"
+                                        {% if value in request.GET.getlist.type or request.GET.type == value %}checked{% endif %}>
+                                    <span>{{ label }}</span>
+                                </label>
+                                {% empty %}
+                                {# Fallback hardcoded list #}
+                                {% for value, label in type_choices %}
+                                <label class="check-item">
+                                    <input type="checkbox" name="type" value="{{ value }}"
+                                        {% if request.GET.type == value %}checked{% endif %}>
+                                    <span>{{ label }}</span>
+                                </label>
+                                {% empty %}
+                                <label class="check-item"><input type="checkbox" name="type" value="Scholarship" {% if request.GET.type == "Scholarship" %}checked{% endif %}><span>Scholarship</span></label>
+                                <label class="check-item"><input type="checkbox" name="type" value="Fellowship" {% if request.GET.type == "Fellowship" %}checked{% endif %}><span>Fellowship</span></label>
+                                <label class="check-item"><input type="checkbox" name="type" value="Internship" {% if request.GET.type == "Internship" %}checked{% endif %}><span>Internship</span></label>
+                                <label class="check-item"><input type="checkbox" name="type" value="Grant" {% if request.GET.type == "Grant" %}checked{% endif %}><span>Grant</span></label>
+                                <label class="check-item"><input type="checkbox" name="type" value="Event" {% if request.GET.type == "Event" %}checked{% endif %}><span>Conference / Event</span></label>
+                                <label class="check-item"><input type="checkbox" name="type" value="Other" {% if request.GET.type == "Other" %}checked{% endif %}><span>Other</span></label>
+                                {% endfor %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        {# Funding Type #}
+                        <div class="filter-group">
+                            <label class="filter-label" for="funding-select">Funding Type</label>
+                            <select name="funding" id="funding-select" class="filter-select" aria-label="Filter by funding type">
+                                <option value="">All Funding</option>
+                                <option value="Fully Funded"       {% if request.GET.funding == "Fully Funded" %}selected{% endif %}>Fully Funded</option>
+                                <option value="Partial Funding"    {% if request.GET.funding == "Partial Funding" %}selected{% endif %}>Partial Funding</option>
+                                <option value="Tuition Fee Waiver" {% if request.GET.funding == "Tuition Fee Waiver" %}selected{% endif %}>Tuition Fee Waiver</option>
+                                <option value="Stipend Only"       {% if request.GET.funding == "Stipend Only" %}selected{% endif %}>Stipend Only</option>
+                            </select>
+                        </div>
+
+                        {# Actions #}
+                        <div class="filter-actions">
+                            <button type="submit" class="btn-apply-filter">Apply Filters</button>
+                            {% if request.GET.q or request.GET.level or request.GET.type or request.GET.funding %}
+                            <a href="{% url 'scholarship_list' %}" class="btn-clear-filter">Clear Filters</a>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </aside>
+
+        {# ══ RESULTS ══ #}
+        <section aria-label="Scholarship results">
+
+            {# Results bar #}
+            <div class="results-bar">
+                <p class="results-count">
+                    Showing <strong>{{ page_obj.start_index }}–{{ page_obj.end_index }}</strong>
+                    of <strong>{{ page_obj.paginator.count }}</strong> opportunities
+                </p>
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div class="sort-row">
+                        <span class="sort-label">Sort:</span>
+                        <select class="sort-select" aria-label="Sort results" onchange="applySortFilter(this.value)">
+                            <option value="-created_at" {% if request.GET.sort == '-created_at' or not request.GET.sort %}selected{% endif %}>Newest First</option>
+                            <option value="deadline"    {% if request.GET.sort == 'deadline' %}selected{% endif %}>Deadline Soon</option>
+                            <option value="title"       {% if request.GET.sort == 'title' %}selected{% endif %}>A → Z</option>
+                        </select>
+                    </div>
+                    <div class="view-toggle" role="group" aria-label="Toggle view">
+                        <button class="view-btn active" id="viewList" onclick="setView('list')" aria-label="List view" aria-pressed="true">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        </button>
+                        <button class="view-btn" id="viewGrid" onclick="setView('grid')" aria-label="Grid view" aria-pressed="false">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {# Results #}
+            {% if opportunities %}
+
+            {# LIST VIEW #}
+            <div class="opp-list" id="listView" role="list" aria-label="Scholarship opportunities">
+                {% for scholarship in opportunities %}
+                <article class="opp-row" role="listitem"
+                    itemscope itemtype="https://schema.org/EducationalOccupationalProgram">
+
+                    {# Thumb #}
+                    <div class="opp-row-thumb">
+                        {% if scholarship.image %}
+                        <img
+                            src="{{ scholarship.image.url }}"
+                            alt="{{ scholarship.image_alt_text|default:scholarship.title }}"
+                            loading="lazy"
+                            width="220" height="160"
+                            itemprop="image"
+                        >
+                        {% else %}
+                        <div class="opp-row-placeholder">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                            {{ scholarship.get_opportunity_type_display }}
+                        </div>
+                        {% endif %}
+
+                        {# Funding badge #}
+                        {% with ft=scholarship.funding_type %}
+                        {% if ft == "Fully Funded" %}
+                        <span class="thumb-badge funded" aria-label="Funding: Fully Funded">Fully Funded</span>
+                        {% elif ft == "Partial Funding" %}
+                        <span class="thumb-badge partial" aria-label="Funding: Partial">Partial Funding</span>
+                        {% elif ft %}
+                        <span class="thumb-badge unpaid" aria-label="Funding: {{ ft }}">{{ ft }}</span>
+                        {% endif %}
+                        {% endwith %}
+
+                        {# Deadline badge #}
+                        {% if scholarship.deadline %}
+                        <span class="thumb-deadline {% if scholarship.deadline|timeuntil|slice:':2' == '0 ' %}urgent{% endif %}"
+                              aria-label="Deadline: {{ scholarship.deadline|date:'M d, Y' }}">
+                            ⏰ {{ scholarship.deadline|date:"M d" }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    {# Body #}
+                    <div class="opp-row-body">
+                        <div class="opp-row-top">
+                            <span class="opp-type-pill" itemprop="programType">{{ scholarship.get_opportunity_type_display }}</span>
+                            <span class="opp-deadline-flag" aria-label="Application deadline">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                {% if scholarship.deadline_type == "Specific Date" and scholarship.deadline %}
+                                    {{ scholarship.deadline|date:"M d, Y" }}
                                 {% else %}
                                     {{ scholarship.get_deadline_type_display }}
                                 {% endif %}
                             </span>
                         </div>
 
-                        <h2 class="h5 fw-bold mb-2">
-                            <a href="{{ scholarship.get_absolute_url }}" class="text-decoration-none text-dark hover-primary stretched-link">
+                        <h2 class="opp-row-title" itemprop="name">
+                            <a href="{{ scholarship.get_absolute_url }}" itemprop="url"
+                               aria-label="View details: {{ scholarship.title }}">
                                 {{ scholarship.title }}
                             </a>
                         </h2>
 
-                        <div class="d-flex flex-wrap gap-3 mb-3 small text-muted">
-                            {# Countries Loop #}
-                            <div title="Host Countries">
-                                <i class="fas fa-map-marker-alt text-danger me-1"></i> 
-                                {% for country in scholarship.host_countries.all|slice:":2" %}
-                                    {{ country.name }}{% if not forloop.last %}, {% endif %}
-                                {% empty %}
-                                    International
-                                {% endfor %}
-                            </div>
-                            
-                            {# Education Levels Loop #}
-                            <div title="Education Level">
-                                <i class="fas fa-user-graduate text-success me-1"></i> 
-                                {% for level in scholarship.education_levels.all %}
-                                    {{ level.name }}{% if not forloop.last %}, {% endif %}
-                                {% endfor %}
-                            </div>
-                            
-                            {# Funding Amount #}
-                            <div title="Funding Status" class="fw-bold text-success">
-                                <i class="fas fa-hand-holding-usd me-1"></i> 
-                                {{ scholarship.funding_amount|default:"Fully Funded" }}
-                            </div>
+                        <div class="opp-meta-row" aria-label="Key details">
+                            {# Host country #}
+                            {% with countries=scholarship.host_countries.all %}
+                            <span class="meta-chip">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                {% if countries %}{% for c in countries|slice:":2" %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if countries|length > 2 %} +{{ countries|length|add:"-2" }} more{% endif %}{% else %}International{% endif %}
+                            </span>
+                            {% endwith %}
+
+                            {# Funding #}
+                            {% if scholarship.funding_amount %}
+                            <span class="meta-chip funded-chip">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                                {{ scholarship.funding_amount|truncatechars:28 }}
+                            </span>
+                            {% elif scholarship.funding_type %}
+                            <span class="meta-chip funded-chip">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                                {{ scholarship.funding_type }}
+                            </span>
+                            {% endif %}
+
+                            {# Category #}
+                            <span class="meta-chip">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                                {{ scholarship.category.name|default:"Scholarship" }}
+                            </span>
                         </div>
 
-                        <p class="card-text text-muted small mb-0 d-none d-md-block">
-                            {{ scholarship.description|striptags|truncatewords:25 }}
+                        <p class="opp-row-desc" itemprop="description">
+                            {{ scholarship.description|striptags|truncatewords:30 }}
                         </p>
+
+                        <div class="opp-row-footer">
+                            <div class="opp-row-footer-left" aria-label="Education levels">
+                                {% for level in scholarship.education_levels.all|slice:":3" %}
+                                <span class="edu-tag">{{ level.name }}</span>
+                                {% empty %}
+                                <span class="edu-tag">Any Level</span>
+                                {% endfor %}
+                            </div>
+                            <a href="{{ scholarship.get_absolute_url }}" class="btn-details" aria-label="View full details for {{ scholarship.title }}">
+                                View Details →
+                            </a>
+                        </div>
                     </div>
-                </div>
+                </article>
+                {% endfor %}
             </div>
-        </div>
-        {% empty %}
-        <div class="text-center py-5 bg-white shadow-sm rounded border">
-            <i class="fas fa-search-minus fa-3x text-muted mb-3"></i>
-            <h4 class="fw-bold text-dark">No opportunities found</h4>
-            <p class="text-muted">Adjust your filters or try a different keyword.</p>
-            <a href="{% url 'scholarship_list' %}" class="btn btn-outline-primary mt-2">Clear All Filters</a>
-        </div>
-        {% endfor %}
 
-        {# Pagination logic remains the same #}
-        {% if is_paginated %}
-        <nav aria-label="Page navigation" class="mt-5">
-            <ul class="pagination justify-content-center custom-pagination">
+            {# GRID VIEW (hidden by default) #}
+            <div class="opp-grid-view" id="gridView" style="display:none;" role="list" aria-label="Scholarship opportunities grid">
+                {% for scholarship in opportunities %}
+                <article class="opp-grid-card" role="listitem" itemscope itemtype="https://schema.org/EducationalOccupationalProgram">
+                    <div class="opp-grid-thumb">
+                        {% if scholarship.image %}
+                        <img src="{{ scholarship.image.url }}" alt="{{ scholarship.title }}" loading="lazy" width="360" height="200" itemprop="image">
+                        {% else %}
+                        <div class="opp-row-placeholder">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        </div>
+                        {% endif %}
+                        {% if scholarship.funding_type == "Fully Funded" %}
+                        <span class="thumb-badge funded">Fully Funded</span>
+                        {% endif %}
+                        {% if scholarship.deadline %}
+                        <span class="thumb-deadline">⏰ {{ scholarship.deadline|date:"M d" }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="opp-grid-body">
+                        <span class="opp-type-pill" style="display:inline-block; margin-bottom:10px;" itemprop="programType">{{ scholarship.get_opportunity_type_display }}</span>
+                        <h2 class="opp-grid-title" itemprop="name">
+                            <a href="{{ scholarship.get_absolute_url }}" itemprop="url">{{ scholarship.title }}</a>
+                        </h2>
+                        <div class="opp-meta-row" style="margin-bottom:12px;">
+                            <span class="meta-chip">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                {% for c in scholarship.host_countries.all|slice:":1" %}{{ c.name }}{% empty %}International{% endfor %}
+                            </span>
+                            {% if scholarship.funding_type %}
+                            <span class="meta-chip funded-chip">{{ scholarship.funding_type }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="opp-grid-footer">
+                            <span class="opp-deadline-flag" style="font-size:.75rem;">
+                                {% if scholarship.deadline %}{{ scholarship.deadline|date:"M d, Y" }}{% else %}{{ scholarship.get_deadline_type_display }}{% endif %}
+                            </span>
+                            <a href="{{ scholarship.get_absolute_url }}" class="btn-details" style="font-size:.78rem; padding:6px 14px;">Details →</a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            {# Empty state #}
+            <div class="empty-state" role="status">
+                <div class="empty-icon" aria-hidden="true">🔍</div>
+                <h3>No opportunities found</h3>
+                <p>Try adjusting your filters or searching with a different keyword.</p>
+                <a href="{% url 'scholarship_list' %}" class="btn btn-primary" style="font-size:.9rem;">Clear All Filters</a>
+            </div>
+            {% endif %}
+
+            {# ── Pagination ── #}
+            {% if is_paginated %}
+            <nav class="pagination-wrap" aria-label="Pagination">
+                {# Previous #}
                 {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link shadow-sm" href="?{{ query_string }}&page={{ page_obj.previous_page_number }}">
-                            <i class="fas fa-chevron-left"></i> Previous
-                        </a>
-                    </li>
+                <a href="?{{ query_string }}&page={{ page_obj.previous_page_number }}"
+                   class="page-btn"
+                   aria-label="Previous page">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                    Prev
+                </a>
+                {% else %}
+                <span class="page-btn disabled" aria-disabled="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                    Prev
+                </span>
                 {% endif %}
-                <li class="page-item disabled">
-                    <span class="page-link bg-light text-dark fw-bold border-0 mx-2 shadow-sm rounded">
-                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                    </span>
-                </li>
-                {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link shadow-sm" href="?{{ query_string }}&page={{ page_obj.next_page_number }}">
-                            Next <i class="fas fa-chevron-right"></i>
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-        {% endif %}
-    </div>
-</div>
 
-<style>
-    /* Styling Enhancements specific to this page */
-    .bg-soft-primary { background-color: rgba(28, 91, 183, 0.1); }
-    .bg-soft-danger { background-color: rgba(220, 53, 69, 0.1); }
-    
-    .opportunity-card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border-radius: 12px;
+                {# Page numbers #}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <span class="page-btn active" aria-current="page" aria-label="Page {{ num }}, current">{{ num }}</span>
+                    {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                    <a href="?{{ query_string }}&page={{ num }}" class="page-btn" aria-label="Go to page {{ num }}">{{ num }}</a>
+                    {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                    <a href="?{{ query_string }}&page={{ num }}" class="page-btn" aria-label="Go to page {{ num }}">{{ num }}</a>
+                    {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                    <span class="page-info" aria-hidden="true">…</span>
+                    {% endif %}
+                {% endfor %}
+
+                {# Next #}
+                {% if page_obj.has_next %}
+                <a href="?{{ query_string }}&page={{ page_obj.next_page_number }}"
+                   class="page-btn"
+                   aria-label="Next page">
+                    Next
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                </a>
+                {% else %}
+                <span class="page-btn disabled" aria-disabled="true">
+                    Next
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+                {% endif %}
+            </nav>
+            {% endif %}
+
+        </section>
+    </div>{# /content-shell #}
+</div>{# /list-page #}
+{% endblock %}
+
+{# ══════════════════════════════════════════════════
+   PAGE JS
+══════════════════════════════════════════════════ #}
+{% block extra_js %}
+<script>
+(function(){
+    'use strict';
+
+    // ── View toggle (list / grid) ──────────────────
+    var listView  = document.getElementById('listView');
+    var gridView  = document.getElementById('gridView');
+    var btnList   = document.getElementById('viewList');
+    var btnGrid   = document.getElementById('viewGrid');
+    var viewPref  = localStorage.getItem('mg_view') || 'list';
+
+    function setView(v) {
+        if (v === 'grid') {
+            listView.style.display = 'none';
+            gridView.style.display = 'grid';
+            btnList.classList.remove('active');
+            btnGrid.classList.add('active');
+            btnList.setAttribute('aria-pressed', 'false');
+            btnGrid.setAttribute('aria-pressed', 'true');
+        } else {
+            gridView.style.display = 'none';
+            listView.style.display = 'flex';
+            btnGrid.classList.remove('active');
+            btnList.classList.add('active');
+            btnGrid.setAttribute('aria-pressed', 'false');
+            btnList.setAttribute('aria-pressed', 'true');
+        }
+        try { localStorage.setItem('mg_view', v); } catch(e){}
     }
-    .opportunity-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+    window.setView = setView;
+    setView(viewPref);
+
+    // ── Sort filter ────────────────────────────────
+    window.applySortFilter = function(val) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('sort', val);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+    };
+
+    // ── Filter form: submit on select change ──────
+    var selects = document.querySelectorAll('#filterForm select');
+    selects.forEach(function(sel) {
+        sel.addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    });
+
+    // ── Keyboard: submit filter on Enter ──────────
+    var searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('filterForm').submit();
+            }
+        });
     }
-    
-    .hover-primary:hover { color: var(--primary-blue) !important; }
-    
-    .custom-pagination .page-link {
-        border-radius: 8px;
-        margin: 0 4px;
-        color: var(--dark-text);
-        border: 1px solid #dee2e6;
-    }
-    .custom-pagination .page-link:hover {
-        background-color: var(--primary-blue);
-        color: white;
-        border-color: var(--primary-blue);
-    }
-</style>
+
+})();
+</script>
 {% endblock %}
