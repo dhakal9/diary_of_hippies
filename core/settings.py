@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-fallback-key-for-local-only')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
@@ -27,6 +27,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
     'cloudinary_storage',       # MUST be above staticfiles
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,8 +40,7 @@ INSTALLED_APPS = [
     'cloudinary',               # Low-level SDK
     'ckeditor',
     'blog',
-    'scraper',  
-    'whitenoise.runserver_nostatic',  # Disable static file handling in development 
+    'scraper',    # Disable static file handling in development 
     'whitenoise',  # Add WhiteNoise for static file handling in production
 ]
 
