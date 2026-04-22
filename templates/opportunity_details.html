@@ -1,220 +1,1268 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ opportunity.title }} | MastersGrant{% endblock %}
+{# ═══════════════════════════════════════════════════
+   SEO META BLOCKS
+═══════════════════════════════════════════════════ #}
 
-{% block extra_head %}
-<style>
-    #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 9999; }
-    #progress-bar { height: 100%; background: #0d6efd; width: 0%; transition: width 0.1s ease; }
-    
-    /* Sticky Mobile CTA */
-    @media (max-width: 768px) {
-        .mobile-sticky-apply {
-            position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: white; padding: 15px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-            z-index: 1000; display: flex; justify-content: center;
-        }
-        body { padding-bottom: 80px; }
-    }
-</style>
+{% block title %}{{ opportunity.meta_title|default:opportunity.title }} | MastersGrant{% endblock %}
 
+{% block meta_description %}{{ opportunity.meta_description|default:opportunity.description|striptags|truncatewords:25 }}{% endblock %}
+
+{% block meta_keywords %}{{ opportunity.focus_keywords|default:opportunity.title }}, scholarship 2026, fully funded, international students{% endblock %}
+
+{% block robots %}index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1{% endblock %}
+
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ opportunity.title|escapejs }}{% endblock %}
+{% block og_description %}{{ opportunity.meta_description|default:opportunity.description|striptags|truncatewords:25|escapejs }}{% endblock %}
+{% if opportunity.image %}
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ opportunity.image.url }}{% endblock %}
+{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{{ opportunity.image.url }}{% endblock %}
+{% endif %}
+{% block twitter_title %}{{ opportunity.title|escapejs }}{% endblock %}
+{% block twitter_description %}{{ opportunity.meta_description|default:opportunity.description|striptags|truncatewords:20|escapejs }}{% endblock %}
+
+{# ═══════════════════════════════════════════════════
+   LCP IMAGE PRELOAD — massive speed win
+═══════════════════════════════════════════════════ #}
+{% block preload_image %}
+{% if opportunity.image %}
+<link rel="preload" as="image" href="{{ opportunity.image.url }}"
+      imagesrcset="{{ opportunity.image.url }}"
+      fetchpriority="high">
+{% endif %}
+{% endblock %}
+
+{# ═══════════════════════════════════════════════════
+   STRUCTURED DATA
+═══════════════════════════════════════════════════ #}
+{% block schema %}
+{{ block.super }}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "EducationalOccupationalProgram",
   "name": "{{ opportunity.title|escapejs }}",
-  "description": "{{ opportunity.description|striptags|truncatewords:50|escapejs }}",
+  "description": "{{ opportunity.meta_description|default:opportunity.description|striptags|truncatewords:50|escapejs }}",
+  "url": "{{ request.build_absolute_uri }}",
   "provider": {
     "@type": "Organization",
-    "name": "{{ opportunity.host|default:'Official Provider'|escapejs }}"
+    "name": "MastersGrant",
+    "url": "https://mastersgrant.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://mastersgrant.com{% static 'images/logo.png' %}"
+    }
   },
   "offers": {
     "@type": "Offer",
-    "category": "Scholarship"
+    "category": "{{ opportunity.opportunity_type|default:'Scholarship'|escapejs }}",
+    "description": "{{ opportunity.funding_type|default:'Funding available'|escapejs }}"
   },
-  "endDate": "{{ opportunity.deadline|date:'Y-m-d' }}"
+  "educationalProgramMode": "{{ opportunity.opportunity_type|escapejs }}",
+  "timeToComplete": "P1Y",
+  {% if opportunity.deadline %}"endDate": "{{ opportunity.deadline|date:'Y-m-d' }}",{% endif %}
+  "hasCourse": {
+    "@type": "Course",
+    "name": "{{ opportunity.title|escapejs }}",
+    "description": "{{ opportunity.meta_description|default:''|escapejs }}"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home",          "item": "{{ request.scheme }}://{{ request.get_host }}/" },
+    { "@type": "ListItem", "position": 2, "name": "Scholarships",  "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'scholarship_list' %}" },
+    { "@type": "ListItem", "position": 3, "name": "{{ opportunity.title|escapejs }}", "item": "{{ request.build_absolute_uri }}" }
+  ]
 }
 </script>
 {% endblock %}
 
+{# ═══════════════════════════════════════════════════
+   PAGE-SPECIFIC STYLES
+═══════════════════════════════════════════════════ #}
+{% block extra_head %}
+<style>
+
+/* ── Page shell ── */
+.detail-page { background: var(--surface-2); min-height: 100vh; }
+
+/* ── Hero header ── */
+.detail-hero {
+    background: linear-gradient(135deg, #0c2d6b 0%, #1349a8 55%, #1a5fc8 100%);
+    padding: 44px 0 88px;
+    position: relative;
+    overflow: hidden;
+}
+.detail-hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+}
+.detail-hero::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -80px;
+    width: 440px; height: 440px;
+    background: radial-gradient(circle, rgba(100,200,255,.12) 0%, transparent 65%);
+    pointer-events: none;
+}
+.detail-hero-inner { position: relative; z-index: 1; }
+
+/* Breadcrumb */
+.detail-breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .78rem; font-weight: 500;
+    color: rgba(255,255,255,.5); margin-bottom: 16px; flex-wrap: wrap;
+}
+.detail-breadcrumb a { color: rgba(255,255,255,.7); transition: color .2s; }
+.detail-breadcrumb a:hover { color: #fff; }
+.detail-breadcrumb span { color: rgba(255,255,255,.3); }
+
+/* Type + funding pills */
+.hero-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.hero-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: .7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .6px; padding: 5px 12px; border-radius: 50px;
+    backdrop-filter: blur(8px);
+}
+.pill-type {
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.22);
+    color: rgba(255,255,255,.9);
+}
+.pill-funded {
+    background: rgba(14,167,110,.22);
+    border: 1px solid rgba(14,167,110,.4);
+    color: #5dedb8;
+}
+.pill-deadline {
+    background: rgba(240,106,40,.2);
+    border: 1px solid rgba(240,106,40,.35);
+    color: #ffc09f;
+}
+
+/* Title */
+.detail-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.65rem, 3.5vw, 2.5rem);
+    font-weight: 900; color: #fff;
+    line-height: 1.12; letter-spacing: -.4px;
+    margin-bottom: 18px; max-width: 760px;
+}
+
+/* Hero meta row */
+.hero-meta {
+    display: flex; align-items: center; flex-wrap: wrap;
+    gap: 18px; padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,.14);
+}
+.hero-meta-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: .8rem; font-weight: 500;
+    color: rgba(255,255,255,.6);
+}
+.hero-meta-item svg { flex-shrink: 0; opacity: .7; }
+.hero-meta-item strong { color: rgba(255,255,255,.88); }
+
+/* Hero share */
+.hero-share { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.hero-share-label { font-size: .72rem; font-weight: 600; color: rgba(255,255,255,.45); }
+.hero-share-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.2);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,.7); font-size: .78rem; font-weight: 700;
+    transition: background .2s, color .2s; backdrop-filter: blur(6px);
+}
+.hero-share-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
+
+/* ── Layout ── */
+.detail-shell {
+    max-width: 1280px;
+    margin: -52px auto 0;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 308px;
+    gap: 28px;
+    align-items: start;
+    position: relative;
+    z-index: 10;
+}
+
+/* ── Main article card ── */
+.article-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Reading progress bar inside card top */
+.read-progress {
+    height: 3px; background: var(--surface-3);
+}
+.read-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    width: 0%; will-change: width; transition: width .12s;
+}
+
+/* Hero image */
+.detail-img-wrap {
+    width: 100%; overflow: hidden;
+    /* CLS fix: aspect-ratio reserves space before image loads */
+    aspect-ratio: 16/7;
+    background: var(--surface-3);
+    position: relative;
+}
+.detail-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.img-overlay-badge {
+    position: absolute; bottom: 16px; left: 16px;
+    background: rgba(0,0,0,.65); backdrop-filter: blur(8px);
+    color: #fff; font-size: .72rem; font-weight: 700;
+    padding: 5px 12px; border-radius: 50px;
+    display: flex; align-items: center; gap: 6px;
+}
+
+/* Quick-facts strip */
+.quick-facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--border);
+}
+.qf-item {
+    padding: 22px 24px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+    position: relative;
+}
+.qf-item:last-child { border-right: none; }
+.qf-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px;
+    font-size: 1.15rem;
+}
+.qf-label {
+    font-size: .65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .7px;
+    color: var(--ink-3); margin-bottom: 5px;
+}
+.qf-value {
+    font-size: .9rem; font-weight: 700; color: var(--ink);
+    line-height: 1.3;
+}
+.qf-value.urgent { color: #dc2626; }
+.qf-value.funded { color: var(--green); }
+
+/* Countdown badge */
+.deadline-countdown {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: .7rem; font-weight: 700;
+    background: #fef2f2; color: #dc2626;
+    border-radius: 50px; padding: 3px 9px;
+    margin-top: 4px; border: 1px solid #fecaca;
+}
+
+/* Article content */
+.article-body { padding: 40px 48px; }
+
+/* Lead paragraph */
+.lead-para {
+    font-size: 1.05rem;
+    color: var(--ink-2);
+    line-height: 1.8;
+    border-left: 3px solid var(--blue);
+    padding-left: 20px;
+    margin-bottom: 32px;
+    background: var(--blue-light);
+    padding: 18px 22px;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* ── Opportunity content typography ── */
+.opp-content {
+    font-size: 1.02rem;
+    line-height: 1.82;
+    color: var(--ink-2);
+}
+.opp-content h2 {
+    font-family: var(--font-serif);
+    font-size: 1.55rem; font-weight: 900;
+    color: var(--ink); margin: 2.6rem 0 1rem;
+    letter-spacing: -.3px; line-height: 1.2;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+}
+.opp-content h3 {
+    font-family: var(--font-serif);
+    font-size: 1.22rem; font-weight: 700;
+    color: var(--ink); margin: 2rem 0 .85rem;
+    line-height: 1.3;
+}
+.opp-content h4 { font-size:1rem; font-weight:700; color:var(--ink); margin:1.6rem 0 .7rem; }
+.opp-content p { margin-bottom: 1.4rem; }
+.opp-content ul, .opp-content ol { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+.opp-content li { margin-bottom: .55rem; line-height: 1.7; }
+.opp-content a { color: var(--blue); text-decoration: underline; text-decoration-color: rgba(19,73,168,.3); text-underline-offset: 3px; }
+.opp-content a:hover { text-decoration-color: var(--blue); }
+.opp-content blockquote {
+    margin: 2rem 0; padding: 16px 22px;
+    border-left: 4px solid var(--green);
+    background: var(--green-light);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+.opp-content blockquote p { margin-bottom: 0; }
+.opp-content strong { color: var(--ink); font-weight: 700; }
+.opp-content table {
+    width: 100%; border-collapse: collapse; margin-bottom: 1.8rem; font-size: .95rem;
+}
+.opp-content table th {
+    background: var(--surface-2); font-weight: 700;
+    padding: 10px 14px; border: 1px solid var(--border); text-align: left;
+}
+.opp-content table td { padding: 10px 14px; border: 1px solid var(--border); }
+.opp-content table tr:nth-child(even) td { background: var(--surface-2); }
+
+/* CTA apply box */
+.apply-box {
+    background: linear-gradient(135deg, var(--ink) 0%, #1a2d4a 100%);
+    border-radius: var(--radius-xl);
+    padding: 44px 40px;
+    text-align: center;
+    margin: 36px 0;
+    position: relative;
+    overflow: hidden;
+}
+.apply-box::before {
+    content: '';
+    position: absolute; right: -60px; top: -60px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(19,73,168,.4) 0%, transparent 70%);
+    pointer-events: none;
+}
+.apply-box h2 {
+    font-family: var(--font-serif);
+    font-size: 1.7rem; font-weight: 900;
+    color: #fff; margin-bottom: 10px;
+    position: relative;
+}
+.apply-box p {
+    color: rgba(255,255,255,.6); font-size: .95rem;
+    margin-bottom: 26px; position: relative;
+}
+.btn-apply-main {
+    font-family: var(--font-sans);
+    font-size: 1rem; font-weight: 700;
+    background: var(--orange); color: #fff;
+    border: none; border-radius: 50px;
+    padding: 16px 40px;
+    display: inline-flex; align-items: center; gap: 9px;
+    transition: background .2s, transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 20px rgba(240,106,40,.4);
+    position: relative;
+}
+.btn-apply-main:hover {
+    background: #d45a20; transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(240,106,40,.5);
+}
+.apply-disclaimer {
+    font-size: .78rem; color: rgba(255,255,255,.38);
+    margin-top: 14px; position: relative;
+}
+
+/* Disclaimer box */
+.disclaimer-box {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    font-size: .84rem; color: var(--ink-3);
+    line-height: 1.6; margin-top: 28px;
+}
+.disclaimer-box strong { color: var(--ink-2); }
+
+/* Article footer */
+.article-footer {
+    padding: 26px 48px 34px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-2);
+}
+
+/* Tags */
+.detail-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.detail-tag {
+    font-size: .75rem; font-weight: 600;
+    color: var(--blue); background: var(--blue-light);
+    border-radius: 50px; padding: 4px 12px;
+    transition: background .2s, color .2s;
+}
+.detail-tag:hover { background: var(--blue); color: #fff; }
+
+/* Share strip */
+.share-strip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 18px 0; border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+.share-strip-label { font-size: .82rem; font-weight: 700; color: var(--ink-2); }
+.shr-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-sans); font-size: .78rem; font-weight: 700;
+    padding: 8px 14px; border-radius: 50px;
+    border: 1.5px solid var(--border); color: var(--ink-2);
+    background: var(--surface); transition: background .2s, border-color .2s, color .2s, transform .12s;
+}
+.shr-btn:hover { transform: translateY(-2px); }
+.shr-btn.fb:hover { background:#1877f2; border-color:#1877f2; color:#fff; }
+.shr-btn.tw:hover { background:#000; border-color:#000; color:#fff; }
+.shr-btn.wa:hover { background:#25d366; border-color:#25d366; color:#fff; }
+.shr-btn.li:hover { background:#0a66c2; border-color:#0a66c2; color:#fff; }
+.copy-btn {
+    margin-left: auto; font-family: var(--font-sans);
+    font-size: .75rem; font-weight: 600; color: var(--ink-3);
+    background: none; border: 1.5px solid var(--border);
+    border-radius: 50px; padding: 7px 13px;
+    display: flex; align-items: center; gap: 5px;
+    transition: border-color .2s, color .2s;
+}
+.copy-btn:hover { border-color: var(--blue); color: var(--blue); }
+.copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+/* ── SIDEBAR ── */
+.detail-sidebar {
+    position: sticky;
+    top: calc(var(--nav-h) + 16px);
+    display: flex; flex-direction: column; gap: 20px;
+}
+
+/* Sidebar cards */
+.sb {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+.sb-head {
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: .72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .7px;
+    color: var(--ink-3); background: var(--surface-2);
+    display: flex; align-items: center; gap: 7px;
+}
+.sb-head svg { color: var(--blue); }
+.sb-body { padding: 16px 18px; }
+
+/* Quick-apply sidebar card */
+.sb-apply {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+    border-radius: var(--radius-lg);
+    padding: 22px 18px;
+    text-align: center;
+    position: relative; overflow: hidden;
+}
+.sb-apply::before {
+    content: ''; position: absolute;
+    right: -20px; top: -20px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(255,255,255,.1) 0%, transparent 70%);
+}
+.sb-apply h3 {
+    font-family: var(--font-serif);
+    font-size: 1.05rem; font-weight: 900;
+    color: #fff; margin-bottom: 6px;
+}
+.sb-apply p {
+    font-size: .8rem; color: rgba(255,255,255,.6);
+    margin-bottom: 14px; line-height: 1.5;
+}
+.btn-sb-apply {
+    display: block; width: 100%;
+    font-family: var(--font-sans);
+    font-size: .9rem; font-weight: 700;
+    background: var(--orange); color: #fff;
+    border: none; border-radius: 50px;
+    padding: 13px; text-align: center;
+    transition: background .2s, transform .15s;
+    box-shadow: 0 3px 12px rgba(240,106,40,.4);
+}
+.btn-sb-apply:hover { background: #d45a20; transform: translateY(-1px); }
+.sb-apply-meta {
+    font-size: .7rem; color: rgba(255,255,255,.38);
+    margin-top: 10px;
+}
+
+/* Deadline timer in sidebar */
+.sb-deadline {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    margin-top: 12px;
+    display: flex; align-items: center; gap: 9px;
+}
+.sb-deadline svg { color: #dc2626; flex-shrink: 0; }
+.sb-deadline-label { font-size: .72rem; font-weight: 700; color: #dc2626; display: block; }
+.sb-deadline-date { font-size: .82rem; font-weight: 700; color: var(--ink); }
+
+/* Key details list */
+.key-details { display: flex; flex-direction: column; gap: 0; }
+.kd-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.kd-row:last-child { border-bottom: none; padding-bottom: 0; }
+.kd-row:first-child { padding-top: 0; }
+.kd-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .85rem; flex-shrink: 0; margin-top: 1px;
+}
+.kd-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--ink-3); margin-bottom: 2px; }
+.kd-value { font-size: .86rem; font-weight: 600; color: var(--ink); line-height: 1.4; }
+
+/* Related opportunities */
+.related-list { display: flex; flex-direction: column; gap: 0; }
+.related-opp {
+    display: flex; gap: 12px;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+    transition: background .15s;
+    position: relative;
+}
+.related-opp:last-child { border-bottom: none; padding-bottom: 0; }
+.related-opp:first-child { padding-top: 0; }
+.related-thumb {
+    width: 62px; height: 48px; border-radius: var(--radius-sm);
+    object-fit: cover; flex-shrink: 0; background: var(--surface-3);
+}
+.related-thumb-placeholder {
+    width: 62px; height: 48px; border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--blue-light), var(--surface-3));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+}
+.related-body { flex: 1; min-width: 0; }
+.related-type {
+    font-size: .65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .5px; color: var(--blue); margin-bottom: 3px;
+}
+.related-title {
+    font-size: .84rem; font-weight: 700; color: var(--ink);
+    line-height: 1.35; margin-bottom: 4px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    transition: color .2s;
+}
+.related-opp:hover .related-title { color: var(--blue); }
+/* Stretch the whole card as a link */
+.related-opp .related-link::after { content: ''; position: absolute; inset: 0; }
+.related-deadline {
+    font-size: .7rem; font-weight: 600; color: var(--ink-3);
+    display: flex; align-items: center; gap: 4px;
+}
+.related-funding-tag {
+    display: inline-block; font-size: .65rem; font-weight: 700;
+    color: var(--green); background: var(--green-light);
+    border-radius: 50px; padding: 2px 7px; margin-bottom: 3px;
+}
+
+/* Bottom related section (full-width) */
+.more-opps-section {
+    max-width: 1280px; margin: 0 auto 80px;
+    padding: 0 24px;
+}
+.more-opps-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; padding-bottom: 14px;
+    border-bottom: 2px solid var(--border);
+}
+.more-opps-title {
+    font-family: var(--font-serif);
+    font-size: 1.4rem; font-weight: 900;
+    color: var(--ink); letter-spacing: -.2px;
+}
+.more-opps-link {
+    font-size: .83rem; font-weight: 700; color: var(--blue);
+    display: flex; align-items: center; gap: 4px; transition: gap .18s;
+}
+.more-opps-link:hover { gap: 8px; }
+.more-opps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+.mopp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform .22s, box-shadow .22s, border-color .22s;
+    position: relative;
+    display: flex; flex-direction: column;
+}
+.mopp-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(19,73,168,.2);
+}
+.mopp-thumb {
+    aspect-ratio: 16/9; overflow: hidden;
+    background: var(--surface-3); position: relative;
+}
+.mopp-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.mopp-card:hover .mopp-thumb img { transform: scale(1.05); }
+.mopp-thumb-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #0c2d6b, #1349a8);
+    font-size: 2.5rem;
+}
+.mopp-funding-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--green); color: #fff;
+    font-size: .68rem; font-weight: 700;
+    padding: 3px 9px; border-radius: 50px;
+}
+.mopp-deadline-badge {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(0,0,0,.6); backdrop-filter: blur(6px);
+    color: #fff; font-size: .68rem; font-weight: 600;
+    padding: 3px 9px; border-radius: 50px;
+}
+.mopp-body { padding: 18px 20px; flex: 1; display: flex; flex-direction: column; }
+.mopp-cat {
+    font-size: .68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .6px; color: var(--blue); margin-bottom: 7px;
+}
+.mopp-title {
+    font-size: .95rem; font-weight: 700; color: var(--ink);
+    line-height: 1.35; margin-bottom: 10px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* Stretch link */
+.mopp-title a { transition: color .2s; }
+.mopp-title a::after { content: ''; position: absolute; inset: 0; }
+.mopp-title a:hover { color: var(--blue); }
+.mopp-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+.mopp-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: .73rem; font-weight: 600; color: var(--ink-2);
+    background: var(--surface-2); border-radius: 50px; padding: 3px 9px;
+}
+.mopp-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 12px; border-top: 1px solid var(--border); margin-top: auto;
+}
+.mopp-deadline-text { font-size: .73rem; color: var(--ink-3); font-weight: 500; }
+.mopp-link {
+    font-size: .78rem; font-weight: 700; color: var(--blue);
+    display: flex; align-items: center; gap: 3px;
+    position: relative; z-index: 1; transition: gap .18s;
+}
+.mopp-link:hover { gap: 7px; }
+
+/* ── Mobile sticky apply bar ── */
+.mobile-apply-bar {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    padding: 14px 20px;
+    box-shadow: 0 -4px 20px rgba(15,27,45,.12);
+    z-index: 800;
+    border-top: 1px solid var(--border);
+}
+.btn-mobile-apply {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; font-family: var(--font-sans);
+    font-size: .95rem; font-weight: 700;
+    background: var(--orange); color: #fff;
+    border: none; border-radius: 50px; padding: 15px;
+    transition: background .2s;
+}
+.btn-mobile-apply:hover { background: #d45a20; }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .detail-shell { grid-template-columns: 1fr; }
+    .detail-sidebar { position: static; }
+    .more-opps-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+    .detail-hero { padding: 32px 0 72px; }
+    .detail-title { font-size: 1.6rem; }
+    .detail-shell { padding: 0 16px 60px; margin-top: -36px; }
+    .article-body { padding: 24px 20px; }
+    .article-footer { padding: 20px 20px 26px; }
+    .apply-box { padding: 30px 24px; }
+    .quick-facts { grid-template-columns: 1fr; }
+    .qf-item { border-right: none; border-bottom: 1px solid var(--border); }
+    .qf-item:last-child { border-bottom: none; }
+    .hero-share { display: none; }
+    .mobile-apply-bar { display: flex; }
+    body { padding-bottom: 80px; }
+    .more-opps-grid { grid-template-columns: 1fr; }
+    .more-opps-section { padding: 0 16px; }
+}
+@media (max-width: 480px) {
+    .detail-title { font-size: 1.38rem; }
+    .article-body { padding: 18px 16px; }
+    .article-footer { padding: 16px 16px 22px; }
+    .apply-box { padding: 24px 18px; }
+    .share-strip { gap: 6px; }
+    .shr-btn span { display: none; }
+    .copy-btn { margin-left: 0; }
+}
+</style>
+{% endblock %}
+
+{# ═══════════════════════════════════════════════════
+   CONTENT
+═══════════════════════════════════════════════════ #}
 {% block content %}
-<div id="progress-container"><div id="progress-bar"></div></div>
+<div class="detail-page">
 
-<div class="container my-5">
-    <div class="row justify-content-center">
+    {# ── Hero Header ── #}
+    <header class="detail-hero">
+        <div class="container detail-hero-inner">
 
-        <div class="col-lg-8">
-
-            <nav class="mb-3 d-flex align-items-center justify-content-between">
-                <ol class="breadcrumb mb-0 small">
-                    <li class="breadcrumb-item"><a href="{% url 'index' %}" class="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'scholarship_list' %}" class="text-decoration-none">Scholarships</a></li>
-                    <li class="breadcrumb-item active text-truncate" style="max-width: 150px;">{{ opportunity.title }}</li>
-                </ol>
-                <span class="badge bg-soft-primary text-primary border px-3 rounded-pill">
-                    {{ opportunity.opportunity_type }}
-                </span>
+            {# Breadcrumb #}
+            <nav class="detail-breadcrumb" aria-label="Breadcrumb">
+                <a href="{% url 'index' %}">Home</a>
+                <span aria-hidden="true">›</span>
+                <a href="{% url 'scholarship_list' %}">Scholarships</a>
+                <span aria-hidden="true">›</span>
+                <span aria-current="page">{{ opportunity.title|truncatechars:45 }}</span>
             </nav>
 
-            <h1 class="display-6 fw-bold mb-3 text-dark lh-sm">{{ opportunity.title }}</h1>
-            
-            <div class="d-flex align-items-center mb-4 text-muted small">
-                <div class="me-3"><i class="fas fa-check-circle text-success me-1"></i> Verified Opportunity</div>
-                <div class="me-3"><i class="far fa-eye me-1"></i> 5 min read</div>
-                <div><i class="far fa-calendar-alt me-1"></i> Updated: {{ opportunity.created_at|date:"M d, Y" }}</div>
+            {# Type + funding pills #}
+            <div class="hero-pills">
+                <span class="hero-pill pill-type">{{ opportunity.get_opportunity_type_display|default:"Scholarship" }}</span>
+                {% if opportunity.funding_type %}
+                <span class="hero-pill pill-funded">💰 {{ opportunity.funding_type }}</span>
+                {% endif %}
+                {% if opportunity.deadline %}
+                <span class="hero-pill pill-deadline">⏰ Deadline: {{ opportunity.deadline|date:"M d, Y" }}</span>
+                {% endif %}
             </div>
 
-            <div class="featured-image-wrapper mb-5 shadow-sm rounded overflow-hidden">
-                <img src="{{ opportunity.image.url }}" alt="{{ opportunity.title }}" class="img-fluid w-100">
-            </div>
+            {# Title #}
+            <h1 class="detail-title">{{ opportunity.title }}</h1>
 
-            <div class="card border-0 bg-white shadow-sm mb-5 overflow-hidden">
-                <div class="row g-0">
-                    <div class="col-md-4 border-end border-light text-center p-4">
-                        <i class="fas fa-hand-holding-usd fa-2x text-primary mb-2"></i>
-                        <h6 class="text-muted small text-uppercase fw-bold">Funding</h6>
-                        <p class="mb-0 fw-bold text-dark">
-                            {% if opportunity.provides_stipend %}
-                                Stipend Amount: {{ opportunity.stipend_amount }}
-                            {% else %}
-                                Funding Amount: {{ opportunity.funding_amount }}
-                            {% endif %}
-                        </p>
-                    </div>
-                    <div class="col-md-4 border-end border-light text-center p-4">
-                        <i class="fas fa-user-graduate fa-2x text-success mb-2"></i>
-                        <h6 class="text-muted small text-uppercase fw-bold">Degree Level</h6>
-                        <p class="mb-0 fw-bold text-dark">
-                            {% for level in opportunity.education_levels.all %}
-                                <span>{{ level.name }}</span>{% if not forloop.last %}, {% endif %}
-                            {% empty %}
-                                No education levels specified.
-                            {% endfor %} 
-                        </p>
-                    </div>
-                    <div class="col-md-4 text-center p-4">
-                        <i class="fas fa-clock fa-2x text-danger mb-2"></i>
-                        <h6 class="text-muted small text-uppercase fw-bold">Deadline</h6>
-                        <p class="mb-0 fw-bold text-danger">{{ opportunity.deadline|date:"d M Y" }}</p>
-                    </div>
+            {# Meta row + share #}
+            <div class="hero-meta">
+                <div class="hero-meta-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span>Verified Opportunity</span>
                 </div>
-            </div>
-
-            <article class="scholarship-main-content">
-                <div class="lead-text mb-4">
-                    Looking for a chance to study in {{ opportunity.target_countries }}? The <strong>{{ opportunity.title }}</strong> is a prestigious opportunity 
-                    offering {{ opportunity.amount }} for {{ opportunity.education_level }} students. Below are the full details on how to apply.
+                <div class="hero-meta-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>5 min read</span>
                 </div>
-
-                {{ opportunity.description|safe }}
-            </article>
-
-            <div class="my-5 p-4 bg-light border border-dashed rounded text-center">
-                <small class="text-muted d-block mb-2">STORY CONTINUES BELOW</small>
+                <div class="hero-meta-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <time datetime="{{ opportunity.created_at|date:'Y-m-d' }}">Updated: {{ opportunity.created_at|date:"M d, Y" }}</time>
                 </div>
-
-            <div class="apply-box bg-dark text-white p-5 rounded-3 shadow-lg text-center my-5">
-                <h3 class="fw-bold mb-3">Ready to Apply?</h3>
-                <p class="opacity-75 mb-4">Ensure you have all documents ready before the {{ opportunity.deadline|date:"M d" }} deadline.</p>
-                <a href="{{ opportunity.official_link }}" target="_blank" rel="nofollow" class="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow">
-                    Apply on Official Website <i class="fas fa-external-link-alt ms-2"></i>
-                </a>
-                <p class="small opacity-50 mt-3 mb-0">No application fee required through our portal.</p>
+                <div class="hero-share" aria-label="Share">
+                    <span class="hero-share-label">Share:</span>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener noreferrer" class="hero-share-btn" aria-label="Share on Facebook">f</a>
+                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ opportunity.title|urlencode }}" target="_blank" rel="noopener noreferrer" class="hero-share-btn" aria-label="Share on Twitter">𝕏</a>
+                    <a href="https://wa.me/?text={{ opportunity.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener noreferrer" class="hero-share-btn" aria-label="Share on WhatsApp">W</a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri|urlencode }}&title={{ opportunity.title|urlencode }}" target="_blank" rel="noopener noreferrer" class="hero-share-btn" aria-label="Share on LinkedIn">in</a>
+                </div>
             </div>
 
         </div>
+    </header>
 
-        <div class="col-lg-4">
-            <div class="sticky-top" style="top: 100px;">
-                
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body">
-                        <h6 class="fw-bold mb-3">Share this Opportunity</h6>
-                        <div class="d-flex gap-2">
-                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-secondary flex-grow-1"><i class="fab fa-facebook-f"></i></a>
-                            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-secondary flex-grow-1"><i class="fab fa-twitter"></i></a>
-                            <a href="https://api.whatsapp.com/send?text={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline-secondary flex-grow-1"><i class="fab fa-whatsapp"></i></a>
-                        </div>
+    {# ── Content shell ── #}
+    <div class="detail-shell">
+
+        {# ════ MAIN ARTICLE ════ #}
+        <article class="article-card"
+                 itemscope itemtype="https://schema.org/EducationalOccupationalProgram">
+
+            {# Reading progress bar #}
+            <div class="read-progress" aria-hidden="true">
+                <div class="read-progress-fill" id="readFill"></div>
+            </div>
+
+            {# Hero image (LCP element — preloaded above) #}
+            {% if opportunity.image %}
+            <div class="detail-img-wrap">
+                <img
+                    src="{{ opportunity.image.url }}"
+                    alt="{{ opportunity.image_alt_text|default:opportunity.title }}"
+                    width="900" height="394"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                    itemprop="image"
+                >
+                {% if opportunity.funding_type %}
+                <span class="img-overlay-badge" aria-label="Funding: {{ opportunity.funding_type }}">
+                    💰 {{ opportunity.funding_type }}
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {# Quick facts strip #}
+            <div class="quick-facts" aria-label="Key facts">
+
+                <div class="qf-item">
+                    <div class="qf-icon" style="background:var(--blue-light);">💰</div>
+                    <div class="qf-label">Funding</div>
+                    <div class="qf-value funded">
+                        {% if opportunity.provides_stipend and opportunity.stipend_amount %}
+                            {{ opportunity.stipend_amount }}
+                        {% elif opportunity.funding_amount %}
+                            {{ opportunity.funding_amount }}
+                        {% elif opportunity.funding_type %}
+                            {{ opportunity.funding_type }}
+                        {% else %}
+                            Check Official Site
+                        {% endif %}
                     </div>
                 </div>
 
-                {% if related_items %}
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-0 pt-3">
-                        <h6 class="fw-bold mb-0">You Might Also Like</h6>
-                    </div>
-                    <div class="card-body">
-                        {% for r in related_items %}
-                        <div class="d-flex mb-3 align-items-start border-bottom pb-2">
-                            <div class="flex-grow-1">
-                                <a href="{% url 'opportunity_detail' r.slug %}" class="text-decoration-none text-dark small fw-bold d-block mb-1">
-                                    {{ r.title|truncatechars:60 }}
-                                </a>
-                                <span class="text-success x-small fw-bold">{{ r.amount }}</span>
-                            </div>
-                        </div>
+                <div class="qf-item">
+                    <div class="qf-icon" style="background:var(--green-light);">🎓</div>
+                    <div class="qf-label">Degree Level</div>
+                    <div class="qf-value">
+                        {% for level in opportunity.education_levels.all %}
+                            {{ level.name }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            Open to All
                         {% endfor %}
                     </div>
                 </div>
-                {% endif %}
 
-                <div class="text-center p-3 bg-light border rounded">
-                    <small class="text-muted">Advertisement</small>
-                    <div style="height: 250px;"></div>
+                <div class="qf-item">
+                    <div class="qf-icon" style="background:#fef2f2;">⏰</div>
+                    <div class="qf-label">Deadline</div>
+                    {% if opportunity.deadline %}
+                    <div class="qf-value urgent">{{ opportunity.deadline|date:"d M Y" }}</div>
+                    {% else %}
+                    <div class="qf-value">{{ opportunity.get_deadline_type_display|default:"Check Official Site" }}</div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            {# Article body #}
+            <div class="article-body">
+
+                {# Lead paragraph #}
+                <div class="lead-para" role="note">
+                    {% with tc=opportunity.target_countries.all %}
+                    <strong>{{ opportunity.title }}</strong> is a
+                    {{ opportunity.funding_type|default:"prestigious" }} {{ opportunity.get_opportunity_type_display|lower|default:"opportunity" }}
+                    {% if tc %}open to students from {{ tc|join:", " }}{% else %}open to international students{% endif %}.
+                    Read on for full eligibility criteria, benefits, and application steps.
+                    {% endwith %}
+                </div>
+
+                {# Main content from scraper #}
+                <div class="opp-content" id="oppContent" itemprop="description">
+                    {{ opportunity.description|safe }}
+                </div>
+
+                {# Main apply CTA #}
+                <div class="apply-box" id="applyBox" aria-label="Apply for this opportunity">
+                    <h2>Ready to Apply?</h2>
+                    <p>
+                        {% if opportunity.deadline %}
+                            Deadline is <strong style="color:#fff;">{{ opportunity.deadline|date:"F d, Y" }}</strong>. Don't miss it.
+                        {% else %}
+                            Gather your documents and apply through the official website.
+                        {% endif %}
+                    </p>
+                    <a href="{{ opportunity.official_link }}"
+                       target="_blank"
+                       rel="noopener noreferrer nofollow"
+                       class="btn-apply-main"
+                       aria-label="Apply for {{ opportunity.title }} on official website">
+                        Apply on Official Website
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                    <p class="apply-disclaimer">No application fee required through our portal.</p>
+                </div>
+
+                {# Disclaimer #}
+                <div class="disclaimer-box" role="note" aria-label="Disclaimer">
+                    <strong>⚠️ Disclaimer:</strong> MastersGrant provides informational summaries only. Always verify details and check the official website before applying. We are not affiliated with the scholarship provider.
+                </div>
+
+            </div>
+
+            {# Article footer #}
+            <footer class="article-footer">
+
+                {# Tags #}
+                <div class="detail-tags" aria-label="Topics">
+                    {% if opportunity.category %}<a href="{% url 'scholarship_list' %}?type={{ opportunity.opportunity_type }}" class="detail-tag">{{ opportunity.category.name }}</a>{% endif %}
+                    {% if opportunity.funding_type %}<a href="{% url 'scholarship_list' %}?funding={{ opportunity.funding_type|urlencode }}" class="detail-tag">{{ opportunity.funding_type }}</a>{% endif %}
+                    {% for country in opportunity.host_countries.all|slice:":3" %}<a href="{% url 'scholarship_list' %}?q={{ country.name|urlencode }}" class="detail-tag">{{ country.name }}</a>{% endfor %}
+                    {% for level in opportunity.education_levels.all|slice:":2" %}<a href="{% url 'scholarship_list' %}?level={{ level.name|urlencode }}" class="detail-tag">{{ level.name }}</a>{% endfor %}
+                </div>
+
+                {# Share strip #}
+                <div class="share-strip" aria-label="Share this opportunity">
+                    <span class="share-strip-label">Share:</span>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener noreferrer" class="shr-btn fb" aria-label="Share on Facebook">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ opportunity.title|urlencode }}" target="_blank" rel="noopener noreferrer" class="shr-btn tw" aria-label="Share on Twitter">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4l16 16M4 20L20 4"/></svg>
+                        <span>Twitter</span>
+                    </a>
+                    <a href="https://wa.me/?text={{ opportunity.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener noreferrer" class="shr-btn wa" aria-label="Share on WhatsApp">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                        <span>WhatsApp</span>
+                    </a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri|urlencode }}&title={{ opportunity.title|urlencode }}" target="_blank" rel="noopener noreferrer" class="shr-btn li" aria-label="Share on LinkedIn">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                        <span>LinkedIn</span>
+                    </a>
+                    <button class="copy-btn" id="copyBtn" aria-label="Copy link to clipboard">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                        <span id="copyTxt">Copy link</span>
+                    </button>
+                </div>
+
+            </footer>
+        </article>
+
+        {# ════ SIDEBAR ════ #}
+        <aside class="detail-sidebar" aria-label="Opportunity sidebar">
+
+            {# Quick apply CTA #}
+            <div class="sb-apply">
+                <h3>Apply Now</h3>
+                <p>Visit the official website to start your application.</p>
+                <a href="{{ opportunity.official_link }}"
+                   target="_blank"
+                   rel="noopener noreferrer nofollow"
+                   class="btn-sb-apply"
+                   aria-label="Apply for {{ opportunity.title }}">
+                    Apply on Official Site →
+                </a>
+                {% if opportunity.deadline %}
+                <div class="sb-deadline">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <div>
+                        <span class="sb-deadline-label">Application Deadline</span>
+                        <span class="sb-deadline-date">{{ opportunity.deadline|date:"F d, Y" }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                <p class="sb-apply-meta">No fee required via MastersGrant</p>
+            </div>
+
+            {# Key details #}
+            <div class="sb">
+                <div class="sb-head">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Key Details
+                </div>
+                <div class="sb-body" style="padding:12px 16px;">
+                    <div class="key-details">
+
+                        <div class="kd-row">
+                            <div class="kd-icon" style="background:var(--blue-light);">📋</div>
+                            <div>
+                                <div class="kd-label">Type</div>
+                                <div class="kd-value">{{ opportunity.get_opportunity_type_display|default:"Scholarship" }}</div>
+                            </div>
+                        </div>
+
+                        {% if opportunity.funding_type %}
+                        <div class="kd-row">
+                            <div class="kd-icon" style="background:var(--green-light);">💰</div>
+                            <div>
+                                <div class="kd-label">Funding</div>
+                                <div class="kd-value">{{ opportunity.funding_type }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if opportunity.funding_amount %}
+                        <div class="kd-row">
+                            <div class="kd-icon" style="background:#fef9ec;">🏆</div>
+                            <div>
+                                <div class="kd-label">Award Amount</div>
+                                <div class="kd-value">{{ opportunity.funding_amount }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% with hc=opportunity.host_countries.all %}
+                        {% if hc %}
+                        <div class="kd-row">
+                            <div class="kd-icon" style="background:var(--surface-3);">📍</div>
+                            <div>
+                                <div class="kd-label">Host Country</div>
+                                <div class="kd-value">{% for c in hc|slice:":3" %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+
+                        {% with tc=opportunity.target_countries.all %}
+                        {% if tc %}
+                        <div class="kd-row">
+                            <div class="kd-icon" style="background:var(--orange-lt);">🌍</div>
+                            <div>
+                                <div class="kd-label">Open To</div>
+                                <div class="kd-value">{% for c in tc|slice:":3" %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if tc|length > 3 %} +{{ tc|length|add:"-3" }} more{% endif %}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+
+                        {% if opportunity.education_levels.all %}
+                        <div class="kd-row">
+                            <div class="kd-icon" style="background:var(--green-light);">🎓</div>
+                            <div>
+                                <div class="kd-label">Level</div>
+                                <div class="kd-value">{% for l in opportunity.education_levels.all %}{{ l.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if opportunity.deadline_note %}
+                        <div class="kd-row">
+                            <div class="kd-icon" style="background:#fef2f2;">⏰</div>
+                            <div>
+                                <div class="kd-label">Deadline Note</div>
+                                <div class="kd-value" style="font-size:.82rem;">{{ opportunity.deadline_note }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
                 </div>
             </div>
+
+            {# Related in sidebar #}
+            {% if related_opportunities %}
+            <div class="sb">
+                <div class="sb-head">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                    You Might Also Like
+                </div>
+                <div class="sb-body" style="padding:10px 14px;">
+                    <nav class="related-list" aria-label="Related opportunities">
+                        {% for r in related_opportunities|slice:":5" %}
+                        <div class="related-opp">
+                            {% if r.image %}
+                            <img src="{{ r.image.url }}" alt="{{ r.title }}" class="related-thumb" loading="lazy" width="62" height="48">
+                            {% else %}
+                            <div class="related-thumb-placeholder" aria-hidden="true">🏅</div>
+                            {% endif %}
+                            <div class="related-body">
+                                {% if r.funding_type == "Fully Funded" %}
+                                <span class="related-funding-tag">Fully Funded</span>
+                                {% endif %}
+                                <div class="related-title">
+                                    <a href="{{ r.get_absolute_url }}" class="related-link" aria-label="View: {{ r.title }}">{{ r.title|truncatechars:65 }}</a>
+                                </div>
+                                {% if r.deadline %}
+                                <div class="related-deadline">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    {{ r.deadline|date:"M d, Y" }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </nav>
+                </div>
+            </div>
+            {% endif %}
+
+            {# Newsletter #}
+            <div style="background:linear-gradient(135deg,#0c2d6b,#1349a8);border-radius:var(--radius-lg);padding:22px 18px;position:relative;overflow:hidden;">
+                <div style="position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 70%);"></div>
+                <h3 style="font-family:var(--font-serif);font-size:1rem;font-weight:900;color:#fff;margin-bottom:6px;">Get Daily Alerts</h3>
+                <p style="font-size:.8rem;color:rgba(255,255,255,.55);margin-bottom:14px;line-height:1.5;">New scholarships straight to your inbox.</p>
+                <form action="#" method="POST" aria-label="Newsletter signup">
+                    {% csrf_token %}
+                    <input type="email" name="email" placeholder="your@email.com" required
+                           style="width:100%;font-family:var(--font-sans);font-size:.85rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);padding:10px 12px;color:#fff;outline:none;margin-bottom:8px;"
+                           aria-label="Email address">
+                    <button type="submit"
+                            style="width:100%;font-family:var(--font-sans);font-size:.85rem;font-weight:700;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px;cursor:pointer;transition:background .2s;"
+                            onmouseover="this.style.background='#0b8f5d'" onmouseout="this.style.background='var(--green)'">
+                        Subscribe Free →
+                    </button>
+                </form>
+            </div>
+
+        </aside>
+    </div>{# /detail-shell #}
+
+    {# ════ BOTTOM RELATED GRID — keeps users on site ════ #}
+    {% if related_opportunities %}
+    <section class="more-opps-section" aria-labelledby="more-opps-heading">
+        <div class="more-opps-header">
+            <h2 class="more-opps-title" id="more-opps-heading">
+                More {{ opportunity.category.name|default:"Opportunities" }} to Explore
+            </h2>
+            <a href="{% url 'scholarship_list' %}{% if opportunity.category %}?type={{ opportunity.opportunity_type }}{% endif %}"
+               class="more-opps-link">
+                View All →
+            </a>
         </div>
-    </div>
+
+        <div class="more-opps-grid" role="list">
+            {% for r in related_opportunities|slice:":6" %}
+            <article class="mopp-card" role="listitem"
+                     itemscope itemtype="https://schema.org/EducationalOccupationalProgram">
+
+                <div class="mopp-thumb">
+                    {% if r.image %}
+                    <img src="{{ r.image.url }}" alt="{{ r.title }}"
+                         loading="lazy" width="400" height="225"
+                         itemprop="image">
+                    {% else %}
+                    <div class="mopp-thumb-placeholder" aria-hidden="true">🏅</div>
+                    {% endif %}
+                    {% if r.funding_type == "Fully Funded" %}
+                    <span class="mopp-funding-badge">Fully Funded</span>
+                    {% endif %}
+                    {% if r.deadline %}
+                    <span class="mopp-deadline-badge">⏰ {{ r.deadline|date:"M d" }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="mopp-body">
+                    <div class="mopp-cat" itemprop="educationalProgramMode">{{ r.category.name|default:"Scholarship" }}</div>
+                    <h3 class="mopp-title" itemprop="name">
+                        <a href="{{ r.get_absolute_url }}" itemprop="url">{{ r.title }}</a>
+                    </h3>
+                    <div class="mopp-meta">
+                        {% with hc=r.host_countries.all %}
+                        {% if hc %}
+                        <span class="mopp-chip">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            {% for c in hc|slice:":2" %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                        </span>
+                        {% endif %}
+                        {% endwith %}
+                        {% if r.funding_type %}
+                        <span class="mopp-chip" style="color:var(--green);">💰 {{ r.funding_type }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="mopp-footer">
+                        <span class="mopp-deadline-text">
+                            {% if r.deadline %}⏰ {{ r.deadline|date:"M d, Y" }}{% else %}{{ r.get_deadline_type_display }}{% endif %}
+                        </span>
+                        <a href="{{ r.get_absolute_url }}" class="mopp-link" aria-label="View {{ r.title }}">
+                            Details →
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+</div>{# /detail-page #}
+
+{# ── Mobile sticky apply bar ── #}
+<div class="mobile-apply-bar" role="complementary" aria-label="Apply button">
+    <a href="{{ opportunity.official_link }}"
+       target="_blank"
+       rel="noopener noreferrer nofollow"
+       class="btn-mobile-apply"
+       aria-label="Apply for {{ opportunity.title }}">
+        Apply Now
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    </a>
 </div>
 
-<div class="mobile-sticky-apply d-md-none">
-    <a href="{{ opportunity.official_link }}" class="btn btn-primary w-100 fw-bold py-3">Apply Now <i class="fas fa-paper-plane ms-2"></i></a>
-</div>
+{% endblock %}
 
+{# ═══════════════════════════════════════════════════
+   PAGE JS — non-blocking
+═══════════════════════════════════════════════════ #}
+{% block extra_js %}
 <script>
-    // Reading Progress Bar Logic
-    window.onscroll = function() {
-        var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        var scrolled = (winScroll / height) * 100;
-        document.getElementById("progress-bar").style.width = scrolled + "%";
-    };
-</script>
+(function(){
+    'use strict';
 
-<style>
-    /* Content Readability */
-    .scholarship-main-content {
-        font-family: 'Inter', -apple-system, sans-serif;
-        font-size: 1.15rem; /* Larger font for reading */
-        line-height: 1.8;
-        color: #1a1a1a;
+    // ── Reading progress bar ──────────────────────────
+    var fill    = document.getElementById('readFill');
+    var content = document.getElementById('oppContent');
+    if (fill && content) {
+        window.addEventListener('scroll', function() {
+            var rect     = content.getBoundingClientRect();
+            var total    = content.offsetHeight - window.innerHeight;
+            var scrolled = Math.max(0, -rect.top);
+            var pct      = total > 0 ? Math.min(100, (scrolled / total) * 100) : 0;
+            fill.style.width = pct + '%';
+        }, { passive: true });
     }
-    .lead-text {
-        font-size: 1.25rem;
-        color: #4a4a4a;
-        border-left: 4px solid #0d6efd;
-        padding-left: 20px;
-        margin-top: 30px;
+
+    // ── Copy link button ──────────────────────────────
+    var copyBtn = document.getElementById('copyBtn');
+    var copyTxt = document.getElementById('copyTxt');
+    if (copyBtn && navigator.clipboard) {
+        copyBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(window.location.href).then(function() {
+                copyTxt.textContent = '✓ Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(function() {
+                    copyTxt.textContent = 'Copy link';
+                    copyBtn.classList.remove('copied');
+                }, 2500);
+            });
+        });
+    } else if (copyBtn) {
+        copyBtn.style.display = 'none';
     }
-    .scholarship-main-content h2 {
-        font-weight: 800;
-        margin-top: 2.5rem;
-        margin-bottom: 1.2rem;
-        color: #000;
-    }
-    .scholarship-main-content p { margin-bottom: 1.5rem; }
-    
-    .bg-soft-primary { background-color: rgba(13, 110, 253, 0.08); }
-    .featured-image-wrapper { max-height: 450px; }
-    .x-small { font-size: 0.75rem; }
-    
-    /* Scraper content overrides */
-    .opp-requirements {
-        background: #fdfdfd !important;
-        border: 1px solid #eee !important;
-        padding: 30px !important;
-        border-radius: 12px !important;
-    }
-</style>
+
+    // ── Highlight apply box when near deadline ────────
+    (function() {
+        var deadlineStr = '{{ opportunity.deadline|date:"Y-m-d" }}';
+        if (deadlineStr) {
+            var deadline = new Date(deadlineStr);
+            var today    = new Date();
+            var daysLeft = Math.ceil((deadline - today) / 86400000);
+            if (daysLeft <= 14 && daysLeft >= 0) {
+                var box = document.getElementById('applyBox');
+                if (box) {
+                    var badge = document.createElement('div');
+                    badge.style.cssText = 'background:#dc2626;color:#fff;font-size:.78rem;font-weight:700;padding:8px 18px;border-radius:50px;display:inline-block;margin-bottom:16px;position:relative;';
+                    badge.textContent = '⚡ Only ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '') + ' left to apply!';
+                    var title = box.querySelector('h2');
+                    if (title) box.insertBefore(badge, title);
+                }
+            }
+        }
+    })();
+
+})();
+</script>
 {% endblock %}

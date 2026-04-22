@@ -1,173 +1,1032 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}
-{{ guide.meta_title|default:guide.title }}
-{% endblock %}
+{# ═══════════════════════════════════════════════════
+   SEO META BLOCKS
+═══════════════════════════════════════════════════ #}
 
-{% block meta_description %}
-{{ guide.meta_description|default:guide.title }}
-{% endblock %}
+{% block title %}{{ guide.meta_title|default:guide.title }} | MastersGrant{% endblock %}
 
-{% block extra_head %}
+{% block meta_description %}{{ guide.meta_description|default:guide.title }}{% endblock %}
+
+{% block robots %}index, follow, max-snippet:-1, max-image-preview:large{% endblock %}
+
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ guide.title|escapejs }}{% endblock %}
+{% block og_description %}{{ guide.meta_description|default:guide.title|escapejs }}{% endblock %}
+
+{% block twitter_title %}{{ guide.title|escapejs }}{% endblock %}
+{% block twitter_description %}{{ guide.meta_description|default:guide.title|escapejs }}{% endblock %}
+
+{# ═══════════════════════════════════════════════════
+   STRUCTURED DATA
+═══════════════════════════════════════════════════ #}
+{% block schema %}
+{{ block.super }}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "{{ guide.title|escapejs }}",
+  "description": "{{ guide.meta_description|default:guide.title|escapejs }}",
   "author": {
     "@type": "Person",
-    "name": "Amrit Dhakal"
+    "name": "{{ guide.author|default:'MastersGrant Editorial'|escapejs }}",
+    "url": "https://mastersgrant.com/about/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "MastersGrant",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://mastersgrant.com{% static 'images/logo.png' %}"
+    }
   },
   "datePublished": "{{ guide.created_at|date:'c' }}",
+  "dateModified":  "{{ guide.created_at|date:'c' }}",
   "mainEntityOfPage": {
     "@type": "WebPage",
     "@id": "{{ request.build_absolute_uri }}"
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home",   "item": "{{ request.scheme }}://{{ request.get_host }}/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'guide_list' %}" },
+      { "@type": "ListItem", "position": 3, "name": "{{ guide.title|escapejs }}", "item": "{{ request.build_absolute_uri }}" }
+    ]
   }
 }
 </script>
 {% endblock %}
 
-{% block content %}
-<main class="container my-5">
-    <div class="row">
-
-        <div class="col-lg-8 pe-lg-4">
-            
-            <nav aria-label="breadcrumb" class="mb-3" style="background-color: #fcb716;">
-              <ol class="breadcrumb small">
-                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
-                <li class="breadcrumb-item"><a href="/guides/" class="text-decoration-none">Guides</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ guide.title|truncatechars:30 }}</li>
-              </ol>
-            </nav>
-
-            <h1 class="fw-bold mb-3 lh-base">{{ guide.title }}</h1>
-
-            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
-                <p class="text-muted small mb-0">
-                    <i class="far fa-user me-1"></i> {{ guide.author }} &nbsp;|&nbsp;
-                    <i class="far fa-clock me-1"></i> {{ guide.created_at|date:"F d, Y" }} &nbsp;|&nbsp;
-                    <i class="fas fa-book-open me-1"></i> 5 min read
-                </p>
-                
-                <div class="social-share">
-                    <span class="small text-muted me-2">Share:</span>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ guide.title|urlencode }}" target="_blank" class="btn btn-sm btn-outline-info rounded-circle"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ guide.title|urlencode }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-circle"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-
-            <div class="guide-content mb-5">
-                {{ guide.content|safe }}
-            </div>
-
-            <div class="my-5 text-center p-3 bg-light border rounded">
-                <small class="text-muted d-block mb-2" style="font-size: 11px; letter-spacing: 1px;">ADVERTISEMENT</small>
-                <ins class="adsbygoogle"
-                     style="display:block"
-                     data-ad-client="ca-pub-XXXX"
-                     data-ad-slot="XXXX"
-                     data-ad-format="auto"></ins>
-            </div>
-
-            <div class="card border-0 bg-light p-4 mt-5 rounded-3">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
-                            {{ guide.author|make_list|first|upper }}
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5 class="mb-1 fw-bold">About {{ guide.author }}</h5>
-                        <p class="mb-0 text-muted small">Helping international students find global funding and scholarship opportunities to achieve their academic dreams.</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="col-lg-4 mt-5 mt-lg-0">
-            
-            <div class="mb-4">
-                <h4 class="fw-bold mb-3 fs-5 border-bottom pb-2">Related Guides</h4>
-                
-                {% if similar_guides %}
-                    <div class="list-group list-group-flush">
-                        {% for similar in similar_guides %}
-                        <a href="{{ similar.get_absolute_url }}" class="list-group-item list-group-item-action px-0 py-3 border-bottom">
-                            <h6 class="mb-1 fw-semibold text-dark">{{ similar.title }}</h6>
-                            <small class="text-muted"><i class="far fa-clock me-1"></i> {{ similar.created_at|date:"M d, Y" }}</small>
-                        </a>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted small">More guides coming soon.</p>
-                {% endif %}
-            </div>
-
-            <div class="sticky-top" style="top: 20px; z-index: 1020;">
-                <div class="card border-0 shadow-sm p-3 mb-4 text-center bg-light" style="min-height: 300px;">
-                    <small class="text-muted d-block mb-2" style="font-size: 11px; letter-spacing: 1px;">SPONSORED</small>
-                    <ins class="adsbygoogle"
-                         style="display:block;height:100%"
-                         data-ad-client="ca-pub-XXXX"
-                         data-ad-slot="XXXX"></ins>
-                </div>
-            </div>
-            
-        </div>
-
-    </div>
-</main>
-
+{# ═══════════════════════════════════════════════════
+   PAGE-SPECIFIC STYLES
+═══════════════════════════════════════════════════ #}
+{% block extra_head %}
 <style>
-/* Improved Typography and Spacing */
+/* ── Page shell ── */
+.guide-page {
+    background: var(--surface-2);
+    min-height: 100vh;
+}
+
+/* ── Page header ── */
+.guide-header {
+    background: linear-gradient(135deg, #0c2d6b 0%, #1349a8 55%, #1a5fc8 100%);
+    padding: 48px 0 80px;
+    position: relative;
+    overflow: hidden;
+}
+.guide-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.055) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+}
+.guide-header::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -80px;
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(100,180,255,.13) 0%, transparent 68%);
+    pointer-events: none;
+}
+.guide-header-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+}
+
+/* Breadcrumb */
+.guide-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .78rem;
+    font-weight: 500;
+    color: rgba(255,255,255,.5);
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+.guide-breadcrumb a {
+    color: rgba(255,255,255,.7);
+    transition: color .2s;
+}
+.guide-breadcrumb a:hover { color: #fff; }
+.guide-breadcrumb span { color: rgba(255,255,255,.35); }
+
+/* Category pill */
+.guide-cat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.22);
+    color: rgba(255,255,255,.9);
+    font-size: .75rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 50px;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    backdrop-filter: blur(8px);
+}
+.guide-cat-pill .dot {
+    width: 6px; height: 6px;
+    background: #0ea76e;
+    border-radius: 50%;
+}
+
+/* Title */
+.guide-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.12;
+    letter-spacing: -.4px;
+    margin-bottom: 20px;
+}
+
+/* Meta row */
+.guide-meta-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,.14);
+}
+.guide-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .82rem;
+    color: rgba(255,255,255,.65);
+    font-weight: 500;
+}
+.guide-meta-item svg { flex-shrink: 0; opacity: .75; }
+.guide-meta-item strong { color: rgba(255,255,255,.9); }
+
+/* Share buttons in header */
+.guide-share {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+.share-label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: rgba(255,255,255,.5);
+    white-space: nowrap;
+}
+.share-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.22);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,.75);
+    font-size: .8rem;
+    font-weight: 700;
+    transition: background .2s, border-color .2s, color .2s;
+    backdrop-filter: blur(6px);
+}
+.share-btn:hover { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.4); color: #fff; }
+
+/* ── Layout grid ── */
+.guide-shell {
+    max-width: 1280px;
+    margin: -44px auto 0;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 28px;
+    align-items: start;
+    position: relative;
+    z-index: 10;
+}
+
+/* ── Article card ── */
+.article-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Progress bar inside article (reading progress) */
+.reading-progress {
+    height: 3px;
+    background: var(--surface-3);
+    position: relative;
+    overflow: hidden;
+}
+.reading-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    width: 0%;
+    transition: width .15s;
+    will-change: width;
+}
+
+/* Article body */
+.article-body {
+    padding: 44px 52px;
+}
+
+/* ── Guide content typography ── */
 .guide-content {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #333;
+    font-size: 1.05rem;
+    line-height: 1.82;
+    color: var(--ink-2);
 }
 .guide-content h2 {
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
-    font-size: 1.75rem;
+    font-family: var(--font-serif);
+    font-size: 1.65rem;
+    font-weight: 900;
+    color: var(--ink);
+    margin: 2.8rem 0 1rem;
+    letter-spacing: -.3px;
+    line-height: 1.2;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
 }
 .guide-content h3 {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-    font-size: 1.4rem;
+    font-family: var(--font-serif);
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 2.2rem 0 .9rem;
+    line-height: 1.3;
 }
-.guide-content ul, .guide-content ol {
-    margin-bottom: 1.5rem;
-    padding-left: 1.5rem;
-}
-.guide-content li {
-    margin-bottom: 0.5rem;
+.guide-content h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 1.8rem 0 .7rem;
 }
 .guide-content p {
     margin-bottom: 1.5rem;
 }
 .guide-content a {
-    color: #0d6efd;
+    color: var(--blue);
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-decoration-color: rgba(19,73,168,.35);
+    text-underline-offset: 3px;
+    transition: text-decoration-color .2s;
 }
-.social-share a {
-    width: 35px;
-    height: 35px;
+.guide-content a:hover {
+    text-decoration-color: var(--blue);
+}
+.guide-content ul,
+.guide-content ol {
+    padding-left: 1.6rem;
+    margin-bottom: 1.6rem;
+}
+.guide-content li {
+    margin-bottom: .6rem;
+    line-height: 1.7;
+}
+.guide-content blockquote {
+    margin: 2rem 0;
+    padding: 18px 24px;
+    border-left: 4px solid var(--blue);
+    background: var(--blue-light);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-style: italic;
+    color: var(--ink);
+}
+.guide-content blockquote p { margin-bottom: 0; }
+.guide-content img {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    margin: 1.5rem 0;
+    box-shadow: var(--shadow-md);
+}
+.guide-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.8rem;
+    font-size: .95rem;
+}
+.guide-content table th {
+    background: var(--surface-2);
+    font-weight: 700;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    text-align: left;
+}
+.guide-content table td {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+}
+.guide-content table tr:nth-child(even) td { background: var(--surface-2); }
+.guide-content code {
+    font-family: 'Courier New', monospace;
+    font-size: .88em;
+    background: var(--surface-3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #c7254e;
+}
+.guide-content pre {
+    background: var(--ink);
+    color: #e8eaf0;
+    padding: 20px 24px;
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin-bottom: 1.8rem;
+    font-size: .9rem;
+    line-height: 1.6;
+}
+.guide-content pre code { background: none; color: inherit; padding: 0; }
+
+/* ── Article footer ── */
+.article-footer {
+    padding: 28px 52px 36px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-2);
+}
+
+/* Tags */
+.guide-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+.guide-tag {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--blue);
+    background: var(--blue-light);
+    border-radius: 50px;
+    padding: 4px 12px;
+    transition: background .2s, color .2s;
+}
+.guide-tag:hover { background: var(--blue); color: #fff; }
+
+/* Share strip */
+.share-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0 24px;
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.share-strip-label {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--ink-2);
+}
+.share-strip-btn {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease-in-out;
+    gap: 7px;
+    font-family: var(--font-sans);
+    font-size: .8rem;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: 1.5px solid var(--border);
+    color: var(--ink-2);
+    background: var(--surface);
+    transition: background .2s, border-color .2s, color .2s, transform .15s;
 }
-.social-share a:hover {
-    transform: translateY(-2px);
+.share-strip-btn:hover { transform: translateY(-2px); }
+.share-strip-btn.fb:hover  { background: #1877f2; border-color: #1877f2; color: #fff; }
+.share-strip-btn.tw:hover  { background: #000; border-color: #000; color: #fff; }
+.share-strip-btn.li:hover  { background: #0a66c2; border-color: #0a66c2; color: #fff; }
+.share-strip-btn.wa:hover  { background: #25d366; border-color: #25d366; color: #fff; }
+.copy-link-btn {
+    margin-left: auto;
+    font-family: var(--font-sans);
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--ink-3);
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    padding: 7px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color .2s, color .2s;
 }
-.list-group-item-action:hover h6 {
-    color: #0d6efd !important;
+.copy-link-btn:hover { border-color: var(--blue); color: var(--blue); }
+.copy-link-btn.copied { border-color: var(--green); color: var(--green); }
+
+/* Author card */
+.author-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+}
+.author-avatar {
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #fff;
+    flex-shrink: 0;
+}
+.author-name {
+    font-weight: 700;
+    font-size: .95rem;
+    color: var(--ink);
+    margin-bottom: 3px;
+}
+.author-role {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+}
+.author-bio {
+    font-size: .86rem;
+    color: var(--ink-3);
+    line-height: 1.65;
+}
+
+/* ── Sidebar ── */
+.guide-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* TOC */
+.sidebar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+.sidebar-card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    color: var(--ink-3);
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sidebar-card-header svg { color: var(--blue); }
+.sidebar-card-body { padding: 16px 20px; }
+
+/* TOC list */
+.toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.toc-list a {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: .85rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    padding: 7px 10px;
+    border-radius: var(--radius-sm);
+    transition: background .15s, color .15s;
+    line-height: 1.4;
+    border-left: 2px solid transparent;
+}
+.toc-list a:hover {
+    background: var(--blue-light);
+    color: var(--blue);
+    border-left-color: var(--blue);
+}
+.toc-list a.active {
+    background: var(--blue-light);
+    color: var(--blue);
+    border-left-color: var(--blue);
+    font-weight: 700;
+}
+.toc-list .toc-num {
+    font-size: .7rem;
+    font-weight: 700;
+    color: var(--blue);
+    background: var(--blue-light);
+    border-radius: 4px;
+    padding: 1px 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* Sticky sidebar */
+.sidebar-sticky {
+    position: sticky;
+    top: calc(var(--nav-h) + 16px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Related guides list */
+.related-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.related-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+    transition: background .15s;
+}
+.related-item:last-child { border-bottom: none; padding-bottom: 0; }
+.related-item:first-child { padding-top: 0; }
+.related-num {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--ink-3);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.related-title {
+    font-size: .86rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.4;
+    margin-bottom: 4px;
+    transition: color .2s;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.related-item:hover .related-title { color: var(--blue); }
+.related-date {
+    font-size: .72rem;
+    color: var(--ink-3);
+    font-weight: 500;
+}
+
+/* Newsletter sidebar card */
+.newsletter-card {
+    background: linear-gradient(135deg, #0c2d6b 0%, #1349a8 100%);
+    border-radius: var(--radius-lg);
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+}
+.newsletter-card::before {
+    content: '';
+    position: absolute;
+    right: -30px; top: -30px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+.newsletter-card h3 {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 8px;
+}
+.newsletter-card p {
+    font-size: .82rem;
+    color: rgba(255,255,255,.6);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+.nl-form input {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: .85rem;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    color: #fff;
+    outline: none;
+    margin-bottom: 8px;
+    transition: border-color .2s, background .2s;
+}
+.nl-form input::placeholder { color: rgba(255,255,255,.4); }
+.nl-form input:focus { border-color: var(--green); background: rgba(255,255,255,.16); }
+.nl-form button {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: .85rem;
+    font-weight: 700;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    transition: background .2s;
+}
+.nl-form button:hover { background: #0b8f5d; }
+
+/* CTA card */
+.cta-sidebar {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    text-align: center;
+}
+.cta-sidebar h4 {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 8px;
+}
+.cta-sidebar p {
+    font-size: .82rem;
+    color: var(--ink-3);
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+.btn-cta-sidebar {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: .85rem;
+    font-weight: 700;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 11px 20px;
+    transition: background .2s, transform .15s;
+}
+.btn-cta-sidebar:hover { background: var(--blue-dark); transform: translateY(-1px); }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .guide-shell { grid-template-columns: 1fr; }
+    .sidebar-sticky { position: static; }
+    .guide-sidebar { order: -1; }
+}
+@media (max-width: 768px) {
+    .article-body  { padding: 28px 24px; }
+    .article-footer { padding: 22px 24px 28px; }
+    .guide-header  { padding: 36px 0 70px; }
+    .guide-title   { font-size: 1.7rem; }
+    .guide-meta-row { gap: 12px; }
+    .guide-share   { display: none; }
+    .share-strip   { gap: 8px; }
+    .copy-link-btn { margin-left: 0; }
+    .guide-shell   { padding: 0 16px 60px; }
+}
+@media (max-width: 480px) {
+    .guide-title   { font-size: 1.45rem; }
+    .article-body  { padding: 22px 18px; }
+    .article-footer { padding: 18px 18px 24px; }
+    .guide-content { font-size: 1rem; }
+    .share-strip-btn span { display: none; }
 }
 </style>
+{% endblock %}
+
+{# ═══════════════════════════════════════════════════
+   CONTENT
+═══════════════════════════════════════════════════ #}
+{% block content %}
+<div class="guide-page">
+
+    {# ── Page Header ── #}
+    <header class="guide-header">
+        <div class="container">
+            <div class="guide-header-inner">
+
+                {# Breadcrumb #}
+                <nav class="guide-breadcrumb" aria-label="Breadcrumb">
+                    <a href="{% url 'index' %}">Home</a>
+                    <span aria-hidden="true">›</span>
+                    <a href="{% url 'guide_list' %}">Guides</a>
+                    <span aria-hidden="true">›</span>
+                    <span aria-current="page">{{ guide.title|truncatechars:40 }}</span>
+                </nav>
+
+                {# Category label #}
+                <div class="guide-cat-pill">
+                    <span class="dot"></span>
+                    Student Guide
+                </div>
+
+                {# Title #}
+                <h1 class="guide-title">{{ guide.title }}</h1>
+
+                {# Meta + share #}
+                <div class="guide-meta-row">
+                    <div class="guide-meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <strong>{{ guide.author|default:"MastersGrant Editorial" }}</strong>
+                    </div>
+                    <div class="guide-meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <time datetime="{{ guide.created_at|date:'Y-m-d' }}">{{ guide.created_at|date:"F d, Y" }}</time>
+                    </div>
+                    <div class="guide-meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>5 min read</span>
+                    </div>
+
+                    {# Share buttons #}
+                    <div class="guide-share" aria-label="Share this guide">
+                        <span class="share-label">Share:</span>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}"
+                           class="share-btn" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">f</a>
+                        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ guide.title|urlencode }}"
+                           class="share-btn" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">𝕏</a>
+                        <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri|urlencode }}&title={{ guide.title|urlencode }}"
+                           class="share-btn" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">in</a>
+                        <a href="https://wa.me/?text={{ guide.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}"
+                           class="share-btn" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">W</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    {# ── Content Shell ── #}
+    <div class="guide-shell">
+
+        {# ════ MAIN ARTICLE ════ #}
+        <article class="article-card"
+                 itemscope itemtype="https://schema.org/Article"
+                 aria-labelledby="guide-title-main">
+
+            {# Reading progress bar #}
+            <div class="reading-progress" aria-hidden="true">
+                <div class="reading-progress-fill" id="readingProgressFill"></div>
+            </div>
+
+            {# Article body #}
+            <div class="article-body">
+                <div class="guide-content" id="guideContent" itemprop="articleBody">
+                    {{ guide.content|safe }}
+                </div>
+            </div>
+
+            {# Article footer #}
+            <footer class="article-footer">
+
+                {# Tags #}
+                <div class="guide-tags" aria-label="Article tags">
+                    <a href="{% url 'guide_list' %}" class="guide-tag">Student Guides</a>
+                    <a href="{% url 'scholarship_list' %}" class="guide-tag">Scholarships</a>
+                    <a href="{% url 'scholarship_list' %}?q=fully+funded" class="guide-tag">Fully Funded</a>
+                    <a href="{% url 'scholarship_list' %}?q=international" class="guide-tag">International</a>
+                </div>
+
+                {# Share strip #}
+                <div class="share-strip" aria-label="Share this article">
+                    <span class="share-strip-label">Found this helpful? Share it:</span>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}"
+                       class="share-strip-btn fb" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ guide.title|urlencode }}"
+                       class="share-strip-btn tw" target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4l16 16M4 20L20 4"/></svg>
+                        <span>Twitter</span>
+                    </a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri|urlencode }}&title={{ guide.title|urlencode }}"
+                       class="share-strip-btn li" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="https://wa.me/?text={{ guide.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}"
+                       class="share-strip-btn wa" target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                        <span>WhatsApp</span>
+                    </a>
+                    <button class="copy-link-btn" id="copyLinkBtn" aria-label="Copy link to clipboard">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                        <span id="copyLinkText">Copy link</span>
+                    </button>
+                </div>
+
+                {# Author card #}
+                <div class="author-card" itemscope itemtype="https://schema.org/Person">
+                    <div class="author-avatar" aria-hidden="true">
+                        {{ guide.author|default:"M"|make_list|first|upper }}
+                    </div>
+                    <div>
+                        <div class="author-name" itemprop="name">{{ guide.author|default:"MastersGrant Editorial" }}</div>
+                        <div class="author-role">Scholarship Expert</div>
+                        <p class="author-bio">Helping international students find global funding and scholarship opportunities to achieve their academic dreams worldwide.</p>
+                    </div>
+                </div>
+
+            </footer>
+        </article>
+
+        {# ════ SIDEBAR ════ #}
+        <aside class="guide-sidebar" aria-label="Article sidebar">
+            <div class="sidebar-sticky">
+
+                {# Table of Contents (auto-generated by JS) #}
+                <div class="sidebar-card" id="tocCard" style="display:none;">
+                    <div class="sidebar-card-header">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        Table of Contents
+                    </div>
+                    <div class="sidebar-card-body" style="padding:12px;">
+                        <ol class="toc-list" id="tocList" aria-label="Table of contents"></ol>
+                    </div>
+                </div>
+
+                {# Related guides #}
+                {% if similar_guides %}
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                        Related Guides
+                    </div>
+                    <div class="sidebar-card-body">
+                        <nav class="related-list" aria-label="Related articles">
+                            {% for similar in similar_guides %}
+                            <a href="{{ similar.get_absolute_url }}" class="related-item">
+                                <span class="related-num" aria-hidden="true">{{ forloop.counter }}</span>
+                                <div>
+                                    <div class="related-title">{{ similar.title }}</div>
+                                    <time class="related-date" datetime="{{ similar.created_at|date:'Y-m-d' }}">
+                                        {{ similar.created_at|date:"M d, Y" }}
+                                    </time>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </nav>
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Newsletter signup #}
+                <div class="newsletter-card">
+                    <h3>Get Scholarship Alerts</h3>
+                    <p>New opportunities and guides delivered to your inbox every day.</p>
+                    <form class="nl-form" action="#" method="POST" aria-label="Newsletter subscription">
+                        {% csrf_token %}
+                        <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address">
+                        <button type="submit">Subscribe Free →</button>
+                    </form>
+                </div>
+
+                {# Browse scholarships CTA #}
+                <div class="cta-sidebar">
+                    <h4>Ready to Apply?</h4>
+                    <p>Browse 10,000+ fully funded scholarships updated daily.</p>
+                    <a href="{% url 'scholarship_list' %}" class="btn-cta-sidebar">Browse Scholarships →</a>
+                </div>
+
+            </div>
+        </aside>
+
+    </div>{# /guide-shell #}
+</div>{# /guide-page #}
+{% endblock %}
+
+{# ═══════════════════════════════════════════════════
+   PAGE JS — non-blocking, runs after DOM is ready
+═══════════════════════════════════════════════════ #}
+{% block extra_js %}
+<script>
+(function(){
+    'use strict';
+
+    // ── Reading progress bar ──────────────────────────
+    var fill    = document.getElementById('readingProgressFill');
+    var article = document.getElementById('guideContent');
+    if (fill && article) {
+        window.addEventListener('scroll', function() {
+            var rect   = article.getBoundingClientRect();
+            var total  = article.offsetHeight - window.innerHeight;
+            var scrolled = Math.max(0, -rect.top);
+            var pct    = total > 0 ? Math.min(100, (scrolled / total) * 100) : 0;
+            fill.style.width = pct + '%';
+        }, { passive: true });
+    }
+
+    // ── Auto Table of Contents ────────────────────────
+    // Finds all h2/h3 in the guide content, builds TOC,
+    // and highlights the active section on scroll.
+    (function buildTOC() {
+        var content  = document.getElementById('guideContent');
+        var tocList  = document.getElementById('tocList');
+        var tocCard  = document.getElementById('tocCard');
+        if (!content || !tocList || !tocCard) return;
+
+        var headings = content.querySelectorAll('h2, h3');
+        if (headings.length < 2) return;   // Don't show TOC for short articles
+
+        headings.forEach(function(h, i) {
+            // Give each heading an id if it doesn't have one
+            if (!h.id) {
+                h.id = 'section-' + i;
+            }
+            var li  = document.createElement('li');
+            var a   = document.createElement('a');
+            a.href  = '#' + h.id;
+            a.setAttribute('aria-label', 'Jump to: ' + h.textContent);
+
+            var num = document.createElement('span');
+            num.className   = 'toc-num';
+            num.textContent = i + 1;
+            num.setAttribute('aria-hidden', 'true');
+
+            var txt = document.createElement('span');
+            txt.textContent = h.textContent;
+
+            // Indent h3 slightly
+            if (h.tagName === 'H3') {
+                li.style.paddingLeft = '10px';
+                num.style.fontSize = '.65rem';
+            }
+
+            a.appendChild(num);
+            a.appendChild(txt);
+            li.appendChild(a);
+            tocList.appendChild(li);
+
+            // Smooth scroll
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                history.pushState(null, '', '#' + h.id);
+            });
+        });
+
+        tocCard.style.display = 'block';
+
+        // Active section highlighting
+        if ('IntersectionObserver' in window) {
+            var tocLinks = tocList.querySelectorAll('a');
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        tocLinks.forEach(function(l) { l.classList.remove('active'); });
+                        var active = tocList.querySelector('a[href="#' + entry.target.id + '"]');
+                        if (active) active.classList.add('active');
+                    }
+                });
+            }, { rootMargin: '-20% 0px -70% 0px' });
+
+            headings.forEach(function(h) { observer.observe(h); });
+        }
+    })();
+
+    // ── Copy link button ──────────────────────────────
+    var copyBtn  = document.getElementById('copyLinkBtn');
+    var copyText = document.getElementById('copyLinkText');
+    if (copyBtn && navigator.clipboard) {
+        copyBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(window.location.href).then(function() {
+                copyText.textContent = '✓ Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(function() {
+                    copyText.textContent = 'Copy link';
+                    copyBtn.classList.remove('copied');
+                }, 2500);
+            });
+        });
+    } else if (copyBtn) {
+        copyBtn.style.display = 'none';   // Hide if clipboard API unavailable
+    }
+
+})();
+</script>
 {% endblock %}

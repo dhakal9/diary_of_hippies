@@ -1,229 +1,1194 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Application Guides & Success Stories | MastersGrant{% endblock %}
-{% block meta_description %}
-Master your study abroad application with our expert-written guides on SOPs, Motivation Letters, and Scholarship Essays.
+{# ═══════════════════════════════════════════════════
+   SEO META BLOCKS
+═══════════════════════════════════════════════════ #}
+
+{% block title %}
+    {% if request.GET.q %}
+        "{{ request.GET.q }}" Guides — MastersGrant
+    {% else %}
+        Scholarship Application Guides 2026 — SOPs, Essays & Templates | MastersGrant
+    {% endif %}
 {% endblock %}
 
+{% block meta_description %}
+    {% if request.GET.q %}
+        Expert guides on "{{ request.GET.q }}" — SOPs, motivation letters, scholarship essays and proven templates for international students.
+    {% else %}
+        Master your scholarship application with step-by-step guides on SOPs, motivation letters, scholarship essays and proven templates. Written by experts, updated for 2026.
+    {% endif %}
+{% endblock %}
+
+{% block meta_keywords %}scholarship application guide, SOP for scholarship, motivation letter template, scholarship essay tips, study abroad application, how to apply for scholarship 2026{% endblock %}
+
+{% block og_type %}website{% endblock %}
+{% block og_title %}Scholarship Application Guides 2026 | MastersGrant{% endblock %}
+{% block og_description %}Step-by-step guides on SOPs, motivation letters, scholarship essays and proven templates. Expert-written for 2026 applicants.{% endblock %}
+
+{% block robots %}index, follow, max-snippet:-1, max-image-preview:large{% endblock %}
+
+{# ═══════════════════════════════════════════════════
+   STRUCTURED DATA
+═══════════════════════════════════════════════════ #}
+{% block schema %}
+{{ block.super }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Scholarship Application Guides 2026 — MastersGrant",
+  "description": "Expert-written scholarship application guides covering SOPs, motivation letters, essays and proven templates.",
+  "url": "{{ request.build_absolute_uri }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "MastersGrant",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://mastersgrant.com{% static 'images/logo.png' %}"
+    }
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home",   "item": "{{ request.scheme }}://{{ request.get_host }}/" },
+      { "@type": "ListItem", "position": 2, "name": "Guides", "item": "{{ request.build_absolute_uri }}" }
+    ]
+  }{% if guides %},
+  "hasPart": [
+    {% for guide in guides|slice:":5" %}
+    {
+      "@type": "Article",
+      "headline": "{{ guide.title|escapejs }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{{ guide.get_absolute_url }}",
+      "author": { "@type": "Person", "name": "{{ guide.author|default:'MastersGrant Editorial'|escapejs }}" },
+      "datePublished": "{{ guide.created_at|date:'c' }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+  {% endif %}
+}
+</script>
+{% endblock %}
+
+{# ═══════════════════════════════════════════════════
+   PAGE-SPECIFIC STYLES
+═══════════════════════════════════════════════════ #}
+{% block extra_head %}
+<style>
+
+/* ── Page shell ── */
+.guides-page { background: var(--surface-2); min-height: 100vh; }
+
+/* ── Hero header ── */
+.guides-hero {
+    background: linear-gradient(135deg, #0c2d6b 0%, #1349a8 55%, #1a5fc8 100%);
+    padding: 52px 0 90px;
+    position: relative;
+    overflow: hidden;
+}
+.guides-hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,.055) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+}
+.guides-hero::before {
+    content: '';
+    position: absolute;
+    right: -80px; bottom: -100px;
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, rgba(14,167,110,.13) 0%, transparent 65%);
+    pointer-events: none;
+}
+.guides-hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: center;
+}
+
+/* Breadcrumb */
+.hero-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .78rem;
+    font-weight: 500;
+    color: rgba(255,255,255,.5);
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.hero-breadcrumb a { color: rgba(255,255,255,.7); transition: color .2s; }
+.hero-breadcrumb a:hover { color: #fff; }
+.hero-breadcrumb span { color: rgba(255,255,255,.3); }
+
+/* Hero text */
+.guides-hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: -.4px;
+    margin-bottom: 14px;
+}
+.guides-hero-sub {
+    font-size: 1rem;
+    color: rgba(255,255,255,.65);
+    max-width: 520px;
+    line-height: 1.65;
+    margin-bottom: 28px;
+}
+
+/* Hero search */
+.hero-search-bar {
+    display: flex;
+    background: #fff;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,.2);
+    max-width: 480px;
+}
+.hero-search-bar input {
+    flex: 1;
+    font-family: var(--font-sans);
+    font-size: .92rem;
+    border: none;
+    outline: none;
+    padding: 13px 18px;
+    color: var(--ink);
+    background: transparent;
+    min-width: 0;
+}
+.hero-search-bar input::placeholder { color: var(--ink-3); }
+.hero-search-btn {
+    font-family: var(--font-sans);
+    font-size: .88rem;
+    font-weight: 700;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    padding: 13px 22px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .2s;
+}
+.hero-search-btn:hover { background: #d45a20; }
+
+/* Hero stats */
+.hero-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: 28px;
+}
+.hero-stat strong {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+}
+.hero-stat span {
+    font-size: .72rem;
+    font-weight: 600;
+    color: rgba(255,255,255,.5);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+/* Hero right: icon grid */
+.hero-icon-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+.hero-icon-card {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: var(--radius-md);
+    padding: 16px 14px;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    transition: background .2s;
+    cursor: default;
+}
+.hero-icon-card:hover { background: rgba(255,255,255,.16); }
+.hero-icon-card .ico { font-size: 1.5rem; margin-bottom: 6px; }
+.hero-icon-card span { display: block; font-size: .72rem; font-weight: 600; color: rgba(255,255,255,.8); }
+
+/* ── Layout ── */
+.guides-shell {
+    max-width: 1280px;
+    margin: -48px auto 0;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 28px;
+    align-items: start;
+    position: relative;
+    z-index: 10;
+}
+
+/* ── FEATURED card ── */
+.featured-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 280px;
+    transition: transform .25s, box-shadow .25s;
+    position: relative;
+}
+.featured-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.featured-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+}
+.featured-body {
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.featured-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: #fff;
+    background: #dc2626;
+    border-radius: 50px;
+    padding: 4px 12px;
+    margin-bottom: 16px;
+    width: fit-content;
+}
+.featured-card h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 12px;
+    letter-spacing: -.3px;
+}
+.featured-card h2 a { transition: color .2s; }
+.featured-card h2 a:hover { color: var(--blue); }
+.featured-excerpt {
+    font-size: .92rem;
+    color: var(--ink-3);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.featured-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+}
+.featured-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .78rem;
+    font-weight: 500;
+    color: var(--ink-3);
+}
+.btn-featured {
+    font-family: var(--font-sans);
+    font-size: .88rem;
+    font-weight: 700;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background .2s, transform .15s;
+    width: fit-content;
+}
+.btn-featured:hover { background: var(--blue-dark); transform: translateY(-1px); }
+
+/* Featured visual panel */
+.featured-visual {
+    background: linear-gradient(135deg, var(--blue-light) 0%, #dbeafe 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    min-height: 260px;
+}
+.featured-visual::before {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(19,73,168,.12) 0%, transparent 70%);
+    top: -40px; right: -40px;
+}
+.featured-visual-icon {
+    font-size: 5rem;
+    opacity: .35;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 4px 12px rgba(19,73,168,.2));
+}
+
+/* ── Section divider ── */
+.section-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+.section-divider h2 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--ink);
+    white-space: nowrap;
+    letter-spacing: -.2px;
+}
+.section-divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+.section-divider-count {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--ink-3);
+    background: var(--surface-3);
+    border-radius: 50px;
+    padding: 3px 10px;
+    white-space: nowrap;
+}
+
+/* ── Guide cards ── */
+.guides-list { display: flex; flex-direction: column; gap: 16px; }
+
+.guide-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 26px 28px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: start;
+    transition: transform .22s, box-shadow .22s, border-color .22s;
+    position: relative;
+    overflow: hidden;
+}
+.guide-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--blue), var(--green));
+    opacity: 0;
+    transition: opacity .22s;
+}
+.guide-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(19,73,168,.25);
+}
+.guide-card:hover::before { opacity: 1; }
+
+.guide-card-left {}
+.guide-card-category {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    color: var(--blue);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.guide-card-category::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--blue);
+    border-radius: 50%;
+}
+.guide-card h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 10px;
+}
+.guide-card h2 a {
+    transition: color .2s;
+}
+/* Stretch link over entire card */
+.guide-card h2 a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+.guide-card h2 a:hover { color: var(--blue); }
+.guide-card-excerpt {
+    font-size: .875rem;
+    color: var(--ink-3);
+    line-height: 1.65;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+.guide-card-footer {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.guide-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .75rem;
+    font-weight: 500;
+    color: var(--ink-3);
+}
+.guide-read-link {
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+    z-index: 1;     /* above stretch link */
+    transition: gap .18s;
+}
+.guide-read-link:hover { gap: 8px; }
+
+/* Right: read time badge */
+.guide-card-badge {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    text-align: center;
+    flex-shrink: 0;
+    min-width: 68px;
+}
+.guide-card-badge .mins {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--blue);
+    line-height: 1;
+    display: block;
+}
+.guide-card-badge .min-label {
+    font-size: .65rem;
+    font-weight: 600;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+/* ── Empty state ── */
+.empty-guides {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 60px 40px;
+    text-align: center;
+}
+.empty-guides-icon {
+    font-size: 3rem;
+    margin-bottom: 18px;
+}
+.empty-guides h3 {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 10px;
+}
+.empty-guides p { color: var(--ink-3); margin-bottom: 24px; }
+
+/* ── Pagination ── */
+.pagination-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+}
+.pg-btn {
+    font-family: var(--font-sans);
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: background .18s, color .18s, border-color .18s;
+}
+.pg-btn:hover, .pg-btn.active {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+}
+.pg-btn.disabled { opacity: .4; pointer-events: none; }
+.pg-info {
+    font-size: .82rem;
+    color: var(--ink-3);
+    font-weight: 600;
+    padding: 9px 14px;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+/* ── SIDEBAR ── */
+.guides-sidebar {
+    position: sticky;
+    top: calc(var(--nav-h) + 16px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Generic sidebar card */
+.sb-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+.sb-card-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    color: var(--ink-3);
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sb-card-head svg { color: var(--blue); }
+.sb-card-body { padding: 16px 18px; }
+
+/* Sidebar search */
+.sb-search {
+    position: relative;
+}
+.sb-search input {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: .88rem;
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 40px 10px 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+.sb-search input::placeholder { color: var(--ink-3); }
+.sb-search input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(19,73,168,.1);
+}
+.sb-search button {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-3);
+    cursor: pointer;
+    display: flex; align-items: center;
+    transition: color .2s;
+}
+.sb-search button:hover { color: var(--blue); }
+
+/* Template links */
+.template-list { display: flex; flex-direction: column; gap: 4px; }
+.template-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: .86rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    transition: background .15s, color .15s;
+}
+.template-link:hover { background: var(--blue-light); color: var(--blue); }
+.template-link:hover .tl-arrow { color: var(--blue); }
+.tl-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.tl-arrow {
+    margin-left: auto;
+    color: var(--ink-3);
+    flex-shrink: 0;
+}
+
+/* Category pills */
+.cat-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.cat-pill {
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    padding: 5px 12px;
+    transition: background .18s, color .18s, border-color .18s;
+    cursor: pointer;
+}
+.cat-pill:hover, .cat-pill.active {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+}
+
+/* Newsletter sidebar */
+.sb-newsletter {
+    background: linear-gradient(135deg, #0c2d6b 0%, #1349a8 100%);
+    border-radius: var(--radius-lg);
+    padding: 22px 18px;
+    position: relative;
+    overflow: hidden;
+}
+.sb-newsletter::before {
+    content: '';
+    position: absolute;
+    right: -30px; top: -30px;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, rgba(255,255,255,.08) 0%, transparent 70%);
+}
+.sb-newsletter h3 {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 6px;
+}
+.sb-newsletter p {
+    font-size: .8rem;
+    color: rgba(255,255,255,.58);
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+.sb-nl-form input {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: .85rem;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    color: #fff;
+    outline: none;
+    margin-bottom: 8px;
+    transition: border-color .2s;
+}
+.sb-nl-form input::placeholder { color: rgba(255,255,255,.38); }
+.sb-nl-form input:focus { border-color: var(--green); }
+.sb-nl-form button {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: .85rem;
+    font-weight: 700;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    cursor: pointer;
+    transition: background .2s;
+}
+.sb-nl-form button:hover { background: #0b8f5d; }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .guides-shell { grid-template-columns: 1fr; }
+    .guides-sidebar { position: static; order: -1; }
+    .hero-icon-grid { display: none; }
+    .guides-hero-inner { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+    .guides-hero { padding: 36px 0 72px; }
+    .featured-card { grid-template-columns: 1fr; }
+    .featured-visual { min-height: 140px; }
+    .featured-body { padding: 24px; }
+    .guides-shell { padding: 0 16px 60px; margin-top: -32px; }
+    .hero-stats { gap: 16px; }
+    .guide-card { grid-template-columns: 1fr; }
+    .guide-card-badge { display: none; }
+    .guide-card { padding: 20px; }
+}
+@media (max-width: 480px) {
+    .guides-hero h1 { font-size: 1.7rem; }
+    .featured-card h2 { font-size: 1.2rem; }
+    .hero-search-bar { flex-direction: column; border-radius: var(--radius-sm); }
+    .hero-search-btn { border-radius: 0; }
+}
+</style>
+{% endblock %}
+
+{# ═══════════════════════════════════════════════════
+   CONTENT
+═══════════════════════════════════════════════════ #}
 {% block content %}
-<section class="bg-primary text-white py-5 mb-5 shadow-sm">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 class="display-5 fw-bold mb-3">Application Success Hub</h1>
-                <p class="lead opacity-75">Step-by-step guides, proven templates, and expert tips to help you secure fully funded scholarships worldwide.</p>
-            </div>
-            <div class="col-lg-4 d-none d-lg-block text-end">
-                <i class="fas fa-book-open fa-5x opacity-25"></i>
-            </div>
-        </div>
-    </div>
-</section>
+<div class="guides-page">
 
-<main class="container">
-    <div class="row">
+    {# ── Hero Header ── #}
+    <header class="guides-hero">
+        <div class="container">
+            <div class="guides-hero-inner">
 
-        <div class="col-lg-8">
-            
-            {% if guides and page_obj.number == 1 %}
-                {% with featured=guides.0 %}
-                <div class="card border-0 shadow-lg mb-5 overflow-hidden featured-card">
-                    <div class="row g-0">
-                        <div class="col-md-12">
-                            <div class="card-body p-4 p-md-5">
-                                <span class="badge bg-danger mb-3 px-3 py-2 rounded-pill">MUST READ</span>
-                                <h2 class="display-6 fw-bold">
-                                    <a href="{{ featured.get_absolute_url }}" class="text-dark text-decoration-none hover-primary">
-                                        {{ featured.title }}
-                                    </a>
-                                </h2>
-                                <p class="text-muted my-3 lead">
-                                    {{ featured.content|striptags|truncatewords:40 }}
-                                </p>
-                                <div class="d-flex align-items-center mb-4">
-                                    <div class="ms-0">
-                                        <small class="text-dark fw-bold d-block">{{ featured.author }}</small>
-                                        <small class="text-muted">{{ featured.created_at|date:"M d, Y" }} · 5 min read</small>
-                                    </div>
-                                </div>
-                                <a href="{{ featured.get_absolute_url }}" class="btn btn-primary btn-lg rounded-pill shadow-sm">
-                                    Start Reading →
-                                </a>
-                            </div>
+                {# Left: text + search #}
+                <div>
+                    <nav class="hero-breadcrumb" aria-label="Breadcrumb">
+                        <a href="{% url 'index' %}">Home</a>
+                        <span aria-hidden="true">›</span>
+                        <span aria-current="page">Guides</span>
+                    </nav>
+
+                    <h1>
+                        {% if request.GET.q %}
+                            Results for "{{ request.GET.q }}"
+                        {% else %}
+                            Application <br>Success Hub
+                        {% endif %}
+                    </h1>
+
+                    {% if not request.GET.q %}
+                    <p class="guides-hero-sub">
+                        Step-by-step guides, proven templates, and expert tips to help you secure fully funded scholarships worldwide.
+                    </p>
+                    {% endif %}
+
+                    <form class="hero-search-bar"
+                          action="{% url 'guide_list' %}"
+                          method="GET"
+                          role="search"
+                          aria-label="Search guides">
+                        <input
+                            type="search"
+                            name="q"
+                            placeholder="Search: SOP, motivation letter, essays…"
+                            aria-label="Search guides by keyword"
+                            value="{{ request.GET.q|default:'' }}"
+                            autocomplete="off"
+                        >
+                        <button type="submit" class="hero-search-btn" aria-label="Search">
+                            Search Guides →
+                        </button>
+                    </form>
+
+                    <div class="hero-stats" aria-label="Platform stats">
+                        <div class="hero-stat">
+                            <strong>{{ page_obj.paginator.count|default:"50" }}+</strong>
+                            <span>Expert Guides</span>
+                        </div>
+                        <div class="hero-stat">
+                            <strong>Free</strong>
+                            <span>Always</span>
+                        </div>
+                        <div class="hero-stat">
+                            <strong>2026</strong>
+                            <span>Updated</span>
                         </div>
                     </div>
                 </div>
-                {% endwith %}
-            {% endif %}
 
-            <h3 class="fw-bold mb-4 d-flex align-items-center">
-                <span class="me-3">Latest Guides</span>
-                <hr class="flex-grow-1 opacity-10">
-            </h3>
-
-            <div class="row">
-                {% for guide in guides %}
-                    {% if page_obj.number == 1 and forloop.first %}
-                        {% else %}
-                    <div class="col-12 mb-4">
-                        <article class="card border-0 shadow-sm h-100 guide-hover-card">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <span class="text-primary small fw-bold text-uppercase tracking-wider">Application Tips</span>
-                                    <small class="text-muted"><i class="far fa-calendar-alt me-1"></i> {{ guide.created_at|date:"M d, Y" }}</small>
-                                </div>
-                                
-                                <h2 class="h4 fw-bold">
-                                    <a href="{{ guide.get_absolute_url }}" class="text-dark text-decoration-none hover-primary">
-                                        {{ guide.title }}
-                                    </a>
-                                </h2>
-
-                                <p class="text-secondary mb-3">
-                                    {{ guide.content|striptags|truncatewords:25 }}
-                                </p>
-
-                                <div class="d-flex align-items-center justify-content-between mt-auto">
-                                    <span class="small text-muted"><i class="far fa-user me-1"></i> By {{ guide.author }}</span>
-                                    <a href="{{ guide.get_absolute_url }}" class="fw-bold text-primary text-decoration-none small">
-                                        Read More <i class="fas fa-arrow-right ms-1"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
+                {# Right: topic cards #}
+                <div class="hero-icon-grid" aria-hidden="true">
+                    <div class="hero-icon-card">
+                        <div class="ico">📝</div>
+                        <span>SOP Writing</span>
                     </div>
-                    {% endif %}
+                    <div class="hero-icon-card">
+                        <div class="ico">✉️</div>
+                        <span>Motivation Letters</span>
+                    </div>
+                    <div class="hero-icon-card">
+                        <div class="ico">🏅</div>
+                        <span>Essay Tips</span>
+                    </div>
+                    <div class="hero-icon-card">
+                        <div class="ico">🎤</div>
+                        <span>Interview Prep</span>
+                    </div>
+                </div>
 
-                    {% if forloop.counter == 4 %}
-                    <div class="col-12 my-4">
-                        <div class="p-4 bg-light border rounded-3 text-center position-relative">
-                            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-white text-muted border px-3">Advertisement</span>
-                            <div class="py-3">
-                                <ins class="adsbygoogle"
-                                     style="display:block"
-                                     data-ad-client="ca-pub-XXXX"
-                                     data-ad-slot="XXXX"
-                                     data-ad-format="auto"></ins>
-                            </div>
+            </div>
+        </div>
+    </header>
+
+    {# ── Content Shell ── #}
+    <div class="guides-shell">
+
+        {# ════ MAIN CONTENT ════ #}
+        <main aria-label="Guide articles">
+
+            {# ── Featured guide (first article, page 1 only) ── #}
+            {% if guides and page_obj.number == 1 %}
+            {% with featured=guides.0 %}
+            <article class="featured-card"
+                     aria-label="Featured guide"
+                     itemscope itemtype="https://schema.org/Article">
+
+                <div class="featured-body">
+                    <span class="featured-label">⭐ Must Read</span>
+
+                    <h2 itemprop="name">
+                        <a href="{{ featured.get_absolute_url }}" itemprop="url">
+                            {{ featured.title }}
+                        </a>
+                    </h2>
+
+                    <p class="featured-excerpt" itemprop="description">
+                        {{ featured.content|striptags|truncatewords:40 }}
+                    </p>
+
+                    <div class="featured-meta">
+                        <div class="featured-meta-item">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <span itemprop="author">{{ featured.author|default:"MastersGrant Editorial" }}</span>
+                        </div>
+                        <div class="featured-meta-item">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <time datetime="{{ featured.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                                {{ featured.created_at|date:"M d, Y" }}
+                            </time>
+                        </div>
+                        <div class="featured-meta-item">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>5 min read</span>
                         </div>
                     </div>
+
+                    <a href="{{ featured.get_absolute_url }}" class="btn-featured">
+                        Start Reading
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+
+                {# Right visual panel #}
+                <div class="featured-visual" aria-hidden="true">
+                    <div class="featured-visual-icon">📖</div>
+                </div>
+
+            </article>
+            {% endwith %}
+            {% endif %}
+
+            {# ── Guide list ── #}
+            {% if guides %}
+
+            <div class="section-divider">
+                <h2>
+                    {% if request.GET.q %}
+                        Search Results
+                    {% elif page_obj.number > 1 %}
+                        More Guides
+                    {% else %}
+                        Latest Guides
                     {% endif %}
+                </h2>
+                <div class="section-divider-line" aria-hidden="true"></div>
+                <span class="section-divider-count">
+                    {{ page_obj.paginator.count }} guide{{ page_obj.paginator.count|pluralize }}
+                </span>
+            </div>
+
+            <div class="guides-list" role="list" aria-label="Application guides">
+                {% for guide in guides %}
+                {# Skip featured on page 1 #}
+                {% if page_obj.number > 1 or not forloop.first %}
+
+                <article class="guide-card"
+                         role="listitem"
+                         itemscope itemtype="https://schema.org/Article">
+
+                    <div class="guide-card-left">
+                        <div class="guide-card-category">Application Guides</div>
+
+                        <h2 itemprop="name">
+                            <a href="{{ guide.get_absolute_url }}"
+                               itemprop="url"
+                               aria-label="Read: {{ guide.title }}">
+                                {{ guide.title }}
+                            </a>
+                        </h2>
+
+                        <p class="guide-card-excerpt" itemprop="description">
+                            {{ guide.content|striptags|truncatewords:28 }}
+                        </p>
+
+                        <div class="guide-card-footer">
+                            <div class="guide-card-meta">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <span itemprop="author">{{ guide.author|default:"Editorial" }}</span>
+                            </div>
+                            <div class="guide-card-meta">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <time datetime="{{ guide.created_at|date:'Y-m-d' }}" itemprop="datePublished">
+                                    {{ guide.created_at|date:"M d, Y" }}
+                                </time>
+                            </div>
+                            <a href="{{ guide.get_absolute_url }}" class="guide-read-link" aria-label="Read full guide: {{ guide.title }}">
+                                Read Guide
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    {# Read time badge #}
+                    <div class="guide-card-badge" aria-label="Estimated reading time: 5 minutes">
+                        <span class="mins">5</span>
+                        <span class="min-label">min read</span>
+                    </div>
+
+                </article>
+
+                {% endif %}
                 {% endfor %}
             </div>
 
+            {% else %}
+            {# Empty state #}
+            <div class="empty-guides" role="status">
+                <div class="empty-guides-icon" aria-hidden="true">🔍</div>
+                <h3>No guides found</h3>
+                <p>
+                    {% if request.GET.q %}
+                        No results for "{{ request.GET.q }}". Try a different keyword.
+                    {% else %}
+                        Guides are coming soon. Check back shortly!
+                    {% endif %}
+                </p>
+                {% if request.GET.q %}
+                <a href="{% url 'guide_list' %}" class="btn btn-primary" style="font-size:.9rem;">
+                    View All Guides
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {# ── Pagination ── #}
             {% if is_paginated %}
-            <nav class="mt-5">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link shadow-sm rounded-pill px-4 mx-1" href="?page={{ page_obj.previous_page_number }}">
-                            <i class="fas fa-chevron-left me-2"></i> Previous
-                        </a>
-                    </li>
-                    {% endif %}
+            <nav class="pagination-row" aria-label="Page navigation">
+                {% if page_obj.has_previous %}
+                <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                   class="pg-btn" aria-label="Previous page">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                    Prev
+                </a>
+                {% else %}
+                <span class="pg-btn disabled" aria-disabled="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                    Prev
+                </span>
+                {% endif %}
 
-                    <li class="page-item active">
-                        <span class="page-link shadow-sm rounded-pill px-4 mx-1">{{ page_obj.number }}</span>
-                    </li>
-
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link shadow-sm rounded-pill px-4 mx-1" href="?page={{ page_obj.next_page_number }}">
-                            Next <i class="fas fa-chevron-right ms-2"></i>
-                        </a>
-                    </li>
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <span class="pg-btn active" aria-current="page" aria-label="Page {{ num }}, current">{{ num }}</span>
+                    {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                    <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}"
+                       class="pg-btn" aria-label="Go to page {{ num }}">{{ num }}</a>
+                    {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                    <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ num }}"
+                       class="pg-btn" aria-label="Go to page {{ num }}">{{ num }}</a>
+                    {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                    <span class="pg-info" aria-hidden="true">…</span>
                     {% endif %}
-                </ul>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}page={{ page_obj.next_page_number }}"
+                   class="pg-btn" aria-label="Next page">
+                    Next
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                </a>
+                {% else %}
+                <span class="pg-btn disabled" aria-disabled="true">
+                    Next
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                </span>
+                {% endif %}
             </nav>
             {% endif %}
-        </div>
 
-        <div class="col-lg-4">
-            <div class="sticky-top" style="top:100px;">
+        </main>
 
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3">Search Guides</h5>
-                        <form action="{% url 'guide_list' %}" method="get">
-                            <div class="input-group">
-                                <input type="text" name="q" class="form-control bg-light border-0" placeholder="Search keywords...">
-                                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
-                            </div>
-                        </form>
-                    </div>
+        {# ════ SIDEBAR ════ #}
+        <aside class="guides-sidebar" aria-label="Guide sidebar">
+
+            {# Search #}
+            <div class="sb-card">
+                <div class="sb-card-head">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+                    Search Guides
                 </div>
-
-                <div class="card border-0 shadow-sm mb-4 overflow-hidden">
-                    <div class="card-header bg-dark text-white border-0 py-3">
-                        <h5 class="fw-bold mb-0">Success Templates</h5>
-                    </div>
-                    <div class="list-group list-group-flush">
-                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
-                            <span><i class="fas fa-file-alt text-primary me-2"></i> SOP for USA</span>
-                            <i class="fas fa-chevron-right text-muted small"></i>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
-                            <span><i class="fas fa-map-marker-alt text-danger me-2"></i> Study in Canada Guide</span>
-                            <i class="fas fa-chevron-right text-muted small"></i>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
-                            <span><i class="fas fa-university text-success me-2"></i> Erasmus Motivation Letter</span>
-                            <i class="fas fa-chevron-right text-muted small"></i>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
-                            <span><i class="fas fa-pen-nib text-warning me-2"></i> Scholarship Essay Tips</span>
-                            <i class="fas fa-chevron-right text-muted small"></i>
-                        </a>
-                    </div>
+                <div class="sb-card-body">
+                    <form class="sb-search" action="{% url 'guide_list' %}" method="GET" role="search" aria-label="Search guides">
+                        <input type="search" name="q" placeholder="SOP, essays, interviews…"
+                               aria-label="Search by keyword"
+                               value="{{ request.GET.q|default:'' }}"
+                               autocomplete="off">
+                        <button type="submit" aria-label="Submit search">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+                        </button>
+                    </form>
                 </div>
-
-                <div class="bg-white border rounded shadow-sm p-3 text-center mb-4">
-                    <small class="text-muted d-block mb-3 uppercase small tracking-widest">Sponsored Content</small>
-                    <div style="min-height: 250px; background: #f9f9f9;" class="d-flex align-items-center justify-content-center">
-                        <span class="text-muted small">Google Ad Placement</span>
-                    </div>
-                </div>
-
             </div>
-        </div>
 
-    </div>
-</main>
+            {# Browse by topic #}
+            <div class="sb-card">
+                <div class="sb-card-head">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    Browse by Topic
+                </div>
+                <div class="sb-card-body">
+                    <div class="cat-pills" role="list" aria-label="Guide topics">
+                        <a href="{% url 'guide_list' %}?q=SOP" class="cat-pill {% if request.GET.q == 'SOP' %}active{% endif %}" role="listitem">SOP</a>
+                        <a href="{% url 'guide_list' %}?q=motivation+letter" class="cat-pill {% if request.GET.q == 'motivation letter' %}active{% endif %}" role="listitem">Motivation Letter</a>
+                        <a href="{% url 'guide_list' %}?q=scholarship+essay" class="cat-pill {% if 'essay' in request.GET.q|default:'' %}active{% endif %}" role="listitem">Essays</a>
+                        <a href="{% url 'guide_list' %}?q=interview" class="cat-pill {% if 'interview' in request.GET.q|default:'' %}active{% endif %}" role="listitem">Interview</a>
+                        <a href="{% url 'guide_list' %}?q=recommendation+letter" class="cat-pill" role="listitem">Recommendation</a>
+                        <a href="{% url 'guide_list' %}?q=financial+aid" class="cat-pill" role="listitem">Financial Aid</a>
+                        <a href="{% url 'guide_list' %}?q=visa" class="cat-pill" role="listitem">Student Visa</a>
+                        <a href="{% url 'guide_list' %}?q=CV+resume" class="cat-pill" role="listitem">CV / Resume</a>
+                    </div>
+                </div>
+            </div>
 
-<style>
-    /* Styling for the new blog layout */
-    .featured-card {
-        border-radius: 20px;
-        transition: transform 0.3s ease;
+            {# Quick templates #}
+            <div class="sb-card">
+                <div class="sb-card-head">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Quick Templates
+                </div>
+                <div class="sb-card-body" style="padding:8px 12px;">
+                    <nav class="template-list" aria-label="Template guides">
+                        <a href="{% url 'guide_list' %}?q=SOP+USA" class="template-link">
+                            <span class="tl-icon" style="background:#e8effc;">🇺🇸</span>
+                            <span>SOP for USA</span>
+                            <svg class="tl-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                        </a>
+                        <a href="{% url 'guide_list' %}?q=Canada+study" class="template-link">
+                            <span class="tl-icon" style="background:#fef9ec;">🇨🇦</span>
+                            <span>Study in Canada Guide</span>
+                            <svg class="tl-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                        </a>
+                        <a href="{% url 'guide_list' %}?q=Erasmus+motivation" class="template-link">
+                            <span class="tl-icon" style="background:#e6f7f1;">🇪🇺</span>
+                            <span>Erasmus Motivation Letter</span>
+                            <svg class="tl-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                        </a>
+                        <a href="{% url 'guide_list' %}?q=scholarship+essay+tips" class="template-link">
+                            <span class="tl-icon" style="background:#fff0e8;">✍️</span>
+                            <span>Scholarship Essay Tips</span>
+                            <svg class="tl-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                        </a>
+                        <a href="{% url 'guide_list' %}?q=Chevening" class="template-link">
+                            <span class="tl-icon" style="background:#fce7f3;">🇬🇧</span>
+                            <span>Chevening Application</span>
+                            <svg class="tl-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            {# Newsletter #}
+            <div class="sb-newsletter">
+                <h3>Get New Guides Free</h3>
+                <p>Expert guides and scholarship alerts — directly to your inbox.</p>
+                <form class="sb-nl-form" action="#" method="POST" aria-label="Newsletter signup">
+                    {% csrf_token %}
+                    <input type="email" name="email" placeholder="your@email.com" required aria-label="Your email address">
+                    <button type="submit">Subscribe →</button>
+                </form>
+            </div>
+
+            {# Browse scholarships CTA #}
+            <div class="sb-card">
+                <div class="sb-card-body" style="text-align:center; padding:22px 18px;">
+                    <div style="font-size:2rem; margin-bottom:10px;" aria-hidden="true">🏅</div>
+                    <p style="font-size:.85rem; font-weight:700; color:var(--ink); margin-bottom:6px;">Ready to Apply?</p>
+                    <p style="font-size:.8rem; color:var(--ink-3); margin-bottom:14px; line-height:1.5;">Browse 10,000+ scholarships updated daily.</p>
+                    <a href="{% url 'scholarship_list' %}"
+                       style="display:block; font-family:var(--font-sans); font-size:.85rem; font-weight:700; background:var(--blue); color:#fff; border-radius:50px; padding:11px 20px; transition:background .2s;"
+                       onmouseover="this.style.background='var(--blue-dark)'"
+                       onmouseout="this.style.background='var(--blue)'">
+                        Browse Scholarships →
+                    </a>
+                </div>
+            </div>
+
+        </aside>
+
+    </div>{# /guides-shell #}
+</div>{# /guides-page #}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+    'use strict';
+    // Auto-submit sidebar search on Enter
+    var sbInput = document.querySelector('.sb-search input');
+    if (sbInput) {
+        sbInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sbInput.closest('form').submit();
+            }
+        });
     }
-    .guide-hover-card {
-        border-radius: 15px;
-        transition: all 0.3s ease;
-        border-left: 0px solid var(--bs-primary) !important;
-    }
-    .guide-hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
-        border-left: 5px solid var(--bs-primary) !important;
-    }
-    .hover-primary:hover {
-        color: #0d6efd !important;
-    }
-    .tracking-wider {
-        letter-spacing: 1px;
-    }
-    .bg-soft-primary {
-        background-color: #e7f0ff;
-    }
-    .pagination .page-link {
-        border: none;
-        color: #444;
-        font-weight: 600;
-    }
-    .pagination .page-item.active .page-link {
-        background-color: var(--bs-primary);
-        color: white;
-    }
-</style>
+})();
+</script>
 {% endblock %}
