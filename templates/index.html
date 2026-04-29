@@ -9,34 +9,85 @@
 {% block og_description %}Find fully funded scholarships, fellowships and grants for international students. 10,000+ opportunities updated daily.{% endblock %}
 
 {% block schema %}
-{{ block.super }}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ItemList",
-  "name": "Latest Scholarships 2026",
-  "description": "Recently added scholarships, fellowships and grants on MastersGrant",
-  "numberOfItems": {{ latest_opportunities|length }},
-  "itemListElement": [
-    {% for opt in latest_opportunities|slice:":6" %}
+    {{ block.super }}
+
+    {# --- SCHEMA 1: ItemList (Latest Opportunities) --- #}
+    <script type="application/ld+json">
     {
-      "@type": "ListItem",
-      "position": {{ forloop.counter }},
-      "item": {
-        "@type": "EducationalOccupationalProgram",
-        "name": "{{ opt.title|escapejs }}",
-        "url": "{{ request.scheme }}://{{ request.get_host }}{{ opt.get_absolute_url }}",
-        "offers": {
-          "@type": "Offer",
-          "description": "{{ opt.funding_type|default:'Funding available'|escapejs }}"
-        }
-      }
-    }{% if not forloop.last %},{% endif %}
-    {% endfor %}
-  ]
-}
-</script>
-{% endblock %}
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Latest Scholarships 2026",
+      "description": "Recently added scholarships, fellowships and grants on MastersGrant",
+      "numberOfItems": {{ latest_opportunities|length }},
+      "itemListElement": [
+        {% for opt in latest_opportunities|slice:":6" %}
+        {
+          "@type": "ListItem",
+          "position": {{ forloop.counter }},
+          "item": {
+            "@type": "EducationalOccupationalProgram",
+            "name": "{{ opt.title|escapejs }}",
+            "url": "{{ request.scheme }}://{{ request.get_host }}{{ opt.get_absolute_url }}",
+            "offers": {
+              "@type": "Offer",
+              "description": "{{ opt.funding_type|default:'Funding available'|escapejs }}"
+            }
+          }
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+    </script>
+
+    {# --- SCHEMA 2: Organization & Reviews (Success Stories) --- #}
+    {% if success_stories %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "MastersGrant",
+      "url": "https://mastersgrant.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://mastersgrant.com{% static 'images/logo.png' %}"
+      },
+      "description": "Global scholarship, fellowship and grant directory for international students.",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "{{ success_stories|length }}",
+        "reviewCount": "{{ success_stories|length }}"
+      },
+      "review": [
+        {% for story in success_stories %}
+        {
+          "@type": "Review",
+          "itemReviewed": {
+            "@type": "Organization",
+            "name": "MastersGrant",
+            "url": "https://mastersgrant.com"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "{{ story.name|escapejs }}"
+          },
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "reviewBody": "{{ story.story|striptags|truncatewords:50|escapejs }}",
+          "datePublished": "{{ story.created_at|date:'Y-m-d' }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+    </script>
+    {% endif %}
+    {% endblock %}
 
 {% block extra_head %}
  <link rel="stylesheet" href="{% static 'css/index.css' %}" media="print" onload="this.media='all'">
@@ -489,58 +540,6 @@
 </section>
 
 <!-- ══ SUCCESS STORIES ══ -->
-{% block schema %}
-{{ block.super }}
- 
-{% if success_stories %}
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "MastersGrant",
-  "url": "https://mastersgrant.com",
-  "logo": {
-    "@type": "ImageObject",
-    "url": "https://mastersgrant.com{% static 'images/logo.png' %}"
-  },
-  "description": "Global scholarship, fellowship and grant directory for international students.",
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "5",
-    "bestRating": "5",
-    "worstRating": "1",
-    "ratingCount": "{{ success_stories|length }}",
-    "reviewCount": "{{ success_stories|length }}"
-  },
-  "review": [
-    {% for story in success_stories %}
-    {
-      "@type": "Review",
-      "itemReviewed": {
-        "@type": "Organization",
-        "name": "MastersGrant",
-        "url": "https://mastersgrant.com"
-      },
-      "author": {
-        "@type": "Person",
-        "name": "{{ story.name|escapejs }}"
-      },
-      "reviewRating": {
-        "@type": "Rating",
-        "ratingValue": "5",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "reviewBody": "{{ story.story|striptags|truncatewords:50|escapejs }}",
-      "datePublished": "{{ story.created_at|date:'Y-m-d' }}"
-    }{% if not forloop.last %},{% endif %}
-    {% endfor %}
-  ]
-}
-</script>
-{% endif %}
- 
-{% endblock %}
  
  
 {# ── STEP 2: Replace your stories grid HTML with this ── #}
@@ -630,6 +629,7 @@
     </div>
 </section>
 {% endif %}
+
 
 <!-- ══ RESOURCES ══ -->
 <section class="section" style="background:var(--surface-2); padding:56px 0;" aria-labelledby="resources-heading">
