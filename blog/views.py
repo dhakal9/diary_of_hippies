@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
-from .models import Opportunity, Guide, Category
+from .models import Opportunity, Guide, Category, Subscriber
+from .forms import ContactForm, SuscriberForm
 from django.db.models import Q
 from django.views.generic import ListView, View
 from .forms import ContactForm
@@ -23,6 +24,25 @@ def error_403(request, exception):
 
 def error_400(request,  exception):
         return render(request,'400.html')
+
+
+def subscribe_email(request):
+    if request.method == "POST":
+        form = SuscriberForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+
+            # Avoid duplicate emails
+            if not Subscriber.objects.filter(email=email).exists():
+                Subscriber.objects.create(email=email)
+                messages.success(request, "Subscribed successfully!")
+            else:
+                messages.info(request, "You are already subscribed.")
+
+        else:
+            messages.error(request, "Invalid email address.")
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 # blog/views.py
 class IndexView(ListView):
@@ -265,3 +285,7 @@ class ScholarshipListView(ListView):
         context['query_string'] = query_params.urlencode()
 
         return context
+
+class CountriesView(View):
+    def get(self, request):
+        return render(request, 'countries.html')

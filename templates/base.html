@@ -200,7 +200,7 @@
                             <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="#" role="menuitem"><span class="dm-icon">🇺🇸</span><span>USA</span></a></li>
+                            <li><a href="{% url 'country' %}" role="menuitem"><span class="dm-icon">🇺🇸</span><span>USA</span></a></li>
                             <li><a href="#" role="menuitem"><span class="dm-icon">🇨🇦</span><span>Canada</span></a></li>
                             <li><a href="#" role="menuitem"><span class="dm-icon">🇬🇧</span><span>United Kingdom</span></a></li>
                             <li><a href="#" role="menuitem"><span class="dm-icon">🇦🇺</span><span>Australia</span></a></li>
@@ -298,7 +298,7 @@
                     <div class="footer-newsletter">
                         <h3>Never Miss a Deadline</h3>
                         <p>Daily scholarship alerts delivered to your inbox.</p>
-                        <form class="newsletter-form" action="#" method="POST" aria-label="Newsletter signup">
+                        <form class="newsletter-form" action="{% url 'subscribe_email' %}" method="POST" aria-label="Newsletter signup">
                             {% csrf_token %}
                             <input type="email" name="email" placeholder="you@email.com" required aria-label="Email address">
                             <button type="submit">Subscribe →</button>

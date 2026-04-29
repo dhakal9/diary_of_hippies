@@ -19,14 +19,27 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
-from blog.sitemaps import ScholarshipSitemap, GuideSitemap, StaticViewSitemap, ContactViewSitemap
+from blog.sitemaps import (
+    HomepageSitemap,
+    OpportunitySitemap,
+    GuideSitemap,
+    ScholarshipListSitemap,
+    CategorySitemap,
+    CountrySitemap,
+    StaticPagesSitemap,
+    GuideListSitemap
+)
 
+# Mapping the sitemap sections
 sitemaps = {
-    'scholarships': ScholarshipSitemap,
+    'home': HomepageSitemap,
+    'opportunities': OpportunitySitemap,
     'guides': GuideSitemap,
-    'static': StaticViewSitemap,
-    'contact': ContactViewSitemap,
-
+    'guide_list_index': GuideListSitemap,
+    'scholarship_list': ScholarshipListSitemap,
+    'categories': CategorySitemap,
+    'countries': CountrySitemap,
+    'static_pages': StaticPagesSitemap,
 }
 
 urlpatterns = [

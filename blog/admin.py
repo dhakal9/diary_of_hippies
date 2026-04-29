@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Opportunity, EducationLevel, Country, Guide, Category, SuccessStory
+from .models import Opportunity, EducationLevel, Country, Guide, Category, SuccessStory, Subscriber
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -41,3 +41,8 @@ class GuideAdmin(admin.ModelAdmin):
 class SuccessStoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_at')
     search_fields = ('name', 'story')
+
+@admin.register(Subscriber)
+class SubscriberAdmin(admin.ModelAdmin):
+    list_display = ('email', 'subscribed_at')
+    search_fields = ('email',)

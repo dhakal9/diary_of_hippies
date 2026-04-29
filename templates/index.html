@@ -489,25 +489,141 @@
 </section>
 
 <!-- ══ SUCCESS STORIES ══ -->
+{% block schema %}
+{{ block.super }}
+ 
+{% if success_stories %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "MastersGrant",
+  "url": "https://mastersgrant.com",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://mastersgrant.com{% static 'images/logo.png' %}"
+  },
+  "description": "Global scholarship, fellowship and grant directory for international students.",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5",
+    "bestRating": "5",
+    "worstRating": "1",
+    "ratingCount": "{{ success_stories|length }}",
+    "reviewCount": "{{ success_stories|length }}"
+  },
+  "review": [
+    {% for story in success_stories %}
+    {
+      "@type": "Review",
+      "itemReviewed": {
+        "@type": "Organization",
+        "name": "MastersGrant",
+        "url": "https://mastersgrant.com"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "{{ story.name|escapejs }}"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "{{ story.story|striptags|truncatewords:50|escapejs }}",
+      "datePublished": "{{ story.created_at|date:'Y-m-d' }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
+ 
+{% endblock %}
+ 
+ 
+{# ── STEP 2: Replace your stories grid HTML with this ── #}
+ 
 {% if success_stories %}
 <section class="section" aria-labelledby="stories-heading">
     <div class="container">
         <div class="section-header">
             <h2 class="section-title" id="stories-heading">Success <span class="accent">Stories</span></h2>
         </div>
+ 
         <div class="stories-grid">
             {% for story in success_stories %}
-            <div class="story-card" itemscope itemtype="https://schema.org/Review">
+            <div class="story-card"
+                 itemscope
+                 itemtype="https://schema.org/Review">
+ 
+                {# ── FIX 1 (CRITICAL): itemReviewed — what is being reviewed ── #}
+                {# Use hidden meta tags so they don't affect visual layout      #}
+                <div itemprop="itemReviewed"
+                     itemscope
+                     itemtype="https://schema.org/Organization"
+                     style="display:none;" aria-hidden="true">
+                    <meta itemprop="name"   content="MastersGrant">
+                    <meta itemprop="url"    content="https://mastersgrant.com">
+                </div>
+ 
+                {# ── FIX 2 & 3: author must be Person with a name field ── #}
+                {# DO NOT put itemprop="author" on the <img> tag            #}
+                <div itemprop="author"
+                     itemscope
+                     itemtype="https://schema.org/Person"
+                     style="display:none;" aria-hidden="true">
+                    <meta itemprop="name" content="{{ story.name }}">
+                </div>
+ 
+                {# ── reviewRating: required for star rich results ── #}
+                <div itemprop="reviewRating"
+                     itemscope
+                     itemtype="https://schema.org/Rating"
+                     style="display:none;" aria-hidden="true">
+                    <meta itemprop="ratingValue" content="5">
+                    <meta itemprop="bestRating"  content="5">
+                    <meta itemprop="worstRating" content="1">
+                </div>
+ 
+                {# ── datePublished: recommended by Google ── #}
+                {% if story.created_at %}
+                <meta itemprop="datePublished"
+                      content="{{ story.created_at|date:'Y-m-d' }}">
+                {% endif %}
+ 
+                {# ════ VISIBLE CARD CONTENT — unchanged visually ════ #}
+ 
+                {# Avatar — NOTE: NO itemprop="author" here anymore #}
                 {% if story.image %}
-                <img src="{{ story.image.url }}" alt="{{ story.name }}" class="story-avatar" loading="lazy" itemprop="author">
+                <img src="{{ story.image.url }}"
+                     alt="Photo of {{ story.name }}"
+                     class="story-avatar"
+                     loading="lazy"
+                     width="52" height="52">
                 {% else %}
-                <div class="story-avatar" style="background:var(--blue-light); display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--blue); font-size:1.1rem;">
+                <div class="story-avatar"
+                     style="background:var(--blue-light);display:flex;
+                            align-items:center;justify-content:center;
+                            font-weight:700;color:var(--blue);font-size:1.1rem;"
+                     aria-label="{{ story.name }}">
                     {{ story.name|slice:":1" }}
                 </div>
                 {% endif %}
-                <div class="story-name" itemprop="author">{{ story.name }}</div>
-                <div class="story-role">{% if story.title %}{{ story.title }}{% endif %}</div>
-                <p class="story-quote" itemprop="reviewBody">{{ story.story|safe|truncatewords:50 }}</p>
+ 
+                {# Name — visible display only, schema handled above #}
+                <div class="story-name">{{ story.name }}</div>
+ 
+                {% if story.title %}
+                <div class="story-role">{{ story.title }}</div>
+                {% endif %}
+ 
+                {# Story text — itemprop="reviewBody" goes here #}
+                <p class="story-quote" itemprop="reviewBody">
+                    {{ story.story|safe }}
+                </p>
+ 
             </div>
             {% endfor %}
         </div>

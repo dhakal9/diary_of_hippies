@@ -36,3 +36,12 @@ class ContactForm(forms.Form):
             'placeholder':'Write your message here...'
         })
     )
+
+class SuscriberForm(forms.Form):
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class':'form-control',
+            'placeholder':'Enter your email to subscribe'
+        })
+    )
