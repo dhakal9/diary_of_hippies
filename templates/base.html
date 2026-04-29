@@ -36,10 +36,12 @@
     <!-- CSS styles -->
     <link rel="stylesheet" href="{% static 'css/main.min.css' %}">
 
+
     {# ════ Favicon — pre-declared sizes prevent layout shift ════ #}
-    <link rel="icon"             type="image/png" sizes="32x32"  href="{% static 'images/favicon-32.png' %}">
-    <link rel="icon"             type="image/png" sizes="16x16"  href="{% static 'images/favicon-16.png' %}">
-    <link rel="apple-touch-icon" sizes="180x180"                 href="{% static 'images/apple-touch-icon.png' %}">
+    
+    <link rel="icon"             type="image/png" sizes="32x32"  href="{% static 'images/logo.png' %}">
+    <link rel="icon"             type="image/png" sizes="16x16"  href="{% static 'images/logo.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180"                 href="{% static 'images/logo.png' %}">
     <link rel="manifest"                                          href="{% static 'site.webmanifest' %}">
     <meta name="theme-color" content="#1349a8">
 
@@ -73,7 +75,7 @@
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap&subset=latin">
     </noscript>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css"/>
     <!-- {# ════ PRELOAD HERO IMAGE (above-the-fold — massive LCP improvement) ════
          Only the home page hero. Override per page if needed.
     #} -->
@@ -195,16 +197,41 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">
+                        <a href="{% url 'studyabroad' %}" class="dropdown-trigger" aria-haspopup="true" aria-expanded="false">
                             Study Abroad
                             <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="{% url 'country' %}" role="menuitem"><span class="dm-icon">🇺🇸</span><span>USA</span></a></li>
-                            <li><a href="#" role="menuitem"><span class="dm-icon">🇨🇦</span><span>Canada</span></a></li>
-                            <li><a href="#" role="menuitem"><span class="dm-icon">🇬🇧</span><span>United Kingdom</span></a></li>
-                            <li><a href="#" role="menuitem"><span class="dm-icon">🇦🇺</span><span>Australia</span></a></li>
-                            <li><a href="#" role="menuitem"><span class="dm-icon">🇪🇺</span><span>Europe</span></a></li>
+                            <li>
+                                <a href="{% url 'country' %}" role="menuitem">
+                                    <span class="dm-icon nav-flag"><span class="fi fi-us"></span></span>
+                                    <span>USA</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" role="menuitem">
+                                    <span class="dm-icon nav-flag"><span class="fi fi-ca"></span></span>
+                                    <span>Canada</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" role="menuitem">
+                                    <span class="dm-icon nav-flag"><span class="fi fi-gb"></span></span>
+                                    <span>United Kingdom</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" role="menuitem">
+                                    <span class="dm-icon nav-flag"><span class="fi fi-au"></span></span>
+                                    <span>Australia</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" role="menuitem">
+                                    <span class="dm-icon nav-flag"><span class="fi fi-eu"></span></span>
+                                    <span>Europe</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item"><a href="{% url 'guide_list' %}">Guides</a></li>

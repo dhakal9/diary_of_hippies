@@ -11,6 +11,7 @@ from .views import (
     AboutUsView,
     DisclaimerView,
     CountriesView,
+    AbroadStudyView,
     subscribe_email,
 
     
@@ -47,6 +48,7 @@ urlpatterns = [
     path("fellowships/", ScholarshipListView.as_view(), name="fellowships"),
     path("countries/", CountriesView.as_view(), name="country"),
     path('subscribe/', subscribe_email, name='subscribe_email'),
+    path('study_abroad/', AbroadStudyView.as_view(), name='studyabroad'),
 ]
 
 def get_absolute_url(self):

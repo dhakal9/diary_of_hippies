@@ -286,6 +286,10 @@ class ScholarshipListView(ListView):
 
         return context
 
+class AbroadStudyView(View):
+    def get(self, request):
+        return render(request, 'study_abroad.html')
+
 class CountriesView(View):
     def get(self, request):
         return render(request, 'countries.html')

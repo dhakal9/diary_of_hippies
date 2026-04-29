@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Study Abroad Guide 2026: Countries, Costs & Scholarships | MastersGrant{% endblock %}
+
+{% block extra_head %}
+<!-- Professional Flag Icons CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css"/>
+
+<style>
+    :root {
+        --primary-blue: #1349a8;
+        --soft-bg: #f8faff;
+        --text-dark: #1a202c;
+        --text-muted: #4a5568;
+        --white: #ffffff;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ════ HERO SECTION ════ */
+    .sa-hero {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, #0a2e6e 100%);
+        color: var(--white);
+        padding: 80px 0 60px;
+        text-align: center;
+        border-radius: 0 0 40px 40px;
+    }
+
+    .sa-hero h1 {
+        font-family: 'Fraunces', serif;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        margin-bottom: 20px;
+    }
+
+    /* ════ COUNTRY GRID ════ */
+    .section-title { text-align: center; margin: 60px 0 40px; }
+    .section-title h2 { font-family: 'Fraunces', serif; font-size: 2.25rem; color: var(--text-dark); }
+
+    .country-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 24px;
+        margin-bottom: 60px;
+    }
+
+    .country-card {
+        background: var(--white);
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 40px 32px;
+        text-decoration: none;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .country-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px -10px rgba(19, 73, 168, 0.15);
+        border-color: var(--primary-blue);
+    }
+
+    /* ════ ICON STYLING ════ */
+    /* We use a wrapper to ensure the icons are perfectly circular and uniform */
+    .flag-icon-wrapper {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eee;
+    }
+
+    .flag-icon-wrapper .fi {
+        transform: scale(1.8); /* Zoom into the flag to fill the circle */
+    }
+
+    .multi-flag-container {
+        display: flex;
+        gap: -10px; /* Slight overlap for a modern look */
+        margin-bottom: 20px;
+    }
+
+    .multi-flag-container .flag-icon-small {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid white;
+    }
+
+    .country-card h3 { font-size: 1.5rem; color: var(--text-dark); margin-bottom: 12px; }
+    .country-card p { color: var(--text-muted); line-height: 1.6; }
+
+    /* ════ BUTTONS ════ */
+    .btn-white {
+        background: white;
+        color: var(--primary-blue);
+        padding: 16px 36px;
+        border-radius: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 24px;
+        transition: var(--transition);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<article>
+    <section class="sa-hero">
+        <div class="container">
+            <h1>Study Abroad <br>Destination Guides</h1>
+            <p>Expert insights on admissions, costs, and visas for 2026.</p>
+            <a href="#destinations" class="btn-white">Explore Destinations</a>
+        </div>
+    </section>
+
+    <section id="destinations" class="container">
+        <div class="section-title">
+            <h2>Top Study Destinations</h2>
+        </div>
+        
+        <div class="country-grid">
+            <!-- USA -->
+            <a href="#" class="country-card">
+                <div class="flag-icon-wrapper">
+                    <span class="fi fi-us"></span>
+                </div>
+                <h3>United States</h3>
+                <p>Access Ivy League prestige and the world's largest research network.</p>
+            </a>
+
+            <!-- Canada -->
+            <a href="#" class="country-card">
+                <div class="flag-icon-wrapper">
+                    <span class="fi fi-ca"></span>
+                </div>
+                <h3>Canada</h3>
+                <p>Top-tier education with the most student-friendly residency paths.</p>
+            </a>
+
+            <!-- United Kingdom -->
+            <a href="#" class="country-card">
+                <div class="flag-icon-wrapper">
+                    <span class="fi fi-gb"></span>
+                </div>
+                <h3>United Kingdom</h3>
+                <p>One-year Master's degrees from world-renowned historic institutions.</p>
+            </a>
+
+            <!-- Australia -->
+            <a href="#" class="country-card">
+                <div class="flag-icon-wrapper">
+                    <span class="fi fi-au"></span>
+                </div>
+                <h3>Australia</h3>
+                <p>Innovative learning environments in the world's most livable cities.</p>
+            </a>
+
+            <!-- Germany -->
+            <a href="#" class="country-card">
+                <div class="flag-icon-wrapper">
+                    <span class="fi fi-de"></span>
+                </div>
+                <h3>Germany</h3>
+                <p>Free tuition at public universities and a powerhouse for engineering.</p>
+            </a>
+
+            <!-- Europe (Erasmus+) -->
+            <a href="#" class="country-card">
+                <div class="multi-flag-container">
+                    <div class="flag-icon-small"><span class="fi fi-eu"></span></div>
+                    <div class="flag-icon-small" style="margin-left:-8px;"><span class="fi fi-fr"></span></div>
+                    <div class="flag-icon-small" style="margin-left:-8px;"><span class="fi fi-it"></span></div>
+                    <div class="flag-icon-small" style="margin-left:-8px;"><span class="fi fi-es"></span></div>
+                </div>
+                <h3>Europe (Erasmus+)</h3>
+                <p>The ultimate cross-cultural academic adventure across multiple nations.</p>
+            </a>
+        </div>
+    </section>
+</article>
+{% endblock %}
